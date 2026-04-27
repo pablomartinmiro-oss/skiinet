@@ -426,6 +426,19 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 - **terminos/page.tsx**: full rewrite — `"Términos y condiciones"` title + all body accents (`"través"`, `"están"`, `"comunicación"`, `"indicación"`, `"según"`, `"específicas"`, `"Política de cancelación"`, `"más"`, `"días"`, `"íntegro"`, `"gestión"`, `"presentación"`, `"podrá"`, `"compensación"`, `"código"`, `"montaña"`, `"suspensión"`, `"meteorológicas"`, `"legislación"`, `"española"`, `"someterán"`, `"versión"`, `"jurídico"`)
 - **Audit**: `tsc --noEmit` → 0 errors; `next build` compiled successfully (page-data step fails only due to absent local DATABASE_URL)
 
+### Phase AF: Storefront Experience Catalog — Skicenter Seed (2026-04-27) ✅
+- **Goal**: populate the public storefront `/s/skicenter/experiencias` with real products. The page was returning `{products:[]}` from the API and showing the "No encontramos experiencias" empty state because zero `Product` rows existed for the skicenter tenant.
+- **Seed dataset** (`src/lib/seed/skicenter-storefront-experiences.ts`): 43 products across 7 categories and all 7 stations.
+  - **By category**: pack 11 (7 todo-incluido featured + 4 hotel+forfait), forfait 10 (7 adulto + 3 infantil), escuela 5, clase_particular 3, alquiler 8 (5 alta_quality + 3 media_quality), apreski 3, locker 3.
+  - **By station**: Baqueira Beret 9, Sierra Nevada 10, Formigal 7, Alto Campoo 2, Candanchú 4, Astún 2, La Pinilla 9.
+  - **Stations stored as full names** ("Baqueira Beret", etc.) to match the storefront filter (`StorefrontNav` + `experiencias/page.tsx` use `?station=<encoded name>` and filter via `.includes(name)`).
+  - Each product has slug, description in skicenter.es voice, EUR price (locker 5-8€/día → packs up to 399€), unsplash cover image, isPublished/isActive=true, isFeatured=true on the 7 todo-incluido packs.
+- **Categories**: 7 storefront categories upserted (pack, forfait, escuela, clase_particular, alquiler, apreski, locker) so the experiencias filter chips render.
+- **Endpoint** (`src/app/api/storefront/admin/seed-experiences/route.ts`): one-shot POST with idempotent upserts. Auth: `Authorization: Bearer <AUTH_SECRET>` (lives under `/api/storefront` which is the public middleware prefix, so the bearer check is the only gate). Returns `{ ok, tenant, categoriesUpserted, productsUpserted }`.
+- **Run from prod**: `curl -X POST -H "Authorization: Bearer $AUTH_SECRET" https://openclaw-production-50e4.up.railway.app/api/storefront/admin/seed-experiences?slug=skicenter`
+- **Verify**: `curl https://openclaw-production-50e4.up.railway.app/api/storefront/public/skicenter/products | jq '.products | length'` should return ≥ 43.
+- **Audit**: `npx tsc --noEmit` → 0 errors.
+
 ### Next: TBD
 
 ## DB Migrations
