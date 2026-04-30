@@ -29,9 +29,10 @@ export default function ReservasPage() {
   const { from: monthFrom, to: monthTo } = getMonthRange(calendarMonth);
 
   // Calendar mode loads by activityDate for the visible month
-  const { data: reservations, isLoading } = useReservations(
-    view === "calendario" ? { dateFrom: monthFrom, dateTo: monthTo } : undefined
+  const { data: reservationsData, isLoading } = useReservations(
+    view === "calendario" ? { dateFrom: monthFrom, dateTo: monthTo, pageSize: 200 } : { pageSize: 50 }
   );
+  const reservations = reservationsData?.reservations;
   const { data: stats, isLoading: statsLoading } = useReservationStats();
 
   const lastReservation = useMemo(() => {

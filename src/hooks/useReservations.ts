@@ -80,12 +80,22 @@ async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   return res.json();
 }
 
+export interface ReservationsPage {
+  reservations: Reservation[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export function useReservations(filters?: {
   status?: string;
   station?: string;
   dateFrom?: string;
   dateTo?: string;
   search?: string;
+  page?: number;
+  pageSize?: number;
+  includeDeleted?: boolean;
 }) {
   const params = new URLSearchParams();
   if (filters?.status) params.set("status", filters.status);
@@ -93,13 +103,15 @@ export function useReservations(filters?: {
   if (filters?.dateFrom) params.set("dateFrom", filters.dateFrom);
   if (filters?.dateTo) params.set("dateTo", filters.dateTo);
   if (filters?.search) params.set("search", filters.search);
+  if (filters?.page) params.set("page", String(filters.page));
+  if (filters?.pageSize) params.set("pageSize", String(filters.pageSize));
+  if (filters?.includeDeleted) params.set("includeDeleted", "true");
   const qs = params.toString();
 
   return useQuery({
     queryKey: ["reservations", filters],
     queryFn: () =>
-      fetchJSON<{ reservations: Reservation[] }>(`/api/reservations${qs ? `?${qs}` : ""}`),
-    select: (data) => data.reservations,
+      fetchJSON<ReservationsPage>(`/api/reservations${qs ? `?${qs}` : ""}`),
   });
 }
 
@@ -172,7 +184,7 @@ export function useDeleteReservation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      fetchJSON<{ success: boolean }>(`/api/reservations/${id}`, {
+      fetchJSON<{ reservation: Reservation }>(`/api/reservations/${id}`, {
         method: "DELETE",
       }),
     onSuccess: () => {

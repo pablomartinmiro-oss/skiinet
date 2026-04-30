@@ -24,8 +24,10 @@ export const LANGUAGES = [
 export const STATUS_CONFIG = {
   pendiente: { label: "Pendiente", color: "bg-gold-light text-gold" },
   confirmada: { label: "Confirmada", color: "bg-sage-light text-sage" },
+  completada: { label: "Completada", color: "bg-sky-100 text-sky-700" },
   sin_disponibilidad: { label: "Sin Disponibilidad", color: "bg-muted-red-light text-muted-red" },
   cancelada: { label: "Cancelada", color: "bg-warm-muted text-text-secondary" },
+  eliminada: { label: "Eliminada", color: "bg-slate-100 text-slate-500" },
 } as const;
 
 export const SOURCE_CONFIG = {

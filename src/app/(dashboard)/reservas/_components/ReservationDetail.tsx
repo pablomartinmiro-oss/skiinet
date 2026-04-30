@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CheckCircle, XCircle, ArrowLeft, X, Clock, Trash2 } from "lucide-react";
+import { CheckCircle, CheckCheck, XCircle, ArrowLeft, X, Clock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useUpdateReservation, useDeleteReservation, type Reservation } from "@/hooks/useReservations";
 import { STATUS_CONFIG, SOURCE_CONFIG, formatDate } from "./constants";
@@ -121,6 +121,11 @@ export function ReservationDetail({ reservation, onBack }: ReservationDetailProp
           {reservation.status !== "confirmada" && (
             <Button size="sm" className="gap-1.5 bg-sage text-white hover:bg-sage/90" onClick={() => handleStatusChange("confirmada")} disabled={updateReservation.isPending}>
               <CheckCircle className="h-3.5 w-3.5" /> Confirmar
+            </Button>
+          )}
+          {reservation.status === "confirmada" && (
+            <Button size="sm" className="gap-1.5 bg-sky-600 text-white hover:bg-sky-700" onClick={() => handleStatusChange("completada")} disabled={updateReservation.isPending}>
+              <CheckCheck className="h-3.5 w-3.5" /> Completar
             </Button>
           )}
           {reservation.status !== "sin_disponibilidad" && (

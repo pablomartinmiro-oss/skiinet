@@ -20,10 +20,17 @@ export async function GET(request: NextRequest) {
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
   const search = searchParams.get("search");
+  const includeDeleted = searchParams.get("includeDeleted") === "true";
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
+  const pageSize = Math.min(200, Math.max(1, parseInt(searchParams.get("pageSize") ?? "50", 10) || 50));
 
   try {
     const where: Record<string, unknown> = { tenantId };
-    if (status) where.status = status;
+    if (status) {
+      where.status = status;
+    } else if (!includeDeleted) {
+      where.status = { not: "eliminada" };
+    }
     if (station) where.station = station;
     if (dateFrom || dateTo) {
       where.activityDate = {
@@ -40,14 +47,19 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const reservations = await prisma.reservation.findMany({
-      where,
-      include: { quote: { select: { id: true, clientName: true } } },
-      orderBy: { createdAt: "desc" },
-    });
+    const [reservations, total] = await Promise.all([
+      prisma.reservation.findMany({
+        where,
+        include: { quote: { select: { id: true, clientName: true } } },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.reservation.count({ where }),
+    ]);
 
-    log.info({ count: reservations.length }, "Reservations fetched");
-    return NextResponse.json({ reservations });
+    log.info({ count: reservations.length, total, page, pageSize }, "Reservations fetched");
+    return NextResponse.json({ reservations, total, page, pageSize });
   } catch (error) {
     return apiError(error, {
       publicMessage: "Failed to fetch reservations",

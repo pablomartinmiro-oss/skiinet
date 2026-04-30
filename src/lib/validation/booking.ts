@@ -104,7 +104,7 @@ export const createReservationSchema = z.object({
   paymentMethod: z.string().max(50).optional().nullable(),
   paymentRef: z.string().max(200).optional().nullable(),
   status: z
-    .enum(["pendiente", "confirmada", "sin_disponibilidad", "cancelada"])
+    .enum(["pendiente", "confirmada", "completada", "sin_disponibilidad", "cancelada", "eliminada"])
     .optional()
     .default("pendiente"),
   notes: z.string().max(5000).optional().nullable(),
@@ -123,7 +123,7 @@ export const createReservationSchema = z.object({
 
 export const updateReservationSchema = z.object({
   status: z
-    .enum(["pendiente", "confirmada", "sin_disponibilidad", "cancelada"])
+    .enum(["pendiente", "confirmada", "completada", "sin_disponibilidad", "cancelada", "eliminada"])
     .optional(),
   clientName: z.string().min(1).max(200).optional(),
   clientEmail: z.string().email().optional().nullable(),
