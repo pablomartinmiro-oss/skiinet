@@ -439,6 +439,16 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 - **Verify**: `curl https://openclaw-production-50e4.up.railway.app/api/storefront/public/skicenter/products | jq '.products | length'` should return ≥ 43.
 - **Audit**: `npx tsc --noEmit` → 0 errors.
 
+### Phase AG: Presupuestos Module Fixes (2026-04-30) ✅
+- **PDF endpoint** (`/api/quotes/[id]/pdf`): print-ready HTML quote document at the URL the email already references. Auth: `requireTenant` + `requireModule("booking")`, scoped by `tenantId`. Renders tenant name, quote number (`Q-XXXXXXXX`), client + trip info, full line-items table with per-item variables (modalidad, nivel, sector, idioma, horario, tipoCliente, fecha, días, notas), subtotal/discounts/total, payment instructions (Redsys link if available + IBAN), expiry date, footer with contact info. `@media print` CSS strips chrome; `<script>window.print()</script>` auto-triggers Save-as-PDF. Returns `text/html`.
+- **`en_proceso` quote status** added to `updateQuoteSchema` enum in `src/lib/validation/booking.ts` so the QuoteDetail UI can transition a converted quote without the API rejecting it.
+- **Quote→Reservation conversion** (`/api/reservations/from-quote/[quoteId]`):
+  - **Idempotency guard**: pre-check for existing `Reservation` with this `quoteId`; if present, returns 200 with `{ reservation, existing: true }` instead of duplicating.
+  - **Atomic conversion** in `prisma.$transaction`: creates the reservation and updates the source quote (status → `en_proceso` for `nuevo|borrador|en_proceso`, otherwise preserved; `internalNotes` appended with `Convertido a reserva el <ISO>`).
+  - **Full per-item variable copy**: services array now carries every QuoteItem field (productId, category, description, startDate/endDate, numDays/numPersons, ageDetails, station, modalidad, nivel, sector, idioma, horario, puntoEncuentro, tipoCliente, gama, casco, tipoActividad, regimen, alojamientoNombre, seguroIncluido, tallaBotas, alturaPeso, dni, notes) — no more dropped data.
+  - **Dynamic schedule**: picks the first non-empty `horario` across QuoteItems; falls back to `10:00-13:00` only if none provided. No more universal hardcode.
+- **Audit**: `npx tsc --noEmit` → 0 errors.
+
 ### Next: TBD
 
 ## DB Migrations

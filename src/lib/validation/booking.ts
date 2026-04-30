@@ -19,7 +19,7 @@ export const createQuoteSchema = z.object({
 });
 
 export const updateQuoteSchema = z.object({
-  status: z.enum(["nuevo", "borrador", "enviado", "pagado", "expirado", "cancelado"]).optional(),
+  status: z.enum(["nuevo", "borrador", "en_proceso", "enviado", "pagado", "expirado", "cancelado"]).optional(),
   totalAmount: z.coerce.number().min(0).optional(),
   expiresAt: z.coerce.date().optional().nullable(),
   sentAt: z.coerce.date().optional().nullable(),
