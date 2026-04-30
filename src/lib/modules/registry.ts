@@ -15,6 +15,19 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
     ],
     permissions: ["settings:team", "settings:tenant"],
   },
+  leads: {
+    slug: "leads",
+    name: "Leads",
+    icon: "Target",
+    description: "Captacion, pipeline y scoring de clientes potenciales",
+    dependencies: [],
+    isCore: false,
+    section: "ventas",
+    navItems: [
+      { label: "Leads", href: "/leads", icon: "Target", permission: null },
+    ],
+    permissions: ["leads:view", "leads:create", "leads:edit", "leads:delete"],
+  },
   crm: {
     slug: "crm",
     name: "CRM",

@@ -21,6 +21,7 @@ export * from "./cancellations";
 export * from "./instructors";
 export * from "./planning";
 export * from "./rental";
+export * from "./leads";
 
 // ==================== HELPER ====================
 /**

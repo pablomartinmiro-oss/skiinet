@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skiinet — El SaaS que transforma negocios de montaña</title>
+<meta name="description" content="Plataforma modular para escuelas de esquí, alquiler de material, agencias de viajes y resorts. +15 módulos interconectados, multi-tenant, 100% cloud.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg-primary:#08090a;--bg-secondary:#0f1011;--bg-tertiary:#191a1b;--bg-card:rgba(255,255,255,0.03);
+--blue:#4F8EF7;--cyan:#00D4FF;--snow:#F7F8F8;--green:#34D399;--purple:#A78BFA;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;
+--border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);
+--radius:12px;--radius-lg:20px;--radius-sm:8px;
+--font-sans:'Inter',system-ui,-apple-system,sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--font-sans);font-feature-settings:'cv01','ss03';background:var(--bg-primary);color:var(--snow);overflow-x:hidden;line-height:1.6}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+::selection{background:rgba(79,142,247,0.3);color:#fff}
+
+/* ===== NAVBAR ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 24px;transition:all .4s}
+.nav.scrolled{background:rgba(8,9,10,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:1.25rem;font-weight:700;letter-spacing:-0.03em;display:flex;align-items:center;gap:8px}
+.nav-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{font-size:.875rem;font-weight:400;color:var(--gray-400);transition:color .2s}
+.nav-links a:hover{color:var(--snow)}
+.nav-cta{font-size:.8125rem;font-weight:500;padding:8px 20px;border-radius:8px;background:var(--blue);color:#fff;transition:all .2s}
+.nav-cta:hover{background:#6BA0F9;box-shadow:0 0 24px rgba(79,142,247,0.3)}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* ===== HERO ===== */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 70% 40%,rgba(79,142,247,0.06) 0%,transparent 60%)}
+.hero-inner{display:flex;align-items:center;gap:64px;max-width:1280px;width:100%;padding:100px 24px 0;position:relative;z-index:2}
+.hero-text{flex:1;min-width:0}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.2);font-size:.8125rem;font-weight:500;color:var(--blue);margin-bottom:32px;letter-spacing:0.02em}
+.hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
+.hero h1{font-size:clamp(2rem,4vw,3.5rem);font-weight:700;letter-spacing:-0.04em;line-height:1.08;margin-bottom:24px}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(.95rem,1.8vw,1.15rem);color:var(--gray-400);font-weight:300;margin-bottom:40px;letter-spacing:0.01em}
+.hero-sub span{color:var(--gray-500)}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{padding:14px 32px;border-radius:10px;background:var(--blue);color:#fff;font-weight:600;font-size:.9375rem;transition:all .3s;box-shadow:0 0 32px rgba(79,142,247,0.2)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(79,142,247,0.35);background:#6BA0F9}
+.btn-ghost{padding:14px 32px;border-radius:10px;background:transparent;color:var(--snow);font-weight:500;font-size:.9375rem;border:1px solid var(--border-hover);transition:all .3s}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.04);transform:translateY(-2px)}
+
+/* ===== 3D DASHBOARD ===== */
+.dashboard-3d{perspective:1200px;width:680px;flex-shrink:0}
+.dashboard-frame{background:#0f1011;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;transform:rotateY(-8deg) rotateX(3deg) scale(0.85);transform-style:preserve-3d;box-shadow:0 0 80px rgba(79,142,247,0.15),0 20px 60px rgba(0,0,0,0.5);transition:transform 0.3s ease,box-shadow 0.3s ease}
+.dashboard-frame:hover{transform:rotateY(-8deg) rotateX(3deg) scale(0.87);box-shadow:0 0 120px rgba(79,142,247,0.25),0 24px 80px rgba(0,0,0,0.6)}
+.db-topbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.3)}
+.db-dot{width:8px;height:8px;border-radius:50%}
+.db-dot.r{background:#ff5f57}.db-dot.y{background:#febc2e}.db-dot.g{background:#28c840}
+.db-topbar-title{font-size:.7rem;color:var(--gray-500);margin-left:8px;font-weight:500}
+.db-layout{display:flex;height:380px}
+.db-sidebar{width:140px;border-right:1px solid rgba(255,255,255,0.06);padding:8px 0;overflow-y:auto;flex-shrink:0;background:rgba(0,0,0,0.2)}
+.db-sidebar-item{display:flex;align-items:center;gap:7px;padding:8px 12px;font-size:.65rem;color:var(--gray-500);cursor:pointer;transition:all .2s;white-space:nowrap;border-left:2px solid transparent}
+.db-sidebar-item:hover{color:var(--gray-400);background:rgba(255,255,255,0.02)}
+.db-sidebar-item.active{color:var(--snow);background:rgba(79,142,247,0.08);border-left-color:var(--blue)}
+.db-sidebar-item .si-icon{font-size:.8rem;width:18px;text-align:center;flex-shrink:0}
+.db-main{flex:1;padding:16px;overflow:hidden;position:relative}
+.db-module-content{position:absolute;inset:16px;opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+.db-module-content.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.db-module-title{font-size:.75rem;font-weight:600;color:var(--snow);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* Kanban (Leads) */
+.kanban{display:flex;gap:8px;height:calc(100% - 28px)}
+.kanban-col{flex:1;background:rgba(255,255,255,0.02);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:6px}
+.kanban-col-title{font-size:.55rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:4px 6px;color:var(--gray-400)}
+.kanban-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px 8px}
+.kanban-card .kc-name{font-size:.6rem;font-weight:500;color:var(--snow)}
+.kanban-card .kc-score{font-size:.5rem;padding:2px 6px;border-radius:4px;background:rgba(52,211,153,0.12);color:var(--green);display:inline-block;margin-top:3px}
+
+/* Table (Presupuestos) */
+.db-table{width:100%;border-collapse:collapse}
+.db-table th{font-size:.55rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-500);text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.db-table td{font-size:.6rem;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--gray-400)}
+.db-table td:first-child{color:var(--snow);font-weight:500}
+.db-badge{font-size:.5rem;padding:2px 8px;border-radius:100px;font-weight:500;display:inline-block}
+.db-badge.pending{background:rgba(251,191,36,0.1);color:#FBB324;border:1px solid rgba(251,191,36,0.2)}
+.db-badge.sent{background:rgba(79,142,247,0.1);color:var(--blue);border:1px solid rgba(79,142,247,0.2)}
+.db-badge.accepted{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.db-badge.paid{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.db-btn-sm{font-size:.5rem;padding:2px 8px;border-radius:4px;background:rgba(79,142,247,0.15);color:var(--blue);border:1px solid rgba(79,142,247,0.2);cursor:default}
+
+/* Calendar (Reservas) */
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-header span{font-size:.6rem;color:var(--gray-400)}
+.occ-bar{height:6px;border-radius:3px;background:rgba(255,255,255,0.06);overflow:hidden;width:100%;margin-bottom:10px}
+.occ-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-cell{aspect-ratio:1;border-radius:4px;background:rgba(255,255,255,0.02);font-size:.5rem;display:flex;align-items:center;justify-content:center;color:var(--gray-500)}
+.cal-cell.booked{background:rgba(79,142,247,0.15);color:var(--blue)}
+.cal-cell.booked2{background:rgba(0,212,255,0.12);color:var(--cyan)}
+.cal-cell.booked3{background:rgba(167,139,250,0.12);color:var(--purple)}
+
+/* Escuela */
+.esc-grid{display:grid;grid-template-columns:60px repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.04);border-radius:6px;overflow:hidden;font-size:.55rem}
+.esc-cell{padding:6px 4px;text-align:center;background:#0f1011}
+.esc-header{font-weight:600;color:var(--gray-400);font-size:.5rem;text-transform:uppercase}
+.esc-time{color:var(--gray-500);font-weight:500;display:flex;align-items:center;justify-content:center}
+.esc-class{border-radius:4px;margin:1px;padding:4px;font-size:.5rem;font-weight:500}
+.esc-class.blue{background:rgba(79,142,247,0.12);color:var(--blue)}
+.esc-class.green{background:rgba(52,211,153,0.12);color:var(--green)}
+.esc-class.purple{background:rgba(167,139,250,0.12);color:var(--purple)}
+.esc-class.cyan{background:rgba(0,212,255,0.12);color:var(--cyan)}
+
+/* Alquiler */
+.rental-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rental-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px;text-align:center}
+.rental-card .rc-icon{font-size:1.4rem;margin-bottom:4px}
+.rental-card .rc-name{font-size:.6rem;font-weight:600;color:var(--snow);margin-bottom:2px}
+.rental-card .rc-stock{font-size:.85rem;font-weight:700;color:var(--blue);margin-bottom:2px}
+.rental-card .rc-label{font-size:.45rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em}
+.rental-card .rc-status{font-size:.5rem;margin-top:4px;padding:2px 6px;border-radius:4px;display:inline-block}
+.rc-status.ok{background:rgba(52,211,153,0.1);color:var(--green)}
+.rc-status.low{background:rgba(251,191,36,0.1);color:#FBB324}
+
+/* TPV */
+.tpv-layout{display:flex;gap:12px;height:calc(100% - 28px)}
+.tpv-cart{flex:1;display:flex;flex-direction:column}
+.tpv-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.6rem}
+.tpv-item .ti-name{color:var(--snow)}
+.tpv-item .ti-price{color:var(--gray-400);font-family:var(--font-mono)}
+.tpv-total{margin-top:auto;padding:8px 0;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;font-weight:700;font-size:.75rem}
+.tpv-total .tt-label{color:var(--gray-400)}
+.tpv-total .tt-amount{color:var(--snow);font-family:var(--font-mono)}
+.tpv-actions{display:flex;flex-direction:column;gap:6px;width:100px}
+.tpv-btn{padding:8px;border-radius:6px;font-size:.55rem;font-weight:600;text-align:center;cursor:default}
+.tpv-btn.cash{background:rgba(52,211,153,0.12);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.tpv-btn.card{background:rgba(79,142,247,0.12);color:var(--blue);border:1px solid rgba(79,142,247,0.2)}
+.tpv-btn.split{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}
+
+/* Facturación */
+.inv-list{display:flex;flex-direction:column;gap:6px}
+.inv-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:6px;border:1px solid rgba(255,255,255,0.04)}
+.inv-row .ir-num{font-size:.6rem;font-weight:600;color:var(--snow);font-family:var(--font-mono)}
+.inv-row .ir-client{font-size:.55rem;color:var(--gray-400);flex:1;margin:0 12px}
+.inv-row .ir-amount{font-size:.65rem;font-weight:600;color:var(--snow);font-family:var(--font-mono);margin-right:8px}
+
+/* Finanzas */
+.fin-metrics{display:flex;gap:10px;margin-bottom:12px}
+.fin-metric{flex:1;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;text-align:center}
+.fin-metric .fm-label{font-size:.5rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.fin-metric .fm-value{font-size:.8rem;font-weight:700;font-family:var(--font-mono)}
+.fm-value.income{color:var(--green)}
+.fm-value.expense{color:#f87171}
+.fm-value.profit{color:var(--blue)}
+.fin-chart{display:flex;align-items:flex-end;gap:6px;height:100px;padding:8px 0}
+.fin-bar{flex:1;border-radius:4px 4px 0 0;position:relative;min-height:4px}
+.fin-bar.inc{background:rgba(52,211,153,0.3)}
+.fin-bar.exp{background:rgba(248,113,113,0.3)}
+.fin-bar-label{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:.4rem;color:var(--gray-500);white-space:nowrap}
+
+/* Storefront */
+.sf-preview{border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.sf-hero{height:80px;background:linear-gradient(135deg,rgba(79,142,247,0.2),rgba(0,212,255,0.15));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.sf-hero .sfh-title{font-size:.7rem;font-weight:700;color:var(--snow)}
+.sf-hero .sfh-sub{font-size:.5rem;color:var(--gray-400)}
+.sf-products{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px}
+.sf-product{background:rgba(255,255,255,0.03);border-radius:6px;padding:8px;text-align:center}
+.sf-product .sfp-img{height:36px;border-radius:4px;background:rgba(255,255,255,0.05);margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.sf-product .sfp-name{font-size:.5rem;color:var(--snow);font-weight:500;margin-bottom:2px}
+.sf-product .sfp-price{font-size:.55rem;color:var(--blue);font-weight:600;font-family:var(--font-mono)}
+
+/* Stats Bar */
+.stats-bar{position:relative;z-index:2;display:flex;justify-content:center;gap:0;margin-top:60px;padding:0 24px;width:100%;max-width:800px}
+.stat-item{flex:1;text-align:center;padding:20px 16px;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-value{font-size:1rem;font-weight:600;color:var(--snow);margin-bottom:2px}
+.stat-label{font-size:.75rem;color:var(--gray-500);font-weight:400}
+@media(max-width:600px){.stats-bar{flex-wrap:wrap}.stat-item{flex:0 0 50%;border-right:none;border-bottom:1px solid var(--border)}.stat-item:nth-last-child(-n+2){border-bottom:none}}
+
+/* Hero responsive */
+@media(max-width:768px){
+.hero-inner{flex-direction:column;gap:40px;padding-top:120px}
+.hero-text{text-align:center}
+.hero-buttons{justify-content:center}
+.dashboard-3d{width:100%;perspective:none}
+.dashboard-frame{transform:none !important;border-radius:12px}
+.db-layout{height:320px}
+.db-sidebar{width:120px}
+}
+
+/* ===== SECTIONS ===== */
+section{padding:120px 24px;position:relative}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:.75rem;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px}
+.section-title{font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.035em;line-height:1.1;margin-bottom:16px}
+.section-desc{font-size:1.0625rem;color:var(--gray-400);max-width:560px;line-height:1.7;font-weight:300}
+.section-header{margin-bottom:64px}
+
+/* ===== MODULES ===== */
+.sprint-group{margin-bottom:56px}
+.sprint-label{font-family:var(--font-mono);font-size:.6875rem;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:20px;padding:4px 12px;border-radius:6px;display:inline-block}
+.sprint-label.green{color:var(--green);background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.15)}
+.sprint-label.blue{color:var(--blue);background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.15)}
+.sprint-label.purple{color:var(--purple);background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.15)}
+.sprint-label.cyan{color:var(--cyan);background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.15)}
+.sprint-label.gray{color:var(--gray-400);background:rgba(156,163,175,0.08);border:1px solid rgba(156,163,175,0.15)}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.module-card{background:rgba(255,255,255,0.025);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:all .35s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.module-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glow-color,transparent),transparent);opacity:0;transition:opacity .35s}
+.module-card:hover{transform:translateY(-4px);border-color:var(--border-hover);background:rgba(255,255,255,0.04);box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 0 1px var(--border-hover)}
+.module-card:hover::before{opacity:1}
+.module-card .icon{font-size:1.5rem;margin-bottom:12px;display:block}
+.module-card h3{font-size:.9375rem;font-weight:600;margin-bottom:6px;letter-spacing:-0.01em}
+.module-card p{font-size:.8125rem;color:var(--gray-400);line-height:1.5;margin-bottom:12px}
+.module-card .badge{font-size:.6875rem;font-weight:500;padding:3px 10px;border-radius:100px;display:inline-block}
+.badge-ready{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.badge-dev{background:rgba(251,191,36,0.1);color:#FBB324;border:1px solid rgba(251,191,36,0.2)}
+.badge-soon{background:rgba(156,163,175,0.1);color:var(--gray-400);border:1px solid rgba(156,163,175,0.2)}
+
+/* Sprint card glow colors */
+.sprint-green .module-card{--glow-color:var(--green)}
+.sprint-blue .module-card{--glow-color:var(--blue)}
+.sprint-purple .module-card{--glow-color:var(--purple)}
+.sprint-cyan .module-card{--glow-color:var(--cyan)}
+.sprint-gray .module-card{--glow-color:var(--gray-500)}
+.sprint-green .module-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 32px rgba(52,211,153,0.06)}
+.sprint-blue .module-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 32px rgba(79,142,247,0.06)}
+.sprint-purple .module-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 32px rgba(167,139,250,0.06)}
+.sprint-cyan .module-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 32px rgba(0,212,255,0.06)}
+
+/* ===== HOW IT WORKS ===== */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;position:relative}
+.steps-grid::before{content:'';position:absolute;top:56px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--border-hover),transparent)}
+@media(max-width:768px){.steps-grid{grid-template-columns:1fr}.steps-grid::before{display:none}}
+.step-card{text-align:center;padding:32px 24px}
+.step-number{width:48px;height:48px;border-radius:50%;border:1px solid var(--border-hover);display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.875rem;font-weight:600;color:var(--blue);margin-bottom:24px;background:var(--bg-secondary);position:relative;z-index:1}
+.step-icon{font-size:2.5rem;margin-bottom:20px;display:block}
+.step-card h3{font-size:1.25rem;font-weight:600;margin-bottom:8px;letter-spacing:-0.02em}
+.step-card p{font-size:.9375rem;color:var(--gray-400);font-weight:300}
+
+/* ===== BUSINESS TYPES ===== */
+.biz-tabs{display:flex;gap:8px;margin-bottom:40px;flex-wrap:wrap}
+.biz-tab{padding:10px 24px;border-radius:8px;font-size:.875rem;font-weight:500;color:var(--gray-400);background:transparent;border:1px solid var(--border);transition:all .25s;cursor:pointer}
+.biz-tab.active{color:var(--snow);background:rgba(79,142,247,0.1);border-color:rgba(79,142,247,0.3)}
+.biz-tab:hover:not(.active){color:var(--snow);border-color:var(--border-hover)}
+.biz-content{display:none;animation:fadeUp .4s ease}
+.biz-content.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.biz-modules{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.biz-module{padding:8px 16px;border-radius:8px;font-size:.8125rem;font-weight:500;border:1px solid var(--border);color:var(--gray-400);background:var(--bg-card);transition:all .25s}
+.biz-module.active{color:var(--snow);border-color:rgba(79,142,247,0.3);background:rgba(79,142,247,0.08)}
+.biz-info{font-size:1.0625rem;color:var(--gray-400);font-weight:300;margin-bottom:20px;line-height:1.6}
+.biz-count{font-family:var(--font-mono);font-size:2.5rem;font-weight:700;color:var(--snow);margin-bottom:8px}
+.biz-count span{color:var(--blue)}
+
+/* ===== FEATURES ===== */
+.feature-block{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 0;border-bottom:1px solid var(--border)}
+.feature-block:last-child{border-bottom:none}
+.feature-block.reverse{direction:rtl}.feature-block.reverse>*{direction:ltr}
+@media(max-width:900px){.feature-block,.feature-block.reverse{grid-template-columns:1fr;gap:40px;direction:ltr}}
+.feature-text h3{font-size:clamp(1.5rem,3vw,2.25rem);font-weight:700;letter-spacing:-0.03em;margin-bottom:16px;line-height:1.15}
+.feature-text p{font-size:1rem;color:var(--gray-400);line-height:1.7;font-weight:300;margin-bottom:24px}
+.feature-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;font-size:.75rem;font-weight:500;font-family:var(--font-mono);background:rgba(79,142,247,0.08);color:var(--blue);border:1px solid rgba(79,142,247,0.15)}
+
+/* Feature visuals */
+.feature-visual{position:relative;aspect-ratio:4/3;border-radius:var(--radius-lg);background:var(--bg-secondary);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+/* Nodes visual */
+.nodes-container{position:relative;width:100%;height:100%}
+.node{position:absolute;width:48px;height:48px;border-radius:50%;background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.3);display:flex;align-items:center;justify-content:center;font-size:1.25rem;animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.node:nth-child(2){animation-delay:.5s}.node:nth-child(3){animation-delay:1s}.node:nth-child(4){animation-delay:1.5s}.node:nth-child(5){animation-delay:2s}.node:nth-child(6){animation-delay:2.5s}
+.node-line{position:absolute;background:rgba(79,142,247,0.15);height:1px;transform-origin:left center}
+
+/* Multi-tenant visual */
+.mt-visual{display:flex;flex-direction:column;gap:12px;padding:32px;width:100%}
+.mt-bar{height:40px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;font-size:.8125rem;color:var(--gray-400)}
+.mt-dot{width:8px;height:8px;border-radius:50%}
+.mt-bar:nth-child(1) .mt-dot{background:var(--blue)}
+.mt-bar:nth-child(2) .mt-dot{background:var(--cyan)}
+.mt-bar:nth-child(3) .mt-dot{background:var(--green)}
+.mt-bar:nth-child(4) .mt-dot{background:var(--purple)}
+
+/* AI visual */
+.ai-visual{display:flex;flex-direction:column;gap:16px;padding:32px;width:100%}
+.ai-line{display:flex;align-items:center;gap:12px}
+.ai-tag{padding:6px 14px;border-radius:6px;font-size:.75rem;font-family:var(--font-mono);font-weight:500}
+.ai-tag.score{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.ai-tag.voucher{background:rgba(0,212,255,0.1);color:var(--cyan);border:1px solid rgba(0,212,255,0.2)}
+.ai-tag.auto{background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}
+.ai-desc{font-size:.8125rem;color:var(--gray-400)}
+
+/* ===== ROADMAP ===== */
+.roadmap-track{overflow-x:auto;padding:20px 0 40px;-webkit-overflow-scrolling:touch}
+.roadmap-track::-webkit-scrollbar{height:4px}
+.roadmap-track::-webkit-scrollbar-thumb{background:var(--gray-700);border-radius:4px}
+.roadmap-inner{display:flex;gap:24px;min-width:max-content;padding:0 4px}
+.roadmap-card{width:280px;flex-shrink:0;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;position:relative;transition:all .3s}
+.roadmap-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.roadmap-card::before{content:'';position:absolute;top:-12px;left:28px;width:24px;height:24px;border-radius:50%;background:var(--bg-primary);border:2px solid var(--blue);z-index:1}
+.roadmap-card.active::before{background:var(--blue);box-shadow:0 0 16px rgba(79,142,247,0.4)}
+.roadmap-week{font-family:var(--font-mono);font-size:.6875rem;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px}
+.roadmap-date{font-size:.75rem;color:var(--gray-500);margin-bottom:12px}
+.roadmap-card h4{font-size:1rem;font-weight:600;margin-bottom:8px;letter-spacing:-0.01em}
+.roadmap-card p{font-size:.8125rem;color:var(--gray-400);line-height:1.5}
+.roadmap-line{position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:2px}
+
+/* ===== CTA SECTION ===== */
+.cta-section{text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;top:50%;left:50%;width:600px;height:600px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(79,142,247,0.06) 0%,transparent 70%);pointer-events:none}
+.cta-section h2{font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.035em;margin-bottom:16px}
+.cta-section .section-desc{margin:0 auto 40px;text-align:center}
+.cta-form{display:flex;gap:12px;justify-content:center;max-width:480px;margin:0 auto;flex-wrap:wrap}
+.cta-form input{flex:1;min-width:240px;padding:14px 20px;border-radius:10px;border:1px solid var(--border);background:var(--bg-secondary);color:var(--snow);font-size:.9375rem;font-family:var(--font-sans);transition:border-color .2s}
+.cta-form input::placeholder{color:var(--gray-600)}
+.cta-form input:focus{outline:none;border-color:rgba(79,142,247,0.5)}
+
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-logo{font-size:1.125rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px}
+.footer-tagline{font-size:.8125rem;color:var(--gray-500);margin-bottom:24px}
+.footer-links{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.footer-links a{font-size:.8125rem;color:var(--gray-400);transition:color .2s}
+.footer-links a:hover{color:var(--snow)}
+.footer-copy{font-size:.75rem;color:var(--gray-600)}
+
+/* ===== UTILITIES ===== */
+.reveal{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.4,0,.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Divider glow */
+.glow-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(79,142,247,0.2),rgba(0,212,255,0.2),transparent);margin:0 auto;max-width:600px}
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><span class="dot"></span> Skiinet</a>
+    <div class="nav-links">
+      <a href="#modules">Módulos</a>
+      <a href="#how">Cómo funciona</a>
+      <a href="#business">Negocios</a>
+      <a href="#features">Features</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#cta" class="nav-cta">Solicitar Demo</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge"><span class="pulse"></span> Plataforma en desarrollo activo</div>
+      <h1>El SaaS que <span class="gradient">transforma negocios de montaña</span></h1>
+      <p class="hero-sub">Escuelas de esquí <span>·</span> Alquiler de material <span>·</span> Agencias de viajes <span>·</span> Resorts</p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Ver Demo</button>
+        <button class="btn-ghost" onclick="document.getElementById('modules').scrollIntoView({behavior:'smooth'})">Explorar Módulos</button>
+      </div>
+    </div>
+
+    <div class="dashboard-3d" id="dashboard3d">
+      <div class="dashboard-frame" id="dashboardFrame">
+        <!-- Top bar -->
+        <div class="db-topbar">
+          <div class="db-dot r"></div>
+          <div class="db-dot y"></div>
+          <div class="db-dot g"></div>
+          <span class="db-topbar-title">Skiinet Dashboard — Skicenter Baqueira</span>
+        </div>
+        <div class="db-layout">
+          <!-- Sidebar -->
+          <div class="db-sidebar">
+            <div class="db-sidebar-item active" data-module="leads"><span class="si-icon">🎯</span>Leads</div>
+            <div class="db-sidebar-item" data-module="presupuestos"><span class="si-icon">📋</span>Presupuestos</div>
+            <div class="db-sidebar-item" data-module="reservas"><span class="si-icon">📅</span>Reservas</div>
+            <div class="db-sidebar-item" data-module="escuela"><span class="si-icon">👨‍🏫</span>Escuela</div>
+            <div class="db-sidebar-item" data-module="alquiler"><span class="si-icon">🎿</span>Alquiler</div>
+            <div class="db-sidebar-item" data-module="tpv"><span class="si-icon">💳</span>TPV</div>
+            <div class="db-sidebar-item" data-module="facturacion"><span class="si-icon">💰</span>Facturación</div>
+            <div class="db-sidebar-item" data-module="finanzas"><span class="si-icon">📊</span>Finanzas</div>
+            <div class="db-sidebar-item" data-module="storefront"><span class="si-icon">🏪</span>Storefront</div>
+          </div>
+          <!-- Main content -->
+          <div class="db-main">
+
+            <!-- LEADS -->
+            <div class="db-module-content active" id="mod-leads">
+              <div class="db-module-title">🎯 Pipeline de Leads</div>
+              <div class="kanban">
+                <div class="kanban-col">
+                  <div class="kanban-col-title">Nuevo</div>
+                  <div class="kanban-card"><div class="kc-name">María García</div><div class="kc-score">Score: 87</div></div>
+                  <div class="kanban-card"><div class="kc-name">Pablo Ruiz</div><div class="kc-score">Score: 72</div></div>
+                </div>
+                <div class="kanban-col">
+                  <div class="kanban-col-title">Contactado</div>
+                  <div class="kanban-card"><div class="kc-name">Carlos López</div><div class="kc-score">Score: 91</div></div>
+                </div>
+                <div class="kanban-col">
+                  <div class="kanban-col-title">Calificado</div>
+                  <div class="kanban-card"><div class="kc-name">Ana Martínez</div><div class="kc-score">Score: 95</div></div>
+                  <div class="kanban-card"><div class="kc-name">Lucía Fernández</div><div class="kc-score">Score: 88</div></div>
+                </div>
+                <div class="kanban-col">
+                  <div class="kanban-col-title">Convertido</div>
+                  <div class="kanban-card"><div class="kc-name">Javier Sánchez</div><div class="kc-score">Score: 98</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRESUPUESTOS -->
+            <div class="db-module-content" id="mod-presupuestos">
+              <div class="db-module-title">📋 Presupuestos</div>
+              <table class="db-table">
+                <thead><tr><th>Cliente</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td>María García</td><td style="font-family:var(--font-mono)">€2,450</td><td><span class="db-badge accepted">Aceptado</span></td><td><span class="db-btn-sm">Ver</span></td></tr>
+                  <tr><td>Carlos López</td><td style="font-family:var(--font-mono)">€890</td><td><span class="db-badge sent">Enviado</span></td><td><span class="db-btn-sm">Ver</span></td></tr>
+                  <tr><td>Ana Martínez</td><td style="font-family:var(--font-mono)">€3,200</td><td><span class="db-badge pending">Pendiente</span></td><td><span class="db-btn-sm">Editar</span></td></tr>
+                  <tr><td>Lucía Fernández</td><td style="font-family:var(--font-mono)">€1,750</td><td><span class="db-badge accepted">Aceptado</span></td><td><span class="db-btn-sm">Ver</span></td></tr>
+                  <tr><td>Javier Sánchez</td><td style="font-family:var(--font-mono)">€4,100</td><td><span class="db-badge sent">Enviado</span></td><td><span class="db-btn-sm">Ver</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- RESERVAS -->
+            <div class="db-module-content" id="mod-reservas">
+              <div class="db-module-title">📅 Reservas — Enero 2026</div>
+              <div class="cal-header">
+                <span>23 reservas activas</span>
+                <span>Ocupación: 78%</span>
+              </div>
+              <div class="occ-bar"><div class="occ-fill" style="width:78%"></div></div>
+              <div class="cal-grid">
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">L</div>
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">M</div>
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">X</div>
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">J</div>
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">V</div>
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">S</div>
+                <div class="cal-cell" style="color:var(--gray-600);font-weight:600">D</div>
+                <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+                <div class="cal-cell">1</div><div class="cal-cell booked">2</div><div class="cal-cell booked">3</div><div class="cal-cell booked2">4</div>
+                <div class="cal-cell booked">5</div><div class="cal-cell booked2">6</div><div class="cal-cell booked3">7</div>
+                <div class="cal-cell booked">8</div><div class="cal-cell booked">9</div><div class="cal-cell booked2">10</div><div class="cal-cell booked3">11</div>
+                <div class="cal-cell">12</div><div class="cal-cell booked">13</div><div class="cal-cell booked">14</div>
+                <div class="cal-cell booked2">15</div><div class="cal-cell booked3">16</div><div class="cal-cell booked">17</div><div class="cal-cell booked">18</div>
+                <div class="cal-cell">19</div><div class="cal-cell booked2">20</div><div class="cal-cell booked">21</div>
+                <div class="cal-cell booked">22</div><div class="cal-cell booked3">23</div><div class="cal-cell booked2">24</div><div class="cal-cell booked">25</div>
+                <div class="cal-cell booked">26</div><div class="cal-cell">27</div><div class="cal-cell booked2">28</div>
+                <div class="cal-cell booked">29</div><div class="cal-cell booked3">30</div><div class="cal-cell">31</div>
+              </div>
+            </div>
+
+            <!-- ESCUELA -->
+            <div class="db-module-content" id="mod-escuela">
+              <div class="db-module-title">👨‍🏫 Planificación — Lunes 12 Ene</div>
+              <div class="esc-grid">
+                <div class="esc-cell esc-header">Hora</div>
+                <div class="esc-cell esc-header">Pedro</div>
+                <div class="esc-cell esc-header">Laura</div>
+                <div class="esc-cell esc-header">Miguel</div>
+                <div class="esc-cell esc-time">9:00</div>
+                <div class="esc-cell"><div class="esc-class blue">Principiantes</div></div>
+                <div class="esc-cell"><div class="esc-class green">Intermedio</div></div>
+                <div class="esc-cell"><div class="esc-class purple">Snowboard</div></div>
+                <div class="esc-cell esc-time">10:30</div>
+                <div class="esc-cell"><div class="esc-class green">Intermedio</div></div>
+                <div class="esc-cell"><div class="esc-class purple">Avanzado</div></div>
+                <div class="esc-cell"><div class="esc-class blue">Principiantes</div></div>
+                <div class="esc-cell esc-time">12:00</div>
+                <div class="esc-cell"><div class="esc-class cyan">Privada</div></div>
+                <div class="esc-cell"><div class="esc-class blue">Principiantes</div></div>
+                <div class="esc-cell"><div class="esc-class green">Intermedio</div></div>
+                <div class="esc-cell esc-time">14:00</div>
+                <div class="esc-cell"></div>
+                <div class="esc-cell"><div class="esc-class cyan">Privada</div></div>
+                <div class="esc-cell"><div class="esc-class purple">Avanzado</div></div>
+                <div class="esc-cell esc-time">16:00</div>
+                <div class="esc-cell"><div class="esc-class purple">Snowboard</div></div>
+                <div class="esc-cell"></div>
+                <div class="esc-cell"><div class="esc-class cyan">Privada</div></div>
+              </div>
+            </div>
+
+            <!-- ALQUILER -->
+            <div class="db-module-content" id="mod-alquiler">
+              <div class="db-module-title">🎿 Inventario de Material</div>
+              <div class="rental-cards">
+                <div class="rental-card">
+                  <div class="rc-icon">⛷️</div>
+                  <div class="rc-name">Esquís</div>
+                  <div class="rc-stock">127</div>
+                  <div class="rc-label">Disponibles</div>
+                  <div class="rc-status ok">En stock</div>
+                </div>
+                <div class="rental-card">
+                  <div class="rc-icon">🥾</div>
+                  <div class="rc-name">Botas</div>
+                  <div class="rc-stock">84</div>
+                  <div class="rc-label">Disponibles</div>
+                  <div class="rc-status ok">En stock</div>
+                </div>
+                <div class="rental-card">
+                  <div class="rc-icon">🏒</div>
+                  <div class="rc-name">Bastones</div>
+                  <div class="rc-stock">12</div>
+                  <div class="rc-label">Disponibles</div>
+                  <div class="rc-status low">Stock bajo</div>
+                </div>
+              </div>
+              <div style="margin-top:12px">
+                <div class="rental-cards">
+                  <div class="rental-card">
+                    <div class="rc-icon">🏂</div>
+                    <div class="rc-name">Snowboards</div>
+                    <div class="rc-stock">45</div>
+                    <div class="rc-label">Disponibles</div>
+                    <div class="rc-status ok">En stock</div>
+                  </div>
+                  <div class="rental-card">
+                    <div class="rc-icon">🪖</div>
+                    <div class="rc-name">Cascos</div>
+                    <div class="rc-stock">93</div>
+                    <div class="rc-label">Disponibles</div>
+                    <div class="rc-status ok">En stock</div>
+                  </div>
+                  <div class="rental-card">
+                    <div class="rc-icon">🥽</div>
+                    <div class="rc-name">Gafas</div>
+                    <div class="rc-stock">8</div>
+                    <div class="rc-label">Disponibles</div>
+                    <div class="rc-status low">Stock bajo</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TPV -->
+            <div class="db-module-content" id="mod-tpv">
+              <div class="db-module-title">💳 Punto de Venta</div>
+              <div class="tpv-layout">
+                <div class="tpv-cart">
+                  <div class="tpv-item"><span class="ti-name">Clase grupal esquí (2h)</span><span class="ti-price">€45,00</span></div>
+                  <div class="tpv-item"><span class="ti-name">Alquiler esquís + botas</span><span class="ti-price">€32,00</span></div>
+                  <div class="tpv-item"><span class="ti-name">Casco protección</span><span class="ti-price">€8,00</span></div>
+                  <div class="tpv-item"><span class="ti-name">Forfait día completo</span><span class="ti-price">€52,00</span></div>
+                  <div class="tpv-item"><span class="ti-name">Seguro actividad</span><span class="ti-price">€5,00</span></div>
+                  <div class="tpv-total">
+                    <span class="tt-label">Total</span>
+                    <span class="tt-amount">€142,00</span>
+                  </div>
+                </div>
+                <div class="tpv-actions">
+                  <div class="tpv-btn cash">💵 Efectivo</div>
+                  <div class="tpv-btn card">💳 Tarjeta</div>
+                  <div class="tpv-btn split">✂️ Dividir</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FACTURACIÓN -->
+            <div class="db-module-content" id="mod-facturacion">
+              <div class="db-module-title">💰 Facturas Recientes</div>
+              <div class="inv-list">
+                <div class="inv-row">
+                  <span class="ir-num">F-2026-0042</span>
+                  <span class="ir-client">María García</span>
+                  <span class="ir-amount">€2,450.00</span>
+                  <span class="db-badge paid">Pagada</span>
+                </div>
+                <div class="inv-row">
+                  <span class="ir-num">F-2026-0041</span>
+                  <span class="ir-client">Carlos López</span>
+                  <span class="ir-amount">€890.00</span>
+                  <span class="db-badge pending">Pendiente</span>
+                </div>
+                <div class="inv-row">
+                  <span class="ir-num">F-2026-0040</span>
+                  <span class="ir-client">Ana Martínez</span>
+                  <span class="ir-amount">€3,200.00</span>
+                  <span class="db-badge paid">Pagada</span>
+                </div>
+                <div class="inv-row">
+                  <span class="ir-num">F-2026-0039</span>
+                  <span class="ir-client">Javier Sánchez</span>
+                  <span class="ir-amount">€1,750.00</span>
+                  <span class="db-badge paid">Pagada</span>
+                </div>
+                <div class="inv-row">
+                  <span class="ir-num">F-2026-0038</span>
+                  <span class="ir-client">Lucía Fernández</span>
+                  <span class="ir-amount">€4,100.00</span>
+                  <span class="db-badge pending">Pendiente</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- FINANZAS -->
+            <div class="db-module-content" id="mod-finanzas">
+              <div class="db-module-title">📊 Resumen Financiero — Enero 2026</div>
+              <div class="fin-metrics">
+                <div class="fin-metric"><div class="fm-label">Ingresos</div><div class="fm-value income">€48,320</div></div>
+                <div class="fin-metric"><div class="fm-label">Gastos</div><div class="fm-value expense">€21,450</div></div>
+                <div class="fin-metric"><div class="fm-label">Beneficio</div><div class="fm-value profit">€26,870</div></div>
+              </div>
+              <div class="fin-chart">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <div style="display:flex;gap:3px;align-items:flex-end;flex:1;width:100%">
+                    <div class="fin-bar inc" style="height:65%;flex:1"><span class="fin-bar-label">Sep</span></div>
+                    <div class="fin-bar exp" style="height:40%;flex:1"></div>
+                  </div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <div style="display:flex;gap:3px;align-items:flex-end;flex:1;width:100%">
+                    <div class="fin-bar inc" style="height:72%;flex:1"><span class="fin-bar-label">Oct</span></div>
+                    <div class="fin-bar exp" style="height:38%;flex:1"></div>
+                  </div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <div style="display:flex;gap:3px;align-items:flex-end;flex:1;width:100%">
+                    <div class="fin-bar inc" style="height:85%;flex:1"><span class="fin-bar-label">Nov</span></div>
+                    <div class="fin-bar exp" style="height:42%;flex:1"></div>
+                  </div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <div style="display:flex;gap:3px;align-items:flex-end;flex:1;width:100%">
+                    <div class="fin-bar inc" style="height:95%;flex:1"><span class="fin-bar-label">Dic</span></div>
+                    <div class="fin-bar exp" style="height:48%;flex:1"></div>
+                  </div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <div style="display:flex;gap:3px;align-items:flex-end;flex:1;width:100%">
+                    <div class="fin-bar inc" style="height:100%;flex:1"><span class="fin-bar-label">Ene</span></div>
+                    <div class="fin-bar exp" style="height:44%;flex:1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STOREFRONT -->
+            <div class="db-module-content" id="mod-storefront">
+              <div class="db-module-title">🏪 Vista Previa Tienda</div>
+              <div class="sf-preview">
+                <div class="sf-hero">
+                  <div class="sfh-title">⛷️ Skicenter Baqueira</div>
+                  <div class="sfh-sub">Reserva clases, alquila material y disfruta la nieve</div>
+                </div>
+                <div class="sf-products">
+                  <div class="sf-product">
+                    <div class="sfp-img">⛷️</div>
+                    <div class="sfp-name">Clase Grupal</div>
+                    <div class="sfp-price">€45</div>
+                  </div>
+                  <div class="sf-product">
+                    <div class="sfp-img">🎿</div>
+                    <div class="sfp-name">Pack Esquí</div>
+                    <div class="sfp-price">€89</div>
+                  </div>
+                  <div class="sf-product">
+                    <div class="sfp-img">🏂</div>
+                    <div class="sfp-name">Snowboard</div>
+                    <div class="sfp-price">€55</div>
+                  </div>
+                  <div class="sf-product">
+                    <div class="sfp-img">👨‍🏫</div>
+                    <div class="sfp-name">Clase Privada</div>
+                    <div class="sfp-price">€120</div>
+                  </div>
+                  <div class="sf-product">
+                    <div class="sfp-img">🎫</div>
+                    <div class="sfp-name">Forfait</div>
+                    <div class="sfp-price">€52</div>
+                  </div>
+                  <div class="sf-product">
+                    <div class="sfp-img">📦</div>
+                    <div class="sfp-name">Pack Familiar</div>
+                    <div class="sfp-price">€199</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-value">+15</div><div class="stat-label">Módulos</div></div>
+    <div class="stat-item"><div class="stat-value">Multi‑tenant</div><div class="stat-label">Arquitectura</div></div>
+    <div class="stat-item"><div class="stat-value">100%</div><div class="stat-label">Cloud</div></div>
+    <div class="stat-item"><div class="stat-value">IA</div><div class="stat-label">Integrada</div></div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">⬡ Módulos</div>
+      <h2 class="section-title">Todo lo que necesitas.<br>Nada que no.</h2>
+      <p class="section-desc">Activa solo los módulos que tu negocio requiere. Sin bloatware, sin costes extra por funciones que no usas.</p>
+    </div>
+
+    <!-- Sprint 1 -->
+    <div class="sprint-group sprint-green reveal">
+      <div class="sprint-label green">Sprint 1 — Core Revenue</div>
+      <div class="modules-grid">
+        <div class="module-card"><span class="icon">🎯</span><h3>Leads</h3><p>Captación y scoring automático de clientes potenciales con IA</p><span class="badge badge-dev">🔨 En desarrollo</span></div>
+        <div class="module-card"><span class="icon">📋</span><h3>Presupuestos</h3><p>Generación de presupuestos personalizados con productos del catálogo</p><span class="badge badge-dev">🔨 En desarrollo</span></div>
+        <div class="module-card"><span class="icon">📅</span><h3>Reservas</h3><p>Motor de reservas con calendario, disponibilidad y pagos</p><span class="badge badge-dev">🔨 En desarrollo</span></div>
+      </div>
+    </div>
+
+    <!-- Sprint 2 -->
+    <div class="sprint-group sprint-blue reveal">
+      <div class="sprint-label blue">Sprint 2 — Operaciones</div>
+      <div class="modules-grid">
+        <div class="module-card"><span class="icon">⛷️</span><h3>Escuela / Profesores</h3><p>Gestión de clases, horarios, asignación de profesores y niveles</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">🎿</span><h3>Alquiler Material</h3><p>Inventario de equipos, tallas, estado y órdenes de alquiler</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">💳</span><h3>TPV</h3><p>Punto de venta con sesiones de caja, cobros y cuadres diarios</p><span class="badge badge-ready">✅ Listo</span></div>
+      </div>
+    </div>
+
+    <!-- Sprint 3 -->
+    <div class="sprint-group sprint-purple reveal">
+      <div class="sprint-label purple">Sprint 3 — Gestión</div>
+      <div class="modules-grid">
+        <div class="module-card"><span class="icon">🧾</span><h3>Facturación</h3><p>Facturas, líneas de factura, transacciones y centros de coste</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">💰</span><h3>Finanzas</h3><p>Gastos, gastos recurrentes, categorías y control presupuestario</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">🤝</span><h3>Proveedores</h3><p>Liquidaciones, documentos, seguimiento de estado y pagos</p><span class="badge badge-ready">✅ Listo</span></div>
+      </div>
+    </div>
+
+    <!-- Sprint 4 -->
+    <div class="sprint-group sprint-cyan reveal">
+      <div class="sprint-label cyan">Sprint 4 — Experiencia</div>
+      <div class="modules-grid">
+        <div class="module-card"><span class="icon">🛒</span><h3>Storefront</h3><p>Tienda online con códigos de descuento y vouchers de compensación</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">🎫</span><h3>Ticketing</h3><p>Plataformas externas, cupones, redención y emails configurables</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">📦</span><h3>Packs</h3><p>Packs LEGO combinando productos de distintos módulos</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">👥</span><h3>CRM</h3><p>Contactos, conversaciones, oportunidades y pipelines de venta</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">📚</span><h3>Catálogo</h3><p>Productos, categorías, variantes, ubicaciones y franjas horarias</p><span class="badge badge-ready">✅ Listo</span></div>
+      </div>
+    </div>
+
+    <!-- Sprint 5 -->
+    <div class="sprint-group sprint-gray reveal">
+      <div class="sprint-label gray">Sprint 5 — Extras</div>
+      <div class="modules-grid">
+        <div class="module-card"><span class="icon">📝</span><h3>CMS</h3><p>Páginas estáticas, sliders, menús y configuración del sitio</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">⭐</span><h3>Reseñas</h3><p>Sistema de reseñas de clientes con moderación</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">🏨</span><h3>Hotel</h3><p>Tipos de habitación, tarifas por temporada y bloqueos</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">🍽️</span><h3>Restaurante</h3><p>Turnos, cierres, reservas de mesa y gestión de personal</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">💆</span><h3>Spa</h3><p>Tratamientos, recursos, slots y plantillas de horario</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">📑</span><h3>REAV</h3><p>Expedientes REAV, costes, documentos y trazabilidad legal</p><span class="badge badge-ready">✅ Listo</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-header reveal" style="text-align:center">
+      <div class="section-label" style="justify-content:center">→ Proceso</div>
+      <h2 class="section-title">Operativo en 15 minutos</h2>
+      <p class="section-desc" style="margin:0 auto">Sin reuniones eternas. Sin migraciones de meses. Configura y arranca.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-number">01</div>
+        <span class="step-icon">🧩</span>
+        <h3>Elige tus módulos</h3>
+        <p>Solo activas lo que necesitas. Escuela, alquiler, CRM… tú decides.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-number">02</div>
+        <span class="step-icon">⚙️</span>
+        <h3>Configura tu negocio</h3>
+        <p>Wizard de 5 pasos. Datos básicos, módulos, equipo, catálogo, listo.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-number">03</div>
+        <span class="step-icon">🚀</span>
+        <h3>Empieza a operar</h3>
+        <p>Dashboard completo desde el día 1. Reservas, facturación, todo conectado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- BUSINESS TYPES -->
+<section id="business">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">◆ Negocios</div>
+      <h2 class="section-title">Adaptado a tu tipo de negocio</h2>
+      <p class="section-desc">Cada negocio es diferente. Skiinet se configura para encajar exactamente con tus operaciones.</p>
+    </div>
+    <div class="reveal">
+      <div class="biz-tabs">
+        <button class="biz-tab active" data-biz="escuela">⛷️ Escuela de Esquí</button>
+        <button class="biz-tab" data-biz="alquiler">🎿 Alquiler de Material</button>
+        <button class="biz-tab" data-biz="agencia">✈️ Agencia de Viajes</button>
+        <button class="biz-tab" data-biz="resort">🏔️ Resort Completo</button>
+      </div>
+
+      <div class="biz-content active" id="biz-escuela">
+        <div class="biz-count"><span>8</span> módulos</div>
+        <p class="biz-info">Gestiona profesores, clases, alquiler de material y reservas online. Todo sincronizado para que te centres en enseñar.</p>
+        <div class="biz-modules" data-active="Catálogo,Reservas,Escuela,Alquiler,TPV,CRM,Storefront,Facturación">
+        </div>
+      </div>
+      <div class="biz-content" id="biz-alquiler">
+        <div class="biz-count"><span>6</span> módulos</div>
+        <p class="biz-info">Control de inventario, tallas, estado de equipos y punto de venta integrado. Alquila más, pierde menos.</p>
+        <div class="biz-modules" data-active="Catálogo,Alquiler,TPV,Storefront,Facturación,CRM">
+        </div>
+      </div>
+      <div class="biz-content" id="biz-agencia">
+        <div class="biz-count"><span>9</span> módulos</div>
+        <p class="biz-info">Leads, presupuestos, packs de viaje, ticketing y REAV. La agencia de viajes de montaña del futuro.</p>
+        <div class="biz-modules" data-active="Leads,Presupuestos,Reservas,Packs,Ticketing,CRM,REAV,Storefront,Facturación">
+        </div>
+      </div>
+      <div class="biz-content" id="biz-resort">
+        <div class="biz-count"><span>17</span> módulos</div>
+        <p class="biz-info">Todo el ecosistema: hotel, restaurante, spa, escuela, alquiler, tienda… Un solo dashboard para controlar todo el resort.</p>
+        <div class="biz-modules" data-active="Catálogo,Reservas,Escuela,Alquiler,TPV,CRM,Storefront,Facturación,Leads,Presupuestos,Packs,Ticketing,Hotel,Restaurante,Spa,REAV,Finanzas">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">✦ Features</div>
+      <h2 class="section-title">Potencia bajo el capó</h2>
+    </div>
+
+    <div class="feature-block reveal">
+      <div class="feature-text">
+        <h3>Interconexión total</h3>
+        <p>Los módulos se hablan entre sí. Una reserva genera factura, actualiza inventario de alquiler y notifica al profesor. Sin duplicar datos. Sin errores manuales.</p>
+        <span class="feature-tag">EVENT-DRIVEN</span>
+      </div>
+      <div class="feature-visual">
+        <div class="nodes-container" id="nodes-vis">
+          <div class="node" style="top:15%;left:20%">📅</div>
+          <div class="node" style="top:15%;left:70%">🧾</div>
+          <div class="node" style="top:50%;left:45%">⚡</div>
+          <div class="node" style="top:50%;left:10%">🎿</div>
+          <div class="node" style="top:80%;left:30%">⛷️</div>
+          <div class="node" style="top:80%;left:65%">💳</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block reverse reveal">
+      <div class="feature-text">
+        <h3>Multi‑tenant</h3>
+        <p>Un dashboard, múltiples negocios. Gestiona tu escuela en Baqueira, tu alquiler en Formigal y tu agencia en Madrid. Todo desde un solo login.</p>
+        <span class="feature-tag">ISOLACIÓN TOTAL</span>
+      </div>
+      <div class="feature-visual">
+        <div class="mt-visual">
+          <div class="mt-bar"><div class="mt-dot"></div>Skicenter Baqueira</div>
+          <div class="mt-bar"><div class="mt-dot"></div>Snow Rental Formigal</div>
+          <div class="mt-bar"><div class="mt-dot"></div>Montaña Viajes Madrid</div>
+          <div class="mt-bar"><div class="mt-dot"></div>Resort Sierra Nevada</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block reveal">
+      <div class="feature-text">
+        <h3>IA Integrada</h3>
+        <p>Scoring automático de leads, lectura de vouchers con visión artificial y automatizaciones inteligentes que aprenden de tu negocio.</p>
+        <span class="feature-tag">CLAUDE AI</span>
+      </div>
+      <div class="feature-visual">
+        <div class="ai-visual">
+          <div class="ai-line"><span class="ai-tag score">SCORE: 87</span><span class="ai-desc">Lead cualificado — alta probabilidad de conversión</span></div>
+          <div class="ai-line"><span class="ai-tag voucher">VOUCHER ✓</span><span class="ai-desc">Imagen procesada → datos extraídos automáticamente</span></div>
+          <div class="ai-line"><span class="ai-tag auto">AUTO</span><span class="ai-desc">Seguimiento enviado 48h después sin respuesta</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">◷ Roadmap</div>
+      <h2 class="section-title">Desarrollo en sprints semanales</h2>
+      <p class="section-desc">Avanzamos rápido. Cada semana, funcionalidades nuevas en producción.</p>
+    </div>
+    <div class="roadmap-track reveal" style="position:relative">
+      <div style="position:relative">
+        <div class="roadmap-line"></div>
+        <div class="roadmap-inner">
+          <div class="roadmap-card active">
+            <div class="roadmap-week">Semana 1</div>
+            <div class="roadmap-date">May 1 – 4, 2026</div>
+            <h4>Leads + Presupuestos</h4>
+            <p>Pipeline de ventas completo: captación, scoring IA, generación de presupuestos y seguimiento automático.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Semana 2</div>
+            <div class="roadmap-date">May 5 – 9, 2026</div>
+            <h4>Facturación + Portal Profesor</h4>
+            <p>Integración de facturación avanzada con SII/TicketBAI y portal de autogestión para profesores.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Semana 3</div>
+            <div class="roadmap-date">May 12 – 16, 2026</div>
+            <h4>Interconexión + Infra</h4>
+            <p>Event bus entre módulos, webhooks configurables, optimización de queries y caching avanzado.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Semana 4</div>
+            <div class="roadmap-date">May 19 – 23, 2026</div>
+            <h4>Testing + Storefront 2.0</h4>
+            <p>Suite de tests E2E, nueva tienda online con checkout mejorado y pasarela Redsys.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="section-inner reveal">
+    <h2>¿Listo para transformar<br>tu negocio?</h2>
+    <p class="section-desc" style="margin:0 auto 40px;text-align:center">Déjanos tu email y te preparamos una demo personalizada con los módulos que necesitas.</p>
+    <div class="cta-form">
+      <input type="email" placeholder="tu@email.com" aria-label="Email">
+      <button class="btn-primary">Solicitar Demo</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">❄️ Skiinet</div>
+    <div class="footer-tagline">Built with ❄️ in Spain</div>
+    <div class="footer-links">
+      <a href="#modules">Módulos</a>
+      <a href="#how">Cómo funciona</a>
+      <a href="#features">Features</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#cta">Demo</a>
+    </div>
+    <div class="footer-copy">© 2026 Skiinet. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<!-- GSAP + INTERACTIONS -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ===== INTERACTIVE DASHBOARD =====
+(function() {
+  const frame = document.getElementById('dashboardFrame');
+  const container = document.getElementById('dashboard3d');
+  const sidebarItems = document.querySelectorAll('.db-sidebar-item');
+  const moduleContents = document.querySelectorAll('.db-module-content');
+
+  // Module switching
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const mod = item.dataset.module;
+      sidebarItems.forEach(si => si.classList.remove('active'));
+      item.classList.add('active');
+      moduleContents.forEach(mc => mc.classList.remove('active'));
+      document.getElementById('mod-' + mod).classList.add('active');
+    });
+  });
+
+  // Mouse parallax (desktop only)
+  if (window.innerWidth > 768) {
+    let targetRotateY = -8, targetRotateX = 3;
+    let currentRotateY = -8, currentRotateX = 3;
+
+    document.addEventListener('mousemove', (e) => {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const deltaX = (e.clientX - centerX) / centerX;
+      const deltaY = (e.clientY - centerY) / centerY;
+      targetRotateY = -8 + deltaX * 5;
+      targetRotateX = 3 - deltaY * 3;
+    });
+
+    function animateParallax() {
+      currentRotateY += (targetRotateY - currentRotateY) * 0.08;
+      currentRotateX += (targetRotateX - currentRotateX) * 0.08;
+      frame.style.transform = `rotateY(${currentRotateY}deg) rotateX(${currentRotateX}deg) scale(0.85)`;
+      requestAnimationFrame(animateParallax);
+    }
+    animateParallax();
+  }
+
+  // GSAP entrance animation
+  gsap.fromTo(frame,
+    { opacity: 0, y: 60, rotateY: -15, rotateX: 8 },
+    { opacity: 1, y: 0, duration: 1.2, delay: 1, ease: 'power3.out',
+      onComplete: () => { /* parallax takes over transform */ }
+    }
+  );
+})();
+
+// Hero content entrance
+gsap.fromTo('.hero-text',
+  { opacity: 0, y: 30 },
+  { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: 'power3.out' }
+);
+
+// Stats bar
+gsap.fromTo('.stat-item',
+  { opacity: 0, y: 20 },
+  { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, delay: 1.5, ease: 'power2.out' }
+);
+
+// Reveal animations
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { opacity: 0, y: 40 },
+    {
+      opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+    }
+  );
+});
+
+// Module cards stagger
+document.querySelectorAll('.modules-grid').forEach(grid => {
+  gsap.fromTo(grid.children,
+    { opacity: 0, y: 24, scale: 0.97 },
+    {
+      opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out',
+      scrollTrigger: { trigger: grid, start: 'top 85%', once: true }
+    }
+  );
+});
+
+// Steps stagger
+gsap.fromTo('.step-card',
+  { opacity: 0, y: 32 },
+  {
+    opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out',
+    scrollTrigger: { trigger: '.steps-grid', start: 'top 80%', once: true }
+  }
+);
+
+// Feature blocks
+document.querySelectorAll('.feature-block').forEach(block => {
+  gsap.fromTo(block,
+    { opacity: 0, y: 40 },
+    {
+      opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: block, start: 'top 80%', once: true }
+    }
+  );
+});
+
+// Roadmap cards
+gsap.fromTo('.roadmap-card',
+  { opacity: 0, y: 24 },
+  {
+    opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: 'power2.out',
+    scrollTrigger: { trigger: '.roadmap-track', start: 'top 80%', once: true }
+  }
+);
+
+// Business type tabs
+const allModules = ['Leads','Presupuestos','Reservas','Catálogo','Escuela','Alquiler','TPV','CRM','Storefront','Facturación','Finanzas','Proveedores','Ticketing','Packs','Hotel','Restaurante','Spa','REAV','CMS','Reseñas'];
+
+function populateBizModules() {
+  document.querySelectorAll('.biz-modules').forEach(container => {
+    const activeList = container.dataset.active.split(',');
+    container.innerHTML = '';
+    allModules.forEach(mod => {
+      const el = document.createElement('div');
+      el.className = 'biz-module' + (activeList.includes(mod) ? ' active' : '');
+      el.textContent = mod;
+      container.appendChild(el);
+    });
+  });
+}
+populateBizModules();
+
+document.querySelectorAll('.biz-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.biz-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.biz-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('biz-' + tab.dataset.biz).classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
