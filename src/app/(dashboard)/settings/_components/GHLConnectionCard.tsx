@@ -34,7 +34,7 @@ export function GHLConnectionCard({
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="glass-card p-5">
         <Skeleton className="h-5 w-40" />
         <Skeleton className="mt-1 h-4 w-64" />
         <Skeleton className="mt-4 h-20 w-full" />
@@ -43,7 +43,7 @@ export function GHLConnectionCard({
   }
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="glass-card p-5">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-base font-semibold text-slate-900">Conexión GHL</h3>
         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${

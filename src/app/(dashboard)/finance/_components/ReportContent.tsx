@@ -77,7 +77,7 @@ export default function ReportContent({ data }: { data: ReportData }) {
         />
       </div>
 
-      <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5">
+      <div className="glass-card p-5">
         <h3 className="mb-4 text-sm font-semibold text-[#2D2A26]">
           Tendencia mensual
         </h3>
@@ -137,7 +137,7 @@ function SummaryCard({
   color: string;
 }) {
   return (
-    <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5">
+    <div className="glass-card p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#8A8580]">{label}</p>
         <div
@@ -162,7 +162,7 @@ function GroupTable({
   emptyText: string;
 }) {
   return (
-    <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5">
+    <div className="glass-card p-5">
       <h3 className="mb-4 text-sm font-semibold text-[#2D2A26]">{title}</h3>
       {rows.length === 0 ? (
         <p className="text-sm text-[#8A8580]">{emptyText}</p>

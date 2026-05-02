@@ -59,7 +59,7 @@ function SummaryCard({
   subtext?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5">
+    <div className="glass-card p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#8A8580]">{label}</p>
         <div
@@ -146,7 +146,7 @@ export default function DashboardTab() {
   if (dashLoading || monthLoading || trendLoading) return <PageSkeleton />;
   if (dashErr || !dash) {
     return (
-      <div className="rounded-2xl border border-[#E8E4DE] bg-white p-8 text-center text-[#8A8580]">
+      <div className="glass-card p-8 text-center text-[#8A8580]">
         Error al cargar el resumen financiero
       </div>
     );
@@ -198,14 +198,14 @@ export default function DashboardTab() {
 
       {/* Mini chart + top categories */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl border border-[#E8E4DE] bg-white p-5">
+        <div className="lg:col-span-2 glass-card p-5">
           <h3 className="mb-4 text-sm font-semibold text-[#2D2A26]">
             Ingresos vs gastos · ultimos 6 meses
           </h3>
           <MiniBarChart rows={trendRows} />
         </div>
 
-        <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5">
+        <div className="glass-card p-5">
           <h3 className="mb-4 text-sm font-semibold text-[#2D2A26]">
             Top categorias de gasto · este mes
           </h3>
@@ -235,7 +235,7 @@ export default function DashboardTab() {
       </div>
 
       {/* Recent transactions */}
-      <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5">
+      <div className="glass-card p-5">
         <h3 className="mb-4 text-sm font-semibold text-[#2D2A26]">
           Ultimas transacciones
         </h3>

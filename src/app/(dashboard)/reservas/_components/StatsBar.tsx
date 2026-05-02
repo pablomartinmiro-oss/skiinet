@@ -11,7 +11,7 @@ interface StatsBarProps {
 export function StatsBar({ stats, loading }: StatsBarProps) {
   if (loading || !stats) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl bg-white px-5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-4 glass-card px-5 py-3">
         <div className="h-5 w-64 animate-pulse rounded bg-gray-200" />
         <div className="h-5 w-48 animate-pulse rounded bg-gray-200" />
       </div>
@@ -21,7 +21,7 @@ export function StatsBar({ stats, loading }: StatsBarProps) {
   const { today, stationCapacity } = stats;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl bg-white px-5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 glass-card px-5 py-3">
       <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
         <span>Hoy:</span>
         <span className="text-green-700">{today.confirmed} confirmadas</span>

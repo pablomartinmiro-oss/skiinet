@@ -29,7 +29,7 @@ export function HistoryTab({ client }: { client: Client }) {
 
   if (reservations.length === 0 && quotes.length === 0) {
     return (
-      <div className="rounded-[14px] border border-dashed border-[#E8E4DE] bg-white p-8 text-center">
+      <div className="glass-card p-8 text-center">
         <Calendar className="mx-auto h-8 w-8 text-[#E8E4DE] mb-2" />
         <p className="text-sm text-[#8A8580]">Sin historial de reservas o presupuestos</p>
       </div>

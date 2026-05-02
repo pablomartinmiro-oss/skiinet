@@ -134,7 +134,7 @@ export default function ClientsPage() {
         onSource={setSource}
       />
 
-      <div className="rounded-[14px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden">
+      <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

@@ -149,6 +149,15 @@
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-ring: #4F8EF7;
 
+  /* ── Glass design system ── */
+  --glass-l1: rgba(255,255,255,0.45);
+  --glass-l2: rgba(255,255,255,0.55);
+  --glass-l3: rgba(255,255,255,0.72);
+  --glass-blur: blur(40px);
+  --glass-border: 0.5px solid rgba(255,255,255,0.75);
+  --glass-inset: 0 1px 0 rgba(255,255,255,0.9) inset;
+  --glass-shadow: 0 2px 16px rgba(99,102,241,0.06), 0 1px 3px rgba(0,0,0,0.04);
+
   /* ── Elevation system — premium light shadows ── */
   --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -166,7 +175,9 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #f0f4ff 0%, #fef3f2 50%, #fff7ed 100%);
+    background-attachment: fixed;
+    color: #0f172a;
     font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 14px;
     line-height: 1.5;
@@ -214,13 +225,17 @@
 
   /* ── Stat cards ── */
   .card-stat {
-    @apply bg-white rounded-xl p-5 border border-slate-100;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.15s ease;
+    background: var(--glass-l2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--glass-inset), var(--glass-shadow);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
   }
   .card-stat:hover {
-    box-shadow: var(--shadow-md);
-    border-color: #E2E8F0;
+    box-shadow: var(--glass-inset), 0 4px 20px rgba(99,102,241,0.10), 0 2px 6px rgba(0,0,0,0.06);
     transform: translateY(-1px);
   }
 
@@ -261,23 +276,38 @@
   .badge-slate  { @apply bg-slate-100 text-slate-600 border-slate-200; }
   .badge-violet { @apply bg-violet-50 text-violet-700 border-violet-200; }
 
-  /* ── Sidebar nav item — premium dark ── */
+  /* ── Sidebar nav item — glass ── */
   .nav-item {
-    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150;
-    color: #64748B;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #475569;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    position: relative;
     border-left: 2px solid transparent;
   }
   .nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #E2E8F0;
+    background: rgba(255,255,255,0.5);
+    color: #0f172a;
   }
   .nav-item.active {
-    background: rgba(79, 142, 247, 0.15);
-    color: #FFFFFF;
-    border-left-color: #4F8EF7;
+    background: var(--glass-l3);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    color: #0f172a;
+    font-weight: 500;
+    box-shadow: var(--glass-inset);
+    border-left: 2px solid #0f172a;
   }
   .nav-item.active svg {
-    color: #4F8EF7;
+    color: #6366f1;
   }
 
   /* ── Card hover lift ── */
@@ -292,13 +322,17 @@
 
   /* ── Premium card (foundation) ── */
   .card-premium {
-    @apply bg-white rounded-xl border border-slate-100;
-    box-shadow: var(--shadow-sm);
+    background: var(--glass-l2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-inset), var(--glass-shadow);
     transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   }
   .card-premium:hover {
-    box-shadow: var(--shadow-md);
-    border-color: #E2E8F0;
+    box-shadow: var(--glass-inset), 0 4px 20px rgba(99,102,241,0.10), 0 2px 6px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
   }
 
   /* ── Skeleton loading ── */
@@ -321,6 +355,72 @@
     box-shadow: var(--shadow-blue-glow);
     transform: translateY(-1px);
   }
+
+  /* ── Glass utilities ── */
+  .glass-card {
+    background: var(--glass-l2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-inset), var(--glass-shadow);
+  }
+  .glass-sidebar {
+    background: var(--glass-l1);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-right: var(--glass-border);
+    box-shadow: var(--glass-inset);
+  }
+  .glass-active-item {
+    background: var(--glass-l3);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    box-shadow: var(--glass-inset);
+  }
+
+  /* Aurora background wrapper */
+  .aurora-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .aurora-blob-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%);
+    top: -100px;
+    left: -100px;
+  }
+  .aurora-blob-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(236,72,153,0.14), transparent 70%);
+    bottom: -80px;
+    right: 100px;
+  }
+  .aurora-blob-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(251,191,36,0.10), transparent 70%);
+    top: 40%;
+    left: 40%;
+  }
+
+  /* Glass semantic badges */
+  .badge-confirmed { background: rgba(34,197,94,0.12); color: #16a34a; border: 1px solid rgba(34,197,94,0.25); border-radius: 9999px; font-size: 10px; font-weight: 500; padding: 2px 8px; display: inline-flex; align-items: center; }
+  .badge-pending { background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.25); border-radius: 9999px; font-size: 10px; font-weight: 500; padding: 2px 8px; display: inline-flex; align-items: center; }
+  .badge-cancelled { background: rgba(239,68,68,0.10); color: #dc2626; border: 1px solid rgba(239,68,68,0.20); border-radius: 9999px; font-size: 10px; font-weight: 500; padding: 2px 8px; display: inline-flex; align-items: center; }
+  .badge-default-glass { background: rgba(99,102,241,0.10); color: #4f46e5; border: 1px solid rgba(99,102,241,0.20); border-radius: 9999px; font-size: 10px; font-weight: 500; padding: 2px 8px; display: inline-flex; align-items: center; }
 }
 
 /* ── Animations ───────────────────────────────────────────── */

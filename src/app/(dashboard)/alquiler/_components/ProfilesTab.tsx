@@ -118,7 +118,7 @@ export default function ProfilesTab() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-[16px] border border-[#E8E4DE] bg-white">
+      <div className="glass-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#E8E4DE] text-left text-[#8A8580]">

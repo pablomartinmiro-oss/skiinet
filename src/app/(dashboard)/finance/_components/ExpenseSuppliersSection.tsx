@@ -74,11 +74,11 @@ export default function ExpenseSuppliersSection() {
       </div>
 
       {isLoading ? (
-        <div className="rounded-2xl bg-white p-8 text-center text-sm text-[#8A8580] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="glass-card p-8 text-center text-sm text-[#8A8580]">
           Cargando proveedores...
         </div>
       ) : sorted.length === 0 ? (
-        <div className="rounded-2xl bg-white p-12 text-center shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="glass-card p-12 text-center">
           <Building2 className="mx-auto mb-3 h-10 w-10 text-[#8A8580]" />
           <p className="text-sm text-[#8A8580]">No hay proveedores</p>
           <p className="mt-1 text-xs text-[#8A8580]">
@@ -86,7 +86,7 @@ export default function ExpenseSuppliersSection() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="overflow-hidden glass-card">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

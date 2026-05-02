@@ -80,7 +80,7 @@ export default function ExpedientDetail({
           { label: "Total costes", value: fmt.format(totalCosts) },
           { label: "Documentos", value: String(documents.length) },
         ].map((card) => (
-          <div key={card.label} className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div key={card.label} className="glass-card p-4">
             <p className="text-xs text-[#8A8580] mb-1">{card.label}</p>
             <p className="text-lg font-semibold text-[#2D2A26]">{card.value}</p>
           </div>
@@ -102,7 +102,7 @@ export default function ExpedientDetail({
         </div>
 
         {showCostForm && (
-          <div className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] mb-3 space-y-3">
+          <div className="glass-card p-4 mb-3 space-y-3">
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2">
                 <input
@@ -161,7 +161,7 @@ export default function ExpedientDetail({
         {costs.length === 0 ? (
           <p className="text-xs text-[#8A8580]">Sin costes registrados</p>
         ) : (
-          <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+          <div className="glass-card overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#E8E4DE] bg-[#FAF9F7]/50">
@@ -218,7 +218,7 @@ export default function ExpedientDetail({
         </div>
 
         {showDocForm && (
-          <div className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] mb-3 space-y-3">
+          <div className="glass-card p-4 mb-3 space-y-3">
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <select
@@ -268,7 +268,7 @@ export default function ExpedientDetail({
             {documents.map((d) => (
               <div
                 key={d.id}
-                className="flex items-center justify-between rounded-2xl bg-white p-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+                className="flex items-center justify-between glass-card p-3"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <FileText className="h-4 w-4 shrink-0 text-[#8A8580]" />

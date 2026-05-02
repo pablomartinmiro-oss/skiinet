@@ -10,14 +10,14 @@ export function StorageCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6">
+      <div className="glass-card p-6">
         <div className="animate-pulse h-6 w-48 bg-[#FAF9F7] rounded" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 space-y-4">
+    <div className="glass-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FAF9F7]">

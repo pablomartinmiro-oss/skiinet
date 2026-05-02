@@ -11,7 +11,7 @@ export default function SettingsError({
   reset: () => void;
 }) {
   return (
-    <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 rounded-lg border border-border bg-white p-8 text-center">
+    <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 glass-card p-8 text-center">
       <div className="rounded-full bg-destructive/10 p-3">
         <AlertTriangle className="h-6 w-6 text-destructive" />
       </div>

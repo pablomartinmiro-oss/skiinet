@@ -129,7 +129,7 @@ export default function ReportsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-[#E8E4DE] bg-white p-5 space-y-4">
+      <div className="glass-card p-5 space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           {PRESETS.map((p) => (
             <button
@@ -203,7 +203,7 @@ export default function ReportsTab() {
 
       {isLoading && <PageSkeleton />}
       {error && (
-        <div className="rounded-2xl border border-[#E8E4DE] bg-white p-8 text-center text-[#8A8580]">
+        <div className="glass-card p-8 text-center text-[#8A8580]">
           Error al cargar el informe
         </div>
       )}

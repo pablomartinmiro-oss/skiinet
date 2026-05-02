@@ -115,7 +115,7 @@ export default function PanelTab() {
           return (
             <div
               key={s.label}
-              className="rounded-[16px] border border-[#E8E4DE] bg-white p-4"
+              className="glass-card p-4"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -141,7 +141,7 @@ export default function PanelTab() {
           return (
             <div
               key={s.label}
-              className="rounded-[16px] border border-[#E8E4DE] bg-white p-4"
+              className="glass-card p-4"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -161,7 +161,7 @@ export default function PanelTab() {
       </div>
 
       {/* 7-day pickup chart (inline SVG) */}
-      <div className="rounded-[16px] border border-[#E8E4DE] bg-white p-4">
+      <div className="glass-card p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-[#2D2A26]">
             Alquileres por día (últimos 7 días)
@@ -293,7 +293,7 @@ export default function PanelTab() {
 
       {/* Completed today */}
       {data.completedToday > 0 && (
-        <div className="rounded-[16px] border border-[#E8E4DE] bg-white p-4">
+        <div className="glass-card p-4">
           <p className="text-sm text-[#8A8580]">
             Completados hoy:{" "}
             <span className="font-semibold text-[#5B8C6D]">

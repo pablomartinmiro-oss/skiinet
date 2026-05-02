@@ -28,7 +28,7 @@ export function TopOpportunities({
     .slice(0, 5);
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="glass-card p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-slate-900">Top Opportunities</h2>
         <Link href="/pipeline" className="text-xs text-blue-600 hover:underline">

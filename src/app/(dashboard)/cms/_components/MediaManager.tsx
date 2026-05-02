@@ -85,7 +85,7 @@ export default function MediaManager() {
       </div>
 
       {files.length === 0 ? (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <Upload className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay archivos multimedia</p>
           <p className="text-xs text-[#8A8580] mt-1">Añade el primero por URL</p>
@@ -93,7 +93,7 @@ export default function MediaManager() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {files.map((f) => (
-            <div key={f.id} className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+            <div key={f.id} className="glass-card overflow-hidden">
               <div className="relative h-28 bg-[#FAF9F7] flex items-center justify-center">
                 {f.type === "image" ? (
                   <img src={f.url} alt={f.altText ?? f.filename} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).replaceWith(document.createElement("div")); }} />

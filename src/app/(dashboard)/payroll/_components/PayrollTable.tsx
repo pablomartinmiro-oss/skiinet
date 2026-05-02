@@ -33,7 +33,7 @@ export default function PayrollTable({ records }: Props) {
 
   if (records.length === 0) {
     return (
-      <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+      <div className="glass-card p-12 text-center">
         <FileText className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
         <p className="text-sm text-[#8A8580]">No hay nominas para este mes</p>
         <p className="text-xs text-[#8A8580] mt-1">Crea una nomina para empezar</p>

@@ -183,7 +183,7 @@ export function DocumentNumbersCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-border bg-white p-6 animate-pulse">
+      <div className="glass-card p-6 animate-pulse">
         <div className="h-5 w-48 bg-slate-100 rounded" />
         <div className="mt-4 space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -198,7 +198,7 @@ export function DocumentNumbersCard() {
   const visible = expanded ? counters : counters.slice(0, 4);
 
   return (
-    <div className="rounded-2xl border border-border bg-white p-6">
+    <div className="glass-card p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-slate-900">

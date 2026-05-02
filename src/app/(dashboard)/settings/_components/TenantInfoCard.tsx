@@ -26,7 +26,7 @@ export function TenantInfoCard({
 }: TenantInfoCardProps) {
   if (loading) {
     return (
-      <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+      <div className="glass-card p-5">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="mt-1 h-4 w-48" />
         <Skeleton className="mt-4 h-16 w-full" />
@@ -35,7 +35,7 @@ export function TenantInfoCard({
   }
 
   return (
-    <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+    <div className="glass-card p-5">
       <h3 className="mb-1 text-base font-semibold text-slate-900">Cuenta</h3>
       <p className="mb-4 text-sm text-slate-500">Información de tu cuenta</p>
       <div className="space-y-3">

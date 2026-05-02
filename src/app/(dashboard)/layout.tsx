@@ -56,7 +56,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   // Block render until we know the role — prevents admin flash
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#FAF9F7]">
+      <div className="flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#E8E4DE] border-t-[#E87B5A]" />
           <p className="text-sm text-[#8A8580]">Cargando...</p>
@@ -66,7 +66,14 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Aurora background */}
+      <div className="aurora-wrap" aria-hidden="true">
+        <div className="aurora-blob aurora-blob-1" />
+        <div className="aurora-blob aurora-blob-2" />
+        <div className="aurora-blob aurora-blob-3" />
+      </div>
+      <div className="relative z-10 flex h-screen overflow-hidden">
       {/* Desktop sidebar — swap based on role */}
       <div className="hidden md:block">
         {isInstructor ? <InstructorSidebar /> : <Sidebar />}
@@ -93,8 +100,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         <main
           className={`flex-1 overflow-auto ${
             isInstructor
-              ? "bg-[#FAF9F7] p-4 pb-24 md:p-7 md:pb-7"
-              : "bg-slate-50/50 p-5 md:p-7"
+              ? "p-4 pb-24 md:p-7 md:pb-7"
+              : "p-5 md:p-7"
           }`}
         >
           <ErrorBoundary>{children}</ErrorBoundary>
@@ -111,6 +118,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           <AIChatWidget />
         </>
       )}
+      </div>
     </div>
   );
 }

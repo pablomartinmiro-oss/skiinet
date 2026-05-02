@@ -114,7 +114,7 @@ function SizeCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[14px] border border-[#E8E4DE] bg-white p-3">
+    <div className="glass-card p-3">
       <div className="flex items-center gap-2 mb-2">
         <div
           className="flex h-7 w-7 items-center justify-center rounded-lg"

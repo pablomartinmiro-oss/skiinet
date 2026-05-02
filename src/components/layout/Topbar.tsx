@@ -27,7 +27,7 @@ export function Topbar() {
     : "??";
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b border-slate-100 bg-white/95 backdrop-blur-md px-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+    <header className="flex h-14 items-center gap-4 px-6" style={{background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderBottom: '0.5px solid rgba(255,255,255,0.75)'}}>
       <GlobalSearch />
 
       <div className="ml-auto flex items-center gap-3">

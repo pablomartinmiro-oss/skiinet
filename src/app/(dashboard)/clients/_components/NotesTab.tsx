@@ -46,7 +46,7 @@ export function NotesTab({ client }: { client: Client }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-[14px] border border-[#E8E4DE] bg-white p-3">
+      <div className="glass-card p-3">
         <textarea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

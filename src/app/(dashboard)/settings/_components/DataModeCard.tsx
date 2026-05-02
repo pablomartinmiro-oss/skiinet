@@ -38,7 +38,7 @@ export function SyncStatusCard({
 
   if (loading) {
     return (
-      <div className="rounded-lg border border-border bg-white p-6">
+      <div className="glass-card p-6">
         <div className="h-6 w-48 animate-pulse rounded bg-gray-200" />
         <div className="mt-2 h-4 w-64 animate-pulse rounded bg-gray-200" />
       </div>
@@ -96,7 +96,7 @@ export function SyncStatusCard({
   };
 
   return (
-    <div className="rounded-lg border border-border bg-white p-6">
+    <div className="glass-card p-6">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-2">

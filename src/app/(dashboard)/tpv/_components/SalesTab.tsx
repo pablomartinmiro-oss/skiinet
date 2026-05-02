@@ -137,7 +137,7 @@ export default function SalesTab() {
       )}
 
       {visibleSales.length === 0 ? (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <Receipt className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay ventas registradas</p>
           <p className="text-xs text-[#8A8580] mt-1">
@@ -145,7 +145,7 @@ export default function SalesTab() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -218,7 +218,7 @@ export default function SalesTab() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="glass-card p-4">
       <p className="text-xs font-medium uppercase tracking-wider text-[#8A8580]">
         {label}
       </p>

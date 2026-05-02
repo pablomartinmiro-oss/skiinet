@@ -116,15 +116,15 @@ export default function SettlementsTab() {
     <div className="space-y-4">
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4">
+        <div className="glass-card p-4">
           <p className="text-xs text-[#8A8580] mb-1">Total pendiente</p>
           <p className="text-xl font-semibold text-[#D4A853]">{fmt.format(totalPendiente)}</p>
         </div>
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4">
+        <div className="glass-card p-4">
           <p className="text-xs text-[#8A8580] mb-1">Pagado este mes</p>
           <p className="text-xl font-semibold text-[#5B8C6D]">{fmt.format(pagadoEsteMes)}</p>
         </div>
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4">
+        <div className="glass-card p-4">
           <p className="text-xs text-[#8A8580] mb-1">Total liquidaciones</p>
           <p className="text-xl font-semibold text-[#2D2A26]">{allSettlements.length}</p>
         </div>
@@ -156,7 +156,7 @@ export default function SettlementsTab() {
       </p>
 
       {settlements.length === 0 ? (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <FileText className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay liquidaciones creadas</p>
           <p className="text-xs text-[#8A8580] mt-1">
@@ -164,7 +164,7 @@ export default function SettlementsTab() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

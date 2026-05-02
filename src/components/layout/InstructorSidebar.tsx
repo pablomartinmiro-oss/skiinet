@@ -35,14 +35,14 @@ export function InstructorSidebar() {
   const tdLevel = data?.instructor?.tdLevel ?? "";
 
   return (
-    <aside className="flex h-screen w-[240px] flex-col border-r border-[#E8E4DE] bg-white">
+    <aside className="glass-sidebar flex h-screen w-[240px] flex-col">
       {/* Logo */}
-      <div className="flex h-14 items-center border-b border-[#E8E4DE] px-5">
+      <div className="flex h-14 items-center border-b px-5" style={{borderColor: 'rgba(255,255,255,0.75)'}}>
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#E87B5A]/10">
-            <Mountain className="h-4 w-4 text-[#E87B5A]" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{background: 'linear-gradient(135deg, #6366f1, #8b5cf6)'}}>
+            <Mountain className="h-4 w-4 text-white" />
           </div>
-          <span className="text-[15px] font-bold text-[#2D2A26] tracking-tight">
+          <span className="text-[15px] font-bold text-[#0f172a] tracking-tight">
             Skicenter
           </span>
         </div>
@@ -75,11 +75,11 @@ export function InstructorSidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[#E87B5A]/10 text-[#E87B5A]"
-                  : "text-[#8A8580] hover:bg-[#FAF9F7] hover:text-[#2D2A26]"
+                  ? "glass-active-item text-[#0f172a]"
+                  : "text-[#475569] hover:bg-white/50 hover:text-[#0f172a]"
               )}
             >
-              <item.icon className={cn("h-5 w-5", isActive ? "text-[#E87B5A]" : "text-[#8A8580]")} />
+              <item.icon className={cn("h-5 w-5", isActive ? "text-[#6366f1]" : "text-[#475569]")} />
               {item.label}
             </Link>
           );
@@ -87,10 +87,10 @@ export function InstructorSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-[#E8E4DE] p-3">
+      <div className="border-t p-3" style={{borderColor: 'rgba(255,255,255,0.75)'}}>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#8A8580] hover:bg-[#FAF9F7] hover:text-[#C75D4A] transition-all"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#475569] hover:bg-white/50 hover:text-[#dc2626] transition-all"
         >
           <LogOut className="h-5 w-5" />
           Cerrar sesion

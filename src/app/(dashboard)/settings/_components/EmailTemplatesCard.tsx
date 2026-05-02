@@ -54,7 +54,7 @@ export function EmailTemplatesCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+      <div className="glass-card p-5">
         <Skeleton className="h-5 w-48 mb-4" />
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-12 w-full mb-2" />
@@ -65,7 +65,7 @@ export function EmailTemplatesCard() {
 
   return (
     <>
-      <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+      <div className="glass-card p-5">
         <div className="flex items-center gap-2 mb-1">
           <Mail className="h-4 w-4 text-[#E87B5A]" />
           <h3 className="text-base font-semibold text-[#2D2A26]">
@@ -123,8 +123,11 @@ export function EmailTemplatesCard() {
 
       {/* Preview modal */}
       {previewTemplate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
-          <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs"
+          onClick={() => setPreviewId(null)}
+        >
+          <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-lg" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h4 className="text-sm font-semibold text-[#2D2A26]">

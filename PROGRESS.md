@@ -1,12 +1,22 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AP complete — Operaciones dashboard rebuild + sidebar trim
+- **Phase:** Glass Design System (2026-05-02) ✅
 - **Step:** Ready to push
 - **Live URL:** https://crm-dash-prod.up.railway.app
 - **Last pushed commit:** 710d352 (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
+
+### Glass Design System (2026-05-02) ✅
+- Full glass morphism design across all dashboard pages
+- Aurora gradient background (#f0f4ff with 3 colored blobs, fixed position)
+- Sidebar: glass backdrop-filter (rgba(255,255,255,0.45) + blur(40px)), active items glass-l3
+- Topbar: glass (rgba(255,255,255,0.72) + blur(40px))
+- All module page card containers: glass-card utility (rgba(255,255,255,0.55) + blur(40px))
+- Design tokens: --glass-l1/l2/l3, --glass-blur, --glass-border, --glass-inset, --glass-shadow
+- Badge semantic variants: badge-confirmed, badge-pending, badge-cancelled, badge-default-glass
+- **Audit**: `tsc --noEmit` → 0 errors
 
 ## Phase AP (2026-05-02) — Operaciones dashboard rebuild + sidebar trim
 Operaciones section reduced to three top-level items: **Dashboard Operaciones**, **Escuela** (expandable group), **Alquiler**.

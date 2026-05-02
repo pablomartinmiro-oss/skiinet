@@ -80,7 +80,7 @@ export function OnboardingCards() {
   ];
 
   return (
-    <div className="rounded-2xl border border-warm-border bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="glass-card p-6">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-slate-900">
           ¡Bienvenido! Tu cuenta de GHL está conectada con {contactCount.toLocaleString("es-ES")} contactos.

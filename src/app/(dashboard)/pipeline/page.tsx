@@ -185,7 +185,7 @@ export default function PipelinePage() {
           )}
           {/* View toggle */}
           {!loading && stages.length > 0 && (
-            <div className="flex rounded-lg border border-border bg-white overflow-hidden">
+            <div className="flex glass-card overflow-hidden" style={{borderRadius: '8px'}}>
               <button
                 onClick={() => handleSetViewMode("kanban")}
                 className={cn(

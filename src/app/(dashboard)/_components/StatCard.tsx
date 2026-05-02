@@ -63,7 +63,7 @@ export function StatCard({
   const trendPositive = trend ? trend.value >= 0 : true;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150">
+    <div className="glass-card p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           {/* Label */}

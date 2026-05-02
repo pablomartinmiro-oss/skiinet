@@ -195,7 +195,7 @@ export default function DashboardHome() {
       {/* ── Charts Row ─────────────────────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
         {pipelineBreakdown.length > 0 && (
-          <div className="animate-fade-in card-hover rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
+          <div className="animate-fade-in card-hover glass-card p-5 transition-shadow">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-semibold text-slate-900">Oportunidades por Pipeline</h2>
               <span className="text-xs text-slate-500">{stats?.totalOpportunities.toLocaleString("es-ES")} total</span>
@@ -208,7 +208,7 @@ export default function DashboardHome() {
           </div>
         )}
         {leadSources.length > 0 && (
-          <div className="animate-fade-in card-hover rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
+          <div className="animate-fade-in card-hover glass-card p-5 transition-shadow">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-semibold text-slate-900">Leads por Origen</h2>
               <span className="text-xs text-slate-500">{stats?.totalContacts.toLocaleString("es-ES")} contactos</span>
@@ -224,7 +224,7 @@ export default function DashboardHome() {
 
       {/* ── Reservations Bar Chart + Funnel ─────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="animate-fade-in card-hover rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
+        <div className="animate-fade-in card-hover glass-card p-5 transition-shadow">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-900">Reservas</h2>
             <span className="text-xs text-slate-500">{resStats?.weekly.totalReservations ?? 0} total</span>
@@ -251,7 +251,7 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        <div className="animate-fade-in card-hover rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
+        <div className="animate-fade-in card-hover glass-card p-5 transition-shadow">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-900">Embudo de Conversión</h2>
             <span className="text-xs text-slate-500">{allQuotes.length} presupuestos</span>
@@ -264,13 +264,13 @@ export default function DashboardHome() {
       {resStats && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {resStats.weekly.topStation && (
-            <div className="animate-fade-in flex items-center gap-4 rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            <div className="animate-fade-in flex items-center gap-4 glass-card p-5">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50"><Snowflake className="h-5 w-5 text-coral" /></div>
               <div><p className="text-xs font-medium text-slate-500">Estacion Mas Activa</p><p className="text-lg font-bold text-slate-900">{getStationLabel(resStats.weekly.topStation.name)}</p><p className="text-xs text-slate-500">{resStats.weekly.topStation.count} reservas esta semana</p></div>
             </div>
           )}
           {Object.entries(resStats.weekly.bySource).map(([src, revenue]) => (
-            <div key={src} className="animate-fade-in flex items-center gap-4 rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            <div key={src} className="animate-fade-in flex items-center gap-4 glass-card p-5">
               <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${src === "groupon" ? "bg-green-50" : "bg-amber-50"}`}><Send className={`h-5 w-5 ${src === "groupon" ? "text-green-700" : "text-amber-700"}`} /></div>
               <div><p className="text-xs font-medium text-slate-500 capitalize">{src === "caja" ? "Venta en caja" : src === "groupon" ? "Groupon" : src}</p><p className="text-lg font-bold text-slate-900">{formatCurrency(revenue)}</p><p className="text-xs text-slate-500">ingresos esta semana</p></div>
             </div>

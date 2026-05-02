@@ -40,7 +40,7 @@ export function StatsCards({ stats }: { stats: ClientStats | undefined }) {
         return (
           <div
             key={it.label}
-            className="rounded-[14px] bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover-lift"
+            className="glass-card p-4 hover-lift"
           >
             <div className="flex items-center gap-2 mb-2">
               <div

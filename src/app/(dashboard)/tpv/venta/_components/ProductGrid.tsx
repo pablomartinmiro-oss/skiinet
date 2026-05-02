@@ -36,7 +36,7 @@ export default function ProductGrid({
   }, [products, search]);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="flex flex-col overflow-hidden glass-card">
       {/* Tabs */}
       <div className="flex shrink-0 gap-1 border-b border-[#E8E4DE] px-3">
         {TPV_TABS.map((key) => (

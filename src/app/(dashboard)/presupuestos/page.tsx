@@ -100,7 +100,7 @@ export default function PresupuestosPage() {
       <div className="flex h-[calc(100vh-8rem)] gap-0 -m-4 md:-m-6">
         {/* Left panel — Quote list (hidden on mobile when detail is shown) */}
         <div className={cn(
-          "w-full md:w-[40%] md:min-w-[320px] border-r border-border bg-white",
+          "w-full md:w-[40%] md:min-w-[320px] border-r border-border glass-card rounded-none",
           (showDetail && !debugAlwaysShow) ? "hidden md:block" : "block"
         )}>
           <div className="flex flex-col gap-3 border-b border-border px-4 py-4">
@@ -166,7 +166,7 @@ export default function PresupuestosPage() {
 
         {/* Right panel — Quote detail or form (full width on mobile) */}
         <div className={cn(
-          "flex-1 bg-white",
+          "flex-1 glass-card rounded-none",
           (showDetail || debugAlwaysShow) ? "block" : "hidden md:block"
         )}>
           {/* Mobile back button */}

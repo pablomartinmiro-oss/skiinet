@@ -31,7 +31,7 @@ export function TeamInviteCard({ onInvite, isPending, inviteUrl }: TeamInviteCar
   }
 
   return (
-    <div className="rounded-lg border border-border bg-white p-4">
+    <div className="glass-card p-4">
       <h3 className="text-sm font-semibold text-slate-900">Invitar miembro</h3>
       <form onSubmit={handleSubmit} className="mt-2 flex gap-2">
         <Input

@@ -124,7 +124,7 @@ export function ModulesCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+      <div className="glass-card p-5">
         <Skeleton className="h-5 w-40 mb-4" />
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className="h-12 w-full mb-2" />
@@ -134,7 +134,7 @@ export function ModulesCard() {
   }
 
   return (
-    <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+    <div className="glass-card p-5">
       <h3 className="mb-1 text-base font-semibold text-slate-900">Modulos de la plataforma</h3>
       <p className="mb-5 text-sm text-slate-500">
         Activa o desactiva modulos segun las necesidades de tu negocio

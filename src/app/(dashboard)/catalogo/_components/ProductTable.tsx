@@ -197,13 +197,13 @@ export function ProductTable({ products, onEdit, onDelete, onAdd }: ProductTable
 
       {/* Tables by category */}
       {Object.keys(grouped).length === 0 && (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <p className="text-sm text-slate-500">No se encontraron productos</p>
           <p className="text-xs text-slate-500 mt-1">Prueba a cambiar los filtros o añade un nuevo producto</p>
         </div>
       )}
       {Object.entries(grouped).map(([category, categoryProducts]) => (
-        <div key={category} className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div key={category} className="glass-card overflow-hidden">
           <div className="border-b border-border px-6 py-4">
             <h2 className="text-lg font-semibold text-slate-900">
               {CATEGORY_LABELS[category] || category}

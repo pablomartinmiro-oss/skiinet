@@ -209,7 +209,7 @@ function StatCard({
   Icon: typeof Activity;
 }) {
   return (
-    <div className="rounded-2xl border border-[#E8E4DE] bg-white p-4 shadow-sm">
+    <div className="glass-card p-4">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wider text-[#8A8580]">{label}</p>
@@ -225,7 +225,7 @@ function StatCard({
 
 function StatSkeleton() {
   return (
-    <div className="rounded-2xl border border-[#E8E4DE] bg-white p-4 shadow-sm">
+    <div className="glass-card p-4">
       <div className="h-3 w-24 animate-pulse rounded bg-[#E8E4DE]" />
       <div className="mt-2 h-7 w-12 animate-pulse rounded bg-[#E8E4DE]" />
     </div>
@@ -246,7 +246,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-[#E8E4DE] bg-white shadow-sm">
+    <section className="glass-card overflow-hidden">
       <header className="flex items-center justify-between border-b border-[#E8E4DE] bg-[#FAF9F7] px-5 py-3">
         <div className="flex items-center gap-2.5">
           <Icon className="h-4 w-4 text-[#E87B5A]" />

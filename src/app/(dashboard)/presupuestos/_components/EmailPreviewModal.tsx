@@ -114,8 +114,8 @@ export function EmailPreviewModal({ quote, items, isOpen, onClose }: EmailPrevie
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[14px] bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[14px] bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
         {/* Action buttons */}
         <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
           <button

@@ -99,7 +99,7 @@ export default function SessionsTab() {
       </div>
 
       {sessions.length === 0 ? (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <Clock className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay sesiones de caja</p>
           <p className="text-xs text-[#8A8580] mt-1">
@@ -107,7 +107,7 @@ export default function SessionsTab() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

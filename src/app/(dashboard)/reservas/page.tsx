@@ -73,7 +73,7 @@ export default function ReservasPage() {
       <VoucherStats />
 
       {/* View toggle */}
-      <div className="flex items-center gap-1 self-start rounded-xl border border-[#E8E4DE] bg-white p-1 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+      <div className="flex items-center gap-1 self-start rounded-xl p-1" style={{background: 'var(--glass-l2)', backdropFilter: 'var(--glass-blur)', WebkitBackdropFilter: 'var(--glass-blur)', border: 'var(--glass-border)'}}>
         <button
           onClick={() => { setView("lista"); setCalendarDate(null); }}
           className={cn(
@@ -106,7 +106,7 @@ export default function ReservasPage() {
           <>
             {/* Left panel: list */}
             <div className={cn(
-              "flex w-full md:w-[35%] flex-col rounded-none md:rounded-[14px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]",
+              "flex w-full md:w-[35%] flex-col rounded-none md:rounded-2xl glass-card",
               selectedId ? "hidden md:flex" : "flex"
             )}>
               <ReservationList
@@ -120,7 +120,7 @@ export default function ReservasPage() {
 
             {/* Right panel: detail/form */}
             <div className={cn(
-              "flex w-full md:w-[65%] flex-col rounded-none md:rounded-[14px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]",
+              "flex w-full md:w-[65%] flex-col rounded-none md:rounded-2xl glass-card",
               selectedId ? "flex" : "hidden md:flex"
             )}>
               {/* Mobile back button */}
@@ -153,7 +153,7 @@ export default function ReservasPage() {
           <>
             {/* Left panel: calendar */}
             <div className={cn(
-              "flex w-full md:w-[40%] flex-col rounded-none md:rounded-[14px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]",
+              "flex w-full md:w-[40%] flex-col rounded-none md:rounded-2xl glass-card",
               calendarDate ? "hidden md:flex" : "flex"
             )}>
               <ReservationCalendar
@@ -167,7 +167,7 @@ export default function ReservasPage() {
 
             {/* Right panel: day reservations */}
             <div className={cn(
-              "flex w-full md:w-[60%] flex-col rounded-none md:rounded-[14px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]",
+              "flex w-full md:w-[60%] flex-col rounded-none md:rounded-2xl glass-card",
               calendarDate ? "flex" : "hidden md:flex"
             )}>
               {calendarDate ? (

@@ -60,7 +60,7 @@ export function TeamTable({
   if (loading) return <TableSkeleton rows={4} />;
 
   return (
-    <div className="overflow-x-auto rounded-[14px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+    <div className="overflow-x-auto glass-card">
       <Table>
         <TableHeader>
           <TableRow>

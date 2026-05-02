@@ -62,7 +62,7 @@ export default function CancellationDetail({ requestId }: Props) {
     <div className="space-y-5">
       {/* Resolution info */}
       {cancellation.resolution && (
-        <div className="rounded-[10px] border border-[#E8E4DE] bg-white p-4">
+        <div className="glass-card p-4">
           <h4 className="text-sm font-semibold text-[#2D2A26] mb-2">
             Resolucion
           </h4>
@@ -107,7 +107,7 @@ export default function CancellationDetail({ requestId }: Props) {
       )}
 
       {/* Timeline */}
-      <div className="rounded-[10px] border border-[#E8E4DE] bg-white p-4">
+      <div className="glass-card p-4">
         <h4 className="text-sm font-semibold text-[#2D2A26] mb-3 flex items-center gap-2">
           <Clock className="h-4 w-4 text-[#E87B5A]" />
           Historial de estados
@@ -148,7 +148,7 @@ export default function CancellationDetail({ requestId }: Props) {
 
       {/* Vouchers */}
       {cancellation.vouchers.length > 0 && (
-        <div className="rounded-[10px] border border-[#E8E4DE] bg-white p-4">
+        <div className="glass-card p-4">
           <h4 className="text-sm font-semibold text-[#2D2A26] mb-3 flex items-center gap-2">
             <Gift className="h-4 w-4 text-[#5B8C6D]" />
             Bonos emitidos

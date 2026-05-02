@@ -159,7 +159,7 @@ export function ActivityFeed({
 
   if (loading) {
     return (
-      <div className="animate-fade-in rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="animate-fade-in glass-card p-5">
         <h2 className="mb-4 text-base font-semibold text-slate-900">Actividad Reciente</h2>
         <div className="space-y-2">
           {[1, 2, 3, 4].map((i) => (
@@ -171,7 +171,7 @@ export function ActivityFeed({
   }
 
   return (
-    <div className="animate-fade-in rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
+    <div className="animate-fade-in glass-card p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-slate-900">Actividad Reciente</h2>
         <div className="flex gap-3">

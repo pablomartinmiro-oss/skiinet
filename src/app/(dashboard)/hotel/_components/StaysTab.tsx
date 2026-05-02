@@ -49,14 +49,14 @@ export default function StaysTab() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+      <div className="glass-card p-12 text-center">
         <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-slate-700" />
       </div>
     );
   }
   if (error) {
     return (
-      <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-8 text-center text-sm text-[#C75D4A]">
+      <div className="glass-card p-8 text-center text-sm text-[#C75D4A]">
         Error al cargar reservas de alojamiento
       </div>
     );
@@ -64,7 +64,7 @@ export default function StaysTab() {
   const stays = data?.stays ?? [];
   if (stays.length === 0) {
     return (
-      <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+      <div className="glass-card p-12 text-center">
         <BedDouble className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
         <p className="text-sm text-[#8A8580]">Sin reservas de alojamiento</p>
         <p className="text-xs text-[#8A8580] mt-1">
@@ -75,7 +75,7 @@ export default function StaysTab() {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="overflow-hidden glass-card">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>

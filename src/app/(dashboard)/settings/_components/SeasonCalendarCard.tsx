@@ -80,7 +80,7 @@ export function SeasonCalendarCard() {
   }, {});
 
   return (
-    <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="glass-card">
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-coral" />

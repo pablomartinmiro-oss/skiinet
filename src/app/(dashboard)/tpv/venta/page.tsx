@@ -151,7 +151,7 @@ export default function TpvVentaPage() {
   if (openSessions.length === 0) {
     return (
       <div className="flex h-[calc(100vh-7rem)] items-center justify-center">
-        <div className="rounded-2xl bg-white p-12 text-center shadow-[0_1px_3px_rgba(0,0,0,0.04)] max-w-md">
+        <div className="glass-card p-12 text-center max-w-md">
           <Lock className="mx-auto mb-3 h-10 w-10 text-[#8A8580]" />
           <h2 className="mb-2 text-lg font-semibold text-[#2D2A26]">
             No hay sesiones abiertas
@@ -212,7 +212,7 @@ export default function TpvVentaPage() {
           products={filteredProducts}
           onAdd={addToCart}
         />
-        <div className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="flex flex-col overflow-hidden glass-card">
           <Cart
             items={cart}
             onUpdateQty={updateQty}

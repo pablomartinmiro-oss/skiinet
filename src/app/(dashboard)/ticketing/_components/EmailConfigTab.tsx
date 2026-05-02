@@ -194,7 +194,7 @@ export default function EmailConfigTab() {
       </div>
 
       {configs.length === 0 ? (
-        <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <Mail className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay reglas de email configuradas</p>
           <p className="text-xs text-[#8A8580] mt-1">
@@ -206,7 +206,7 @@ export default function EmailConfigTab() {
           {configs.map((c) => (
             <div
               key={c.id}
-              className="flex items-center justify-between rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-6 py-4"
+              className="flex items-center justify-between glass-card px-6 py-4"
             >
               <div className="flex items-center gap-4">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-[10px] ${

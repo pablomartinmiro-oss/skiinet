@@ -67,7 +67,7 @@ export function NeedsAttention({ quotes, loading }: NeedsAttentionProps) {
 
   if (loading) {
     return (
-      <div className="animate-fade-in rounded-2xl border border-gold/20 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="animate-fade-in glass-card p-5">
         <div className="flex items-center gap-2.5 mb-4">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/10">
             <AlertTriangle className="h-4 w-4 text-amber-700" />
@@ -85,7 +85,7 @@ export function NeedsAttention({ quotes, loading }: NeedsAttentionProps) {
 
   if (urgent.length === 0) {
     return (
-      <div className="animate-fade-in rounded-2xl border border-sage/20 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="animate-fade-in glass-card p-5">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sage/10">
             <AlertTriangle className="h-4 w-4 text-green-700" />
@@ -100,7 +100,7 @@ export function NeedsAttention({ quotes, loading }: NeedsAttentionProps) {
   }
 
   return (
-    <div className="animate-fade-in rounded-2xl border border-gold/20 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
+    <div className="animate-fade-in glass-card p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/10">

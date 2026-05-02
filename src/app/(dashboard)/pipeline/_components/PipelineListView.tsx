@@ -52,7 +52,7 @@ function AccordionSection({ stage, opportunities, dotColor, onCardClick, default
   const total = opportunities.reduce((sum, o) => sum + o.monetaryValue, 0);
 
   return (
-    <div className="rounded-xl border border-border bg-white overflow-hidden">
+    <div className="glass-card overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors"

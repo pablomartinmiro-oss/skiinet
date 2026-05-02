@@ -163,7 +163,7 @@ export default function ContactsPage() {
           }
         />
       ) : (
-        <div className="overflow-x-auto rounded-[16px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+        <div className="overflow-x-auto glass-card">
           <ContactsTable contacts={filtered} />
         </div>
       )}
