@@ -1,12 +1,34 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AL complete — Fase 7 (E2E Testing) + Fase 8 (Storefront 2.0 + Landing Comercial)
+- **Phase:** PHASE AM complete — Comprehensive Demo Seed (todos los módulos poblados)
 - **Step:** Pushed
 - **Live URL:** https://crm-dash-prod.up.railway.app
-- **Last pushed commit:** de2bbc0 (2026-05-02)
+- **Last pushed commit:** (pending push)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
+
+## Phase AM (2026-05-02) — Comprehensive Demo Seed
+Ampliado el seed demo para que la cuenta `admin@demo.com` / `demo1234` tenga datos realistas en TODOS los módulos:
+- 15 leads en distintos estados (nuevo/contactado/calificado/convertido/perdido)
+- 6 instructores totales (3 nuevos: Pablo Sanz TD3 Sierra, Marta Cano TD2 Baqueira, Jorge Velasco TD1 Formigal) con disponibilidad y fichajes
+- ~20 asignaciones de clases (group/private/freeride/adaptive)
+- 12 facturas (5 paid, 4 sent, 2 draft, 1 cancelled) con líneas + transacciones
+- 10 gastos con categorías PER/SUM/MKT y centros de coste
+- 3 proveedores con liquidaciones (1 paid, 1 sent, 1 draft) y líneas
+- 10 reseñas (mix 1-5 estrellas, algunas con respuesta)
+- 11 mensajes internos (admin↔instructores) y 8 notificaciones para profesor
+- 4 tipos de habitación (añadida individual) + 3 estancias en hotel (checkin/reservada/checkout)
+- TPV: caja principal abierta + 5 ventas reales (efectivo/tarjeta/bizum)
+
+**Nuevos archivos:**
+- `src/lib/seed/seed-extra-modules.ts` — función compartida `seedExtraModules(prisma, tenantId, { wipe })`
+- `src/app/api/admin/seed-all-modules/route.ts` — endpoint idempotente (additive, no borra datos existentes)
+
+**Archivos ampliados:**
+- `src/lib/constants/demo-seed-data.ts` — +15 nuevas constantes DEMO_*
+- `prisma/seed.ts` — llama a `seedExtraModules` con `wipe: true`
+- `src/app/api/admin/reset-demo/route.ts` — llama a `seedExtraModules` con `wipe: true`
 
 ## What the App Does Today
 

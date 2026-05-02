@@ -13,6 +13,7 @@ import {
   DEMO_CONVERSATIONS,
   DEMO_CAPACITY,
 } from "@/lib/constants/demo-seed-data";
+import { seedExtraModules } from "@/lib/seed/seed-extra-modules";
 import { hash } from "bcryptjs";
 
 const log = logger.child({ route: "reset-demo" });
@@ -434,7 +435,12 @@ export async function POST() {
       create: { tenantId, module: "instructors", isEnabled: true },
     });
 
-    log.info("Demo reset complete (with full planning data)");
+    // Seed extra modules (leads, internal messages, notifications, lodge stays,
+    // 12 invoices, 10 expenses, 3 suppliers + settlements, 10 reviews, TPV session + sales,
+    // extra room type + 3 more instructors with assignments).
+    const extra = await seedExtraModules(prisma, tenantId, { wipe: true });
+
+    log.info({ extra }, "Demo reset complete (with full planning data + extra modules)");
 
     return NextResponse.json({
       success: true,
@@ -445,7 +451,8 @@ export async function POST() {
         deals: DEMO_DEALS.length,
         conversations: DEMO_CONVERSATIONS.length,
         products: catalog.length,
-        instructors: instrUsers.length,
+        instructors: instrUsers.length + extra.extraInstructors,
+        ...extra,
       },
     });
   } catch (error) {

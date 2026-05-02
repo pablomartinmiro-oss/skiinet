@@ -10,6 +10,7 @@ import {
   DEMO_CONVERSATIONS,
   DEMO_CAPACITY,
 } from "../src/lib/constants/demo-seed-data";
+import { seedExtraModules } from "../src/lib/seed/seed-extra-modules";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -1196,6 +1197,9 @@ async function main() {
   await seedDemoContent(demoTenant.id);
 
   await seedCmsEnhancement(demoTenant.id);
+
+  const extra = await seedExtraModules(prisma, demoTenant.id, { wipe: true });
+  console.log(`Seeded extra modules: ${JSON.stringify(extra)}`);
 
   console.log("Demo tenant seed complete");
 
