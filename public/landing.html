@@ -181,6 +181,21 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 .or-pill.due{background:rgba(251,191,36,0.1);color:#FBB324;border:1px solid rgba(251,191,36,0.2)}
 .or-pill.new{background:rgba(79,142,247,0.1);color:var(--blue);border:1px solid rgba(79,142,247,0.2)}
 
+/* Testimonials */
+.testimonials-section{padding:80px 24px}
+.testimonial-card{max-width:760px;margin:0 auto;background:rgba(255,255,255,0.025);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius-lg);padding:48px 40px;position:relative}
+.testimonial-card::before{content:'"';position:absolute;top:24px;left:32px;font-size:6rem;font-family:Georgia,serif;color:var(--blue);opacity:.18;line-height:1}
+.testimonial-quote{font-size:1.25rem;font-weight:300;line-height:1.6;color:var(--snow);margin-bottom:32px;letter-spacing:-0.01em;position:relative;z-index:1}
+.testimonial-author{display:flex;align-items:center;gap:16px;border-top:1px solid var(--border);padding-top:24px}
+.testimonial-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff;flex-shrink:0}
+.testimonial-info{flex:1}
+.testimonial-name{font-size:1rem;font-weight:600;color:var(--snow);margin-bottom:2px}
+.testimonial-role{font-size:.8125rem;color:var(--gray-500)}
+.testimonial-stats{display:flex;gap:24px;margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
+.testimonial-stat .ts-value{font-size:1.5rem;font-weight:700;color:var(--snow);font-family:var(--font-mono);letter-spacing:-0.02em}
+.testimonial-stat .ts-label{font-size:.6875rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+@media(max-width:600px){.testimonial-card{padding:32px 24px}.testimonial-quote{font-size:1.0625rem}.testimonial-stats{flex-wrap:wrap;gap:16px}}
+
 /* Storefront */
 .sf-preview{border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
 .sf-hero{height:80px;background:linear-gradient(135deg,rgba(79,142,247,0.2),rgba(0,212,255,0.15));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
@@ -252,8 +267,9 @@ section{padding:120px 24px;position:relative}
 .sprint-cyan .module-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 32px rgba(0,212,255,0.06)}
 
 /* ===== HOW IT WORKS ===== */
-.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;position:relative}
-.steps-grid::before{content:'';position:absolute;top:56px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--border-hover),transparent)}
+.steps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;position:relative}
+.steps-grid::before{content:'';position:absolute;top:56px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--border-hover),transparent)}
+@media(max-width:1024px){.steps-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:768px){.steps-grid{grid-template-columns:1fr}.steps-grid::before{display:none}}
 .step-card{text-align:center;padding:32px 24px}
 .step-number{width:48px;height:48px;border-radius:50%;border:1px solid var(--border-hover);display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.875rem;font-weight:600;color:var(--blue);margin-bottom:24px;background:var(--bg-secondary);position:relative;z-index:1}
@@ -835,18 +851,30 @@ footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
     <div class="steps-grid">
       <div class="step-card reveal">
         <div class="step-number">01</div>
-        <span class="step-icon">🧩</span>
-        <h3>Elige tus módulos</h3>
-        <p>Solo activas lo que necesitas. Escuela, alquiler, CRM… tú decides.</p>
+        <span class="step-icon">🏢</span>
+        <h3>Datos de empresa</h3>
+        <p>Nombre, NIF, dirección y datos fiscales. Lo necesario para tus facturas.</p>
       </div>
       <div class="step-card reveal">
         <div class="step-number">02</div>
-        <span class="step-icon">⚙️</span>
-        <h3>Configura tu negocio</h3>
-        <p>Wizard de 5 pasos. Datos básicos, módulos, equipo, catálogo, listo.</p>
+        <span class="step-icon">🧩</span>
+        <h3>Activa tus módulos</h3>
+        <p>17 módulos disponibles. Activa solo lo que tu negocio realmente necesita.</p>
       </div>
       <div class="step-card reveal">
         <div class="step-number">03</div>
+        <span class="step-icon">👥</span>
+        <h3>Invita a tu equipo</h3>
+        <p>4 roles predefinidos (Owner, Manager, Sales Rep, VA). Email + listo.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-number">04</div>
+        <span class="step-icon">📚</span>
+        <h3>Carga tu catálogo</h3>
+        <p>Importa CSV, usa el catálogo precargado de Skicenter o crea desde cero.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-number">05</div>
         <span class="step-icon">🚀</span>
         <h3>Empieza a operar</h3>
         <p>Dashboard completo desde el día 1. Reservas, facturación, todo conectado.</p>
@@ -964,6 +992,35 @@ footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
 
 <div class="glow-divider"></div>
 
+<!-- TESTIMONIAL -->
+<section class="testimonials-section" id="testimonial">
+  <div class="section-inner">
+    <div class="section-header reveal" style="text-align:center;margin-bottom:48px">
+      <div class="section-label" style="justify-content:center">★ Casos de uso</div>
+      <h2 class="section-title">Construido junto a Skicenter</h2>
+      <p class="section-desc" style="margin:0 auto">Skiinet nace de la operativa real de una agencia de viajes y escuela de esquí con 15 años de historia.</p>
+    </div>
+    <div class="testimonial-card reveal">
+      <p class="testimonial-quote">Antes operábamos con 6 herramientas distintas: una para reservas, otra para alquiler, Excel para presupuestos, papel para facturas… Con Skiinet, una reserva confirmada genera la factura, descuenta el material del inventario y avisa al profesor sin que nadie toque nada. Hemos pasado de cerrar el día a las 21h a las 18h.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">SC</div>
+        <div class="testimonial-info">
+          <div class="testimonial-name">Equipo Skicenter</div>
+          <div class="testimonial-role">Agencia de viajes &amp; escuela de esquí — Baqueira, Sierra Nevada, La Pinilla</div>
+        </div>
+      </div>
+      <div class="testimonial-stats">
+        <div class="testimonial-stat"><div class="ts-value">93</div><div class="ts-label">Productos catalogados</div></div>
+        <div class="testimonial-stat"><div class="ts-value">3</div><div class="ts-label">Estaciones operativas</div></div>
+        <div class="testimonial-stat"><div class="ts-value">7</div><div class="ts-label">Periodos de temporada</div></div>
+        <div class="testimonial-stat"><div class="ts-value">3h</div><div class="ts-label">Ahorro al día</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
 <!-- ROADMAP -->
 <section id="roadmap">
   <div class="section-inner">
@@ -976,29 +1033,47 @@ footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
       <div style="position:relative">
         <div class="roadmap-line"></div>
         <div class="roadmap-inner">
+          <div class="roadmap-card">
+            <div class="roadmap-week">Fase 1-2 ✓</div>
+            <div class="roadmap-date">Abril 2026</div>
+            <h4>CRM + Catálogo + Reservas</h4>
+            <p>Pipeline de ventas, presupuestos con auto-package, catálogo de 93 productos, motor de reservas multi-estación.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Fase 3 ✓</div>
+            <div class="roadmap-date">May 2, 2026</div>
+            <h4>Facturación Automática</h4>
+            <p>Auto-invoice al confirmar reserva, PDF fiscal con IVA desglosado, numeración atómica DocumentCounter, recordatorios cada 7 días.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Fase 4 ✓</div>
+            <div class="roadmap-date">May 2, 2026</div>
+            <h4>Portal Profesor</h4>
+            <p>App mobile-first, fichaje con GPS, notificaciones in-app, chat interno entre instructores, planning del día.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Fase 5 ✓</div>
+            <div class="roadmap-date">May 2, 2026</div>
+            <h4>Cross-module + Operaciones</h4>
+            <p>Motor de disponibilidad unificado, cascada al confirmar/cancelar, dashboard "Operaciones del día", cliente 360º.</p>
+          </div>
           <div class="roadmap-card active">
-            <div class="roadmap-week">Semana 1</div>
-            <div class="roadmap-date">May 1 – 4, 2026</div>
-            <h4>Leads + Presupuestos</h4>
-            <p>Pipeline de ventas completo: captación, scoring IA, generación de presupuestos y seguimiento automático.</p>
-          </div>
-          <div class="roadmap-card">
-            <div class="roadmap-week">Semana 2</div>
-            <div class="roadmap-date">May 5 – 9, 2026</div>
-            <h4>Facturación + Portal Profesor</h4>
-            <p>Integración de facturación avanzada con SII/TicketBAI y portal de autogestión para profesores.</p>
-          </div>
-          <div class="roadmap-card">
-            <div class="roadmap-week">Semana 3</div>
-            <div class="roadmap-date">May 12 – 16, 2026</div>
-            <h4>Interconexión + Infra</h4>
-            <p>Event bus entre módulos, webhooks configurables, optimización de queries y caching avanzado.</p>
-          </div>
-          <div class="roadmap-card">
-            <div class="roadmap-week">Semana 4</div>
-            <div class="roadmap-date">May 19 – 23, 2026</div>
+            <div class="roadmap-week">Fase 7-8 ✓</div>
+            <div class="roadmap-date">May 2, 2026</div>
             <h4>Testing + Storefront 2.0</h4>
-            <p>Suite de tests E2E, nueva tienda online con checkout mejorado y pasarela Redsys.</p>
+            <p>Suite de tests E2E (billing, onboarding, isolation, storefront, cross-module), tienda con SEO, sitemap y constructor de packs visual.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Fase 9</div>
+            <div class="roadmap-date">May 2026</div>
+            <h4>Veri*factu / TicketBAI</h4>
+            <p>Cumplimiento fiscal del Real Decreto 1007/2023: firma de facturas + envío en tiempo real a la AEAT.</p>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-week">Fase 10</div>
+            <div class="roadmap-date">Junio 2026</div>
+            <h4>App Mobile + Marketplace</h4>
+            <p>App nativa iOS/Android para clientes y un marketplace de integraciones con WhatsApp, Stripe, Resend y SII.</p>
           </div>
         </div>
       </div>

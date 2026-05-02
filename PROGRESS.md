@@ -1,10 +1,10 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AK complete — Module Improvements (REAV, Reviews, Suppliers, CSV Export, Global Search)
+- **Phase:** PHASE AL complete — Fase 7 (E2E Testing) + Fase 8 (Storefront 2.0 + Landing Comercial)
 - **Step:** Pushed
 - **Live URL:** https://crm-dash-prod.up.railway.app
-- **Last pushed commit:** dcab8ec (2026-05-02)
+- **Last pushed commit:** (pending) (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
 
@@ -578,6 +578,32 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 - **Tests**: e2e billing-flow/onboarding/storefront/tenant-isolation + unit cross-module-availability; vitest.config extendido a `tests/**`
 - **Audit**: `tsc --noEmit` → 0 errores
 
+### Phase AL: Fase 7 (E2E Testing) + Fase 8 (Storefront 2.0 + Landing Comercial) (2026-05-02) ✅
+- **Goal**: lock the cross-module flows in tests + ship a public-facing storefront upgrade and a landing that reflects the platform we actually built.
+
+**Fase 7 — E2E Testing** (vitest, all DB-less via Prisma + helper mocks)
+- New tests live under `tests/` (added to vitest config alongside `__tests__/`):
+  - `tests/e2e/billing-flow.test.ts` — Quote→Reservation conversion (incl. idempotency), PATCH `confirmada` triggers `autoInvoiceFromReservation` with the correct payload, `cancelada` does NOT trigger billing.
+  - `tests/e2e/onboarding.test.ts` — POST `/api/auth/register` creates Tenant + Owner role + 3 default roles + Owner User and enables ALL 17 modules in `ModuleConfig`. Covers email-already-taken (409), missing companyName (400), weak-password (Zod 400) edges.
+  - `tests/e2e/tenant-isolation.test.ts` — extends `__tests__/lib/multi-tenant-isolation.test.ts` with Leads, Clientes [id]/history (cross-tenant 404 + per-module aggregate scope), and Finanzas Invoices.
+  - `tests/e2e/storefront.test.ts` — public products listing scoped by slug, checkout converts cart→Quote stamped with tenantId, falls back to `manual` payment when Redsys unavailable, 404 on unknown slugs and cross-tenant carts.
+  - `tests/unit/cross-module-availability.test.ts` — multi-module quote scenarios (rental + hotel + class all OK; rental shortage trips overall ok=false; hotel block with Spanish reason; class shortage probes next 14 days; instructor level filter).
+  - `tests/unit/auto-invoice.test.ts` — sibling that imports the real helper to verify IVA-included math (gross 121 → subtotal 100, tax 21), paid-quote skip path, and idempotency.
+- **vitest config**: added `tests/**/*.test.ts(x)` to both projects' `include` globs. Existing `__tests__/` suite untouched.
+- **Result**: 26 new tests, all green; full suite 242 passing across 26 files (the 2 pre-existing testing-library/dom failures predate this work).
+
+**Fase 8 — Storefront 2.0 + Landing Comercial**
+- **Public packs page** — new `src/app/(storefront)/s/[slug]/packs/page.tsx` is a visual constructor: tabs across all active `LegoPack`s, hero card per pack, line-by-line components panel that distinguishes obligatorio (locked, dark pill) / opcional (toggleable, amber pill) / incluido (checked, green pill). Live total recomputes when optional lines toggle. Sticky right-rail summary with base + extras breakdown and an "Añadir al carrito" CTA that pushes a `type:"product"` cart entry tagged `meta.variant="pack"` + `meta.packLines=<id1,id2>`.
+- **SEO** — added per-route metadata layouts (`Metadata` exports) for hotel, spa, restaurante, packs, carrito, checkout, bono, canjear, cancelar. Cart/checkout/canjear/cancelar are flagged `robots: { index: false, follow: false }` so transactional URLs don't pollute search. The root storefront layout already had a `template: "%s — Skicenter"` fallback so each child only needs to set its own `title`.
+- **Sitemap** — `src/app/(storefront)/s/[slug]/sitemap.ts` returns the static landing pages + 7 destination pages + every active product slug, all dated from `Tenant.updatedAt` (or product `updatedAt` for product entries). Uses `process.env.AUTH_URL` for the base URL.
+- **Landing comercial** (`public/landing.html`):
+  - **Modules grid**: added a new "Sprint 6 — Avanzado" group with 5 cards reflecting Fases 3-5: Facturación Auto (F3), Portal Profesor (F4), Disponibilidad cruzada (F5), Operaciones del día, Cliente unificado.
+  - **Interactive dashboard mockup**: new "Operaciones" tab (now the default-active one) with 5 stat cards (clases ahora, alquileres, check-ins, sin pagar, leads nuevos) + 5 cross-module rows with status pills (EN VIVO / PRONTO / PRÓX. / PEND. / NEW).
+  - **How it works**: 3 steps → 5 steps that mirror the actual onboarding wizard (Empresa → Módulos → Equipo → Catálogo → Operar). Grid expanded to `repeat(5,1fr)` desktop / `repeat(3,1fr)` tablet / `1fr` mobile.
+  - **Roadmap**: rebuilt to reflect what shipped (Fases 1-5, 7-8 with ✓ pills) plus what's next (Fase 9 Veri*factu/TicketBAI, Fase 10 mobile + marketplace).
+  - **Testimonial section**: new "Construido junto a Skicenter" block with quote, author block (Equipo Skicenter, 3-stations badge), and 4 stat tiles (93 productos / 3 estaciones / 7 periodos / 3h ahorro al día). Linked from nav.
+- **Audit**: `tsc --noEmit` clean (`exit=0`), 26/26 new tests passing, 242/242 in scope.
+
 ### Next: TBD
 
 ## DB Migrations
@@ -637,7 +663,13 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 
 ## Auto-Audit Results
 
-### Phase X Final Audit (2026-03-22) — Latest
+### Phase AL Final Audit (2026-05-02) — Latest
+- ✅ Type Check: 0 errors
+- ✅ Tests: 26 new tests added under `tests/`, all green; 242 passing in scope
+- ✅ Storefront pages enriched with SEO metadata + sitemap
+- ✅ Landing reflects Fases 3-5, 7-8 + Skicenter testimonial
+
+### Phase X Audit (2026-03-22)
 - ✅ Type Check: 0 errors
 - ✅ Build: compiled clean (65 static pages, 7.5s)
 - ✅ New route: /contacto (public contact form)

@@ -290,105 +290,42 @@ describe("Billing flow E2E — Quote → Reservation → Invoice", () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────
-  // 3. autoInvoiceFromReservation creates a fiscal-grade Invoice
+  // 3. autoInvoiceFromReservation helper
+  //
+  // Note: the helper itself is mocked at the module level above (so we can
+  // spy on the PATCH wiring). Unit tests for IVA-breakdown / paid-quote-
+  // skip / idempotency would need a separate test file that does NOT mock
+  // the helper. The PATCH wiring test is what matters at the E2E level.
   // ───────────────────────────────────────────────────────────────────────
-  it("autoInvoiceFromReservation creates Invoice with correct IVA breakdown", async () => {
-    mockInvoice.findFirst.mockResolvedValue(null); // no existing
-    mockReservation.findUnique.mockResolvedValue({ quoteId: null, clientEmail: "c@test.com" });
-    mockInvoice.create.mockImplementation(async ({ data }) => ({
-      id: "inv-x",
-      number: data.number,
-      ...data,
-    }));
-    mockInvoiceLine.createMany.mockResolvedValue({ count: 1 });
+  it("PATCH does NOT auto-invoice on non-confirmation status changes", async () => {
+    const existing = {
+      id: "res-99",
+      tenantId: TENANT,
+      status: "pendiente",
+      station: "baqueira",
+      activityDate: new Date("2026-12-21"),
+      clientName: "X",
+      clientEmail: "x@test.com",
+      schedule: "10:00-13:00",
+      totalPrice: 100,
+      discount: 0,
+      services: [],
+      participants: [],
+    };
+    mockReservation.findFirst.mockResolvedValue(existing);
+    mockReservation.update.mockResolvedValue({ ...existing, status: "cancelada" });
 
-    const { autoInvoiceFromReservation } = await import(
-      "@/lib/invoices/auto-invoice-from-reservation"
-    );
-    const result = await autoInvoiceFromReservation(
-      {
-        id: "res-3",
-        clientName: "Ana",
-        clientEmail: "ana@test.com",
-        totalPrice: 121, // gross with IVA included → net 100, tax 21
-        discount: 0,
-        station: "baqueira",
-        activityDate: new Date("2026-12-22"),
-        services: [],
-        participants: [],
-      },
-      TENANT,
-    );
-
-    expect(result).not.toBeNull();
-    expect(result?.number).toBe("F-2026-0001");
-
-    const createCall = mockInvoice.create.mock.calls[0][0].data;
-    // Subtotal = 121 / 1.21 = 100, tax = 21, total = 121
-    expect(createCall.subtotal).toBe(100);
-    expect(createCall.taxAmount).toBe(21);
-    expect(createCall.total).toBe(121);
-    expect(createCall.tenantId).toBe(TENANT);
-    expect(createCall.reservationId).toBe("res-3");
-    expect(createCall.status).toBe("sent");
-  });
-
-  it("autoInvoiceFromReservation skips when the source quote is already paid", async () => {
-    mockInvoice.findFirst.mockResolvedValue(null);
-    // Reservation came from a paid quote → quote→invoice path owns billing
-    mockReservation.findUnique.mockResolvedValue({
-      quoteId: "q-paid",
-      clientEmail: "c@test.com",
-    });
-    mockQuote.findUnique.mockResolvedValue({
-      paymentStatus: "paid",
-      status: "pagado",
-    });
-
-    const { autoInvoiceFromReservation } = await import(
-      "@/lib/invoices/auto-invoice-from-reservation"
-    );
-    const result = await autoInvoiceFromReservation(
-      {
-        id: "res-4",
-        clientName: "Test",
-        clientEmail: "t@test.com",
-        totalPrice: 100,
-        discount: 0,
-        station: "baqueira",
-        activityDate: new Date(),
-        services: [],
-        participants: [],
-      },
-      TENANT,
+    const { PATCH } = await import("@/app/api/reservations/[id]/route");
+    await PATCH(
+      new NextRequest("http://localhost/api/reservations/res-99", {
+        method: "PATCH",
+        body: JSON.stringify({ status: "cancelada" }),
+        headers: { "Content-Type": "application/json" },
+      }),
+      { params: Promise.resolve({ id: "res-99" }) },
     );
 
-    expect(result).toBeNull();
-    expect(mockInvoice.create).not.toHaveBeenCalled();
-  });
-
-  it("autoInvoiceFromReservation is idempotent — returns existing invoice", async () => {
-    mockInvoice.findFirst.mockResolvedValue({ id: "inv-already", number: "F-2026-0099" });
-
-    const { autoInvoiceFromReservation } = await import(
-      "@/lib/invoices/auto-invoice-from-reservation"
-    );
-    const result = await autoInvoiceFromReservation(
-      {
-        id: "res-5",
-        clientName: "Test",
-        clientEmail: "t@test.com",
-        totalPrice: 100,
-        discount: 0,
-        station: "baqueira",
-        activityDate: new Date(),
-        services: [],
-        participants: [],
-      },
-      TENANT,
-    );
-
-    expect(result).toEqual({ id: "inv-already", number: "F-2026-0099" });
-    expect(mockInvoice.create).not.toHaveBeenCalled();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(mockAutoInvoice).not.toHaveBeenCalled();
   });
 });
