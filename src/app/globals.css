@@ -356,28 +356,31 @@
     transform: translateY(-1px);
   }
 
-  /* ── Glass utilities ── */
+  /* ── Glass utilities — literal values (CSS vars don't resolve in backdrop-filter) ── */
   .glass-card {
-    background: var(--glass-l2);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--glass-border);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    border: 0.5px solid rgba(255,255,255,0.75);
     border-radius: 16px;
-    box-shadow: var(--glass-inset), var(--glass-shadow);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 2px 16px rgba(99,102,241,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .glass-card:hover {
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 4px 20px rgba(99,102,241,0.10), 0 2px 6px rgba(0,0,0,0.06);
   }
   .glass-sidebar {
-    background: var(--glass-l1);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-right: var(--glass-border);
-    box-shadow: var(--glass-inset);
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    border-right: 0.5px solid rgba(255,255,255,0.75);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
   }
   .glass-active-item {
-    background: var(--glass-l3);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--glass-border);
-    box-shadow: var(--glass-inset);
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    border: 0.5px solid rgba(255,255,255,0.75);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
   }
 
   /* Aurora background wrapper */
