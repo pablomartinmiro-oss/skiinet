@@ -4,7 +4,7 @@
 - **Phase:** PHASE AL complete — Fase 7 (E2E Testing) + Fase 8 (Storefront 2.0 + Landing Comercial)
 - **Step:** Pushed
 - **Live URL:** https://crm-dash-prod.up.railway.app
-- **Last pushed commit:** (pending) (2026-05-02)
+- **Last pushed commit:** de2bbc0 (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
 
