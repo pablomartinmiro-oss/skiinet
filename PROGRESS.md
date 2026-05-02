@@ -1,10 +1,10 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AJ complete — Interconexión de Módulos (Fase 5)
-- **Step:** Ready for push
+- **Phase:** PHASE AK complete — Module Improvements (REAV, Reviews, Suppliers, CSV Export, Global Search)
+- **Step:** Pushed
 - **Live URL:** https://crm-dash-prod.up.railway.app
-- **Last pushed commit:** cb6fa70 (2026-03-18)
+- **Last pushed commit:** dcab8ec (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
 
@@ -568,6 +568,15 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
   - Input/Textarea/Select trigger: `h-9 border-slate-200 bg-white hover:border-slate-300 focus:border-[#4F8EF7] focus:ring-[3px] focus:ring-[#4F8EF7]/20` — consistent across all form primitives.
 - **No page-level rewrites required** — design system updates cascade through every existing usage. Pages already wired to `--primary`, `--card`, badge variants, and table primitives inherit the polish automatically.
 - **Audit**: `npx tsc --noEmit` → 0 errors.
+
+### Phase AK: Module Improvements — REAV, Reviews, Suppliers, CSV, Global Search (2026-05-02) ✅
+- **REAV**: stats header (total expedientes, base imponible total), búsqueda en tiempo real por nº factura / tipo operación, dropdown filtro de tipo, paginación 15 filas/página con "Mostrando X-Y de Z"
+- **Reviews**: stats header (puntuación media ★, total reseñas, % respondidas), widget distribución de estrellas 5→1 con barras doradas proporcionales, búsqueda por autor/contenido, filtro de estrellas clickable (pills 1★–5★ + Todas), fix acentos completo (Reseñas, moderación, etc.)
+- **Suppliers**: columna "Pendiente" en SuppliersTab (suma de netAmount de liquidaciones no pagadas por proveedor), stats bar en SettlementsTab (total pendiente gold / pagado este mes green / total count), nuevo SettlementDetailModal con líneas desglosadas (tipo, fecha, pax, venta, comisión%), fix acentos (Añadir, Híbrido, Liquidación)
+- **CSV Export** (`src/lib/export/csv.ts`): función pura con BOM UTF-8 para Excel, escape CSV correcto, botones Exportar CSV en Reservas/Presupuestos/Finanzas (InvoicesTab)
+- **Búsqueda global** (`/api/search`): amplía query a 4 tablas (contacts/reservations/quotes/products), take 3/categoría, componente GlobalSearch muestra sección Catálogo con icono Package
+- **Tests**: e2e billing-flow/onboarding/storefront/tenant-isolation + unit cross-module-availability; vitest.config extendido a `tests/**`
+- **Audit**: `tsc --noEmit` → 0 errores
 
 ### Next: TBD
 
