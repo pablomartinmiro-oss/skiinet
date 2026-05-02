@@ -212,8 +212,8 @@ function OrderDetailModal({
   const style = STATUS_STYLES[order.status] ?? STATUS_STYLES.RESERVED;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-4">
           <div>
             <h2 className="text-lg font-semibold text-[#2D2A26]">
@@ -583,8 +583,8 @@ function CreateOrderModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-4">
           <h2 className="text-lg font-semibold text-[#2D2A26]">
             Nuevo Pedido de Alquiler
