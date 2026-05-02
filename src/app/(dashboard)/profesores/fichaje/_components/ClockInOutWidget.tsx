@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import type { Instructor, TimeEntry } from "@/hooks/useInstructors";
 import { useClockIn, useClockOut } from "@/hooks/useInstructors";
+import { getCurrentCoords } from "@/lib/geo/browser";
 import { toast } from "sonner";
 
 interface Props {
@@ -58,8 +59,14 @@ export default function ClockInOutWidget({ instructors, entries, autoSelectId }:
       return;
     }
     try {
-      await clockInMutation.mutateAsync({ instructorId: selectedId, source: "mobile" });
-      toast.success("Entrada fichada correctamente");
+      const coords = await getCurrentCoords();
+      await clockInMutation.mutateAsync({
+        instructorId: selectedId,
+        source: "mobile",
+        geoLat: coords?.lat ?? null,
+        geoLon: coords?.lon ?? null,
+      });
+      toast.success(coords ? "Entrada fichada · ubicación capturada" : "Entrada fichada correctamente");
     } catch {
       toast.error("Error al fichar entrada");
     }
@@ -68,8 +75,14 @@ export default function ClockInOutWidget({ instructors, entries, autoSelectId }:
   const handleClockOut = async () => {
     if (!openEntry) return;
     try {
-      await clockOutMutation.mutateAsync({ entryId: openEntry.id, breakMinutes: 0 });
-      toast.success("Salida fichada correctamente");
+      const coords = await getCurrentCoords();
+      await clockOutMutation.mutateAsync({
+        entryId: openEntry.id,
+        breakMinutes: 0,
+        clockOutLat: coords?.lat ?? null,
+        clockOutLon: coords?.lon ?? null,
+      });
+      toast.success(coords ? "Salida fichada · ubicación capturada" : "Salida fichada correctamente");
     } catch {
       toast.error("Error al fichar salida");
     }

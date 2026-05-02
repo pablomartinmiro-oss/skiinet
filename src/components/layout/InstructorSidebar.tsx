@@ -11,6 +11,7 @@ import {
   CalendarOff,
   Wallet,
   Award,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "next-auth/react";
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { label: "Fichaje", href: "/profesores/fichaje", icon: Clock },
   { label: "Diplomas", href: "/profesores/mis-diplomas", icon: Award },
   { label: "Dias libres", href: "/profesores/dias-libres", icon: CalendarOff },
+  { label: "Mensajes", href: "/profesores/mensajes", icon: MessageSquare },
   { label: "Liquidaciones", href: "/profesores/liquidaciones", icon: Wallet },
   { label: "Mi Perfil", href: "/profesores/mi-perfil", icon: User },
 ];

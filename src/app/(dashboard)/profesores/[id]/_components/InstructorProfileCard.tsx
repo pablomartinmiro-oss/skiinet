@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { GraduationCap, Pencil, Check, X } from "lucide-react";
+import Link from "next/link";
+import { GraduationCap, Pencil, Check, X, MessageSquare } from "lucide-react";
 import type { Instructor } from "@/hooks/useInstructors";
 import { useUpdateInstructor } from "@/hooks/useInstructors";
 import { toast } from "sonner";
@@ -69,6 +70,13 @@ export default function InstructorProfileCard({ instructor }: Props) {
           </div>
           <p className="mt-1 text-sm text-[#8A8580]">{instructor.user.email}</p>
         </div>
+        <Link
+          href={`/profesores/mensajes?to=${instructor.user.id}`}
+          className="flex items-center gap-1.5 rounded-xl border border-[#E87B5A] bg-white px-3 py-2 text-sm font-medium text-[#E87B5A] hover:bg-[#E87B5A]/5 transition-colors"
+        >
+          <MessageSquare className="h-4 w-4" />
+          <span className="hidden sm:inline">Enviar mensaje</span>
+        </Link>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">

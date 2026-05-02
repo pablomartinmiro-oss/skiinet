@@ -198,6 +198,9 @@ model Tenant {
 
   // Leads
   leads                    Lead[]
+
+  // Internal chat
+  messages                 Message[]
 }
 
 // ==================== USER ====================
@@ -227,6 +230,8 @@ model User {
   payrollRecords   PayrollRecord[]
   instructor       Instructor?
   leads            Lead[]
+  messagesSent     Message[] @relation("MessageFromUser")
+  messagesReceived Message[] @relation("MessageToUser")
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -283,6 +288,26 @@ model Notification {
 
   @@index([userId, isRead])
   @@index([tenantId, createdAt])
+}
+
+// ==================== INTERNAL CHAT ====================
+model Message {
+  id          String   @id @default(cuid())
+  tenantId    String
+  fromUserId  String
+  toUserId    String
+  body        String
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fromUser User   @relation("MessageFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User   @relation("MessageToUser",   fields: [toUserId],   references: [id], onDelete: Cascade)
+
+  @@index([tenantId, toUserId, isRead])
+  @@index([tenantId, fromUserId, createdAt])
+  @@index([toUserId, createdAt])
 }
 
 // ==================== PRODUCT CATALOG ====================
@@ -2245,8 +2270,10 @@ model InstructorTimeEntry {
   // Legal compliance (RD-ley 8/2019)
   source       String    @default("manual") // "manual" | "mobile" | "kiosk"
   ipAddress    String?
-  geoLat       Float?
+  geoLat       Float?    // clock-in geolocation
   geoLon       Float?
+  clockOutLat  Float?    // clock-out geolocation
+  clockOutLon  Float?
 
   // Immutability: locked entries cannot be edited
   lockedAt     DateTime?

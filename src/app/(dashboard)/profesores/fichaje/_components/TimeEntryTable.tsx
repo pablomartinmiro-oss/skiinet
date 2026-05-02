@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { Lock, MapPin } from "lucide-react";
 import type { TimeEntry } from "@/hooks/useInstructors";
 
 function formatTime(iso: string): string {
@@ -53,10 +53,34 @@ export default function TimeEntryTable({ entries }: Props) {
               <td className="px-4 py-3 text-[#2D2A26]">
                 {new Date(entry.date).toLocaleDateString("es-ES")}
               </td>
-              <td className="px-4 py-3 text-[#2D2A26]">{formatTime(entry.clockIn)}</td>
+              <td className="px-4 py-3 text-[#2D2A26]">
+                <div className="flex items-center gap-1.5">
+                  {formatTime(entry.clockIn)}
+                  {(entry.geoLat != null && entry.geoLon != null) && (
+                    <span
+                      title={`Ubicación: ${entry.geoLat.toFixed(5)}, ${entry.geoLon.toFixed(5)}`}
+                      className="inline-flex items-center gap-0.5 rounded-md bg-[#5B8C6D]/15 px-1.5 py-0.5 text-[10px] font-medium text-[#5B8C6D]"
+                    >
+                      <MapPin className="h-2.5 w-2.5" />
+                      Con ubicación
+                    </span>
+                  )}
+                </div>
+              </td>
               <td className="px-4 py-3 text-[#2D2A26]">
                 {entry.clockOut ? (
-                  formatTime(entry.clockOut)
+                  <div className="flex items-center gap-1.5">
+                    {formatTime(entry.clockOut)}
+                    {(entry.clockOutLat != null && entry.clockOutLon != null) && (
+                      <span
+                        title={`Ubicación: ${entry.clockOutLat.toFixed(5)}, ${entry.clockOutLon.toFixed(5)}`}
+                        className="inline-flex items-center gap-0.5 rounded-md bg-[#5B8C6D]/15 px-1.5 py-0.5 text-[10px] font-medium text-[#5B8C6D]"
+                      >
+                        <MapPin className="h-2.5 w-2.5" />
+                        Con ubicación
+                      </span>
+                    )}
+                  </div>
                 ) : (
                   <span className="rounded-md bg-[#5B8C6D]/15 px-2 py-0.5 text-xs font-medium text-[#5B8C6D]">
                     En jornada

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { apiError } from "@/lib/api-response";
 import { validateBody, updateGroupCellSchema } from "@/lib/validation";
+import { createNotification } from "@/lib/notifications/create";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -60,11 +61,32 @@ export async function PATCH(request: NextRequest, context: Ctx) {
       where: { id },
       data: validated.data,
       include: {
-        instructor: { select: { id: true, tdLevel: true, user: { select: { name: true } } } },
+        instructor: { select: { id: true, tdLevel: true, user: { select: { id: true, name: true } } } },
         _count: { select: { units: true } },
       },
     });
     log.info({ groupId: id }, "GroupCell updated");
+
+    // Notify newly-assigned instructor (only when instructorId changed to a non-null value)
+    const newInstructorId = validated.data.instructorId;
+    if (
+      newInstructorId &&
+      newInstructorId !== existing.instructorId &&
+      group.instructor?.user?.id
+    ) {
+      const dateStr = new Date(group.activityDate).toLocaleDateString("es-ES", {
+        day: "numeric", month: "long",
+      });
+      createNotification({
+        tenantId,
+        userId: group.instructor.user.id,
+        type: "clase_asignada",
+        title: "Clase asignada",
+        body: `Tienes una nueva clase el ${dateStr} de ${group.timeSlotStart} a ${group.timeSlotEnd} en ${group.station} (${group.discipline} ${group.level}).`,
+        data: { groupCellId: group.id, activityDate: group.activityDate, station: group.station },
+      });
+    }
+
     return NextResponse.json({ group });
   } catch (error) {
     return apiError(error, { publicMessage: "Error al actualizar grupo", code: "GROUP_UPDATE_ERROR", logContext: { tenantId } });

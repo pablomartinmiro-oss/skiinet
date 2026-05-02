@@ -64,6 +64,8 @@ export async function PATCH(request: NextRequest, context: Ctx) {
         breakMinutes,
         netMinutes,
         notes: data.notes ?? null,
+        clockOutLat: data.clockOutLat ?? null,
+        clockOutLon: data.clockOutLon ?? null,
       },
       include: {
         instructor: {

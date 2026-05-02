@@ -215,6 +215,10 @@ export interface TimeEntry {
   correctionOf: string | null;
   correctionReason: string | null;
   notes: string | null;
+  geoLat: number | null;
+  geoLon: number | null;
+  clockOutLat: number | null;
+  clockOutLon: number | null;
   instructor: {
     id: string;
     user: { id: string; name: string | null; email: string };
@@ -271,6 +275,8 @@ export function useClockOut() {
       entryId: string;
       breakMinutes?: number;
       notes?: string | null;
+      clockOutLat?: number | null;
+      clockOutLon?: number | null;
     }) => {
       const res = await fetch(`/api/instructors/time-entries/${entryId}`, {
         method: "PATCH",

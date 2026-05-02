@@ -49,6 +49,8 @@ export const clockInSchema = z.object({
 export const clockOutSchema = z.object({
   breakMinutes: z.coerce.number().int().min(0).default(0),
   notes: z.string().max(2000).optional().nullable(),
+  clockOutLat: z.number().optional().nullable(),
+  clockOutLon: z.number().optional().nullable(),
 });
 
 export const lockTimeEntriesSchema = z.object({

@@ -10,6 +10,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { InstructorSidebar } from "@/components/layout/InstructorSidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { InstructorTopbar } from "@/components/layout/InstructorTopbar";
+import { InstructorBottomNav } from "@/components/layout/InstructorBottomNav";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { GHLStatusBanner } from "@/components/shared/GHLStatusBanner";
@@ -89,9 +90,18 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         <DemoBanner />
         {!isInstructor && <GHLStatusBanner />}
 
-        <main className={`flex-1 overflow-auto p-5 md:p-7 ${isInstructor ? "bg-[#FAF9F7]" : "bg-slate-50/50"}`}>
+        <main
+          className={`flex-1 overflow-auto ${
+            isInstructor
+              ? "bg-[#FAF9F7] p-4 pb-24 md:p-7 md:pb-7"
+              : "bg-slate-50/50 p-5 md:p-7"
+          }`}
+        >
           <ErrorBoundary>{children}</ErrorBoundary>
         </main>
+
+        {/* Mobile bottom nav for instructors */}
+        {isInstructor && <InstructorBottomNav />}
       </div>
 
       {/* Admin-only: command palette + AI chat */}

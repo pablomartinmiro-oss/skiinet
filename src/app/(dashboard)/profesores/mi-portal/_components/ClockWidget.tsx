@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import type { TimeEntry } from "@/hooks/useInstructors";
 import { useClockIn, useClockOut } from "@/hooks/useInstructors";
+import { getCurrentCoords } from "@/lib/geo/browser";
 import { toast } from "sonner";
 
 interface Props {
@@ -37,8 +38,14 @@ export default function ClockWidget({ instructorId, entries }: Props) {
 
   const handleClockIn = async () => {
     try {
-      await clockInMutation.mutateAsync({ instructorId, source: "mobile" });
-      toast.success("Fichaje de entrada registrado");
+      const coords = await getCurrentCoords();
+      await clockInMutation.mutateAsync({
+        instructorId,
+        source: "mobile",
+        geoLat: coords?.lat ?? null,
+        geoLon: coords?.lon ?? null,
+      });
+      toast.success(coords ? "Fichaje de entrada registrado · ubicación capturada" : "Fichaje de entrada registrado");
     } catch {
       toast.error("Error al fichar entrada");
     }
@@ -47,19 +54,25 @@ export default function ClockWidget({ instructorId, entries }: Props) {
   const handleClockOut = async () => {
     if (!openEntry) return;
     try {
-      await clockOutMutation.mutateAsync({ entryId: openEntry.id, breakMinutes: 0 });
-      toast.success("Fichaje de salida registrado");
+      const coords = await getCurrentCoords();
+      await clockOutMutation.mutateAsync({
+        entryId: openEntry.id,
+        breakMinutes: 0,
+        clockOutLat: coords?.lat ?? null,
+        clockOutLon: coords?.lon ?? null,
+      });
+      toast.success(coords ? "Fichaje de salida registrado · ubicación capturada" : "Fichaje de salida registrado");
     } catch {
       toast.error("Error al fichar salida");
     }
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
       {openEntry && (
-        <div className="text-right">
+        <div className="text-center sm:text-right">
           <p className="text-xs text-white/50">En jornada</p>
-          <p className="text-2xl font-bold tabular-nums tracking-tight">{elapsed}</p>
+          <p className="text-3xl font-bold tabular-nums tracking-tight sm:text-2xl">{elapsed}</p>
         </div>
       )}
 
@@ -67,18 +80,18 @@ export default function ClockWidget({ instructorId, entries }: Props) {
         <button
           onClick={handleClockOut}
           disabled={clockOutMutation.isPending}
-          className="flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur px-5 py-3 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 transition-all disabled:opacity-50"
+          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-white/10 backdrop-blur px-5 py-4 text-base font-semibold text-white border border-white/20 hover:bg-white/20 active:scale-[0.99] transition-all disabled:opacity-50 sm:w-auto sm:min-h-[44px] sm:py-3 sm:text-sm"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-5 w-5 sm:h-4 sm:w-4" />
           {clockOutMutation.isPending ? "..." : "Fichar Salida"}
         </button>
       ) : (
         <button
           onClick={handleClockIn}
           disabled={clockInMutation.isPending}
-          className="flex items-center gap-2 rounded-xl bg-[#5B8C6D] px-5 py-3 text-sm font-semibold text-white hover:bg-[#4a7359] transition-all disabled:opacity-50 shadow-lg"
+          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-[#5B8C6D] px-5 py-4 text-base font-semibold text-white hover:bg-[#4a7359] active:scale-[0.99] transition-all disabled:opacity-50 shadow-lg sm:w-auto sm:min-h-[44px] sm:py-3 sm:text-sm"
         >
-          <LogIn className="h-4 w-4" />
+          <LogIn className="h-5 w-5 sm:h-4 sm:w-4" />
           {clockInMutation.isPending ? "..." : "Fichar Entrada"}
         </button>
       )}

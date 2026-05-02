@@ -4,6 +4,7 @@ import { requireTenant } from "@/lib/auth/guard";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/api-response";
 
+/** PATCH /api/messages/[id]/read — mark a single message as read */
 export async function PATCH(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -12,24 +13,24 @@ export async function PATCH(
   if (authError) return authError;
 
   const { id } = await params;
-  const { userId, tenantId } = session;
+  const { tenantId, userId } = session;
 
   try {
-    await prisma.notification.updateMany({
-      where: { id, userId },
-      data: { isRead: true },
+    await prisma.message.updateMany({
+      where: { id, tenantId, toUserId: userId, isRead: false },
+      data: { isRead: true, readAt: new Date() },
     });
-
     return NextResponse.json({ success: true });
   } catch (error) {
     return apiError(error, {
-      publicMessage: "Error al actualizar notificación",
-      code: "NOTIFICATION_UPDATE_FAILED",
-      logContext: { tenantId },
+      publicMessage: "Error al marcar mensaje",
+      code: "MESSAGE_MARK_READ_FAILED",
+      logContext: { tenantId, userId },
     });
   }
 }
 
+/** DELETE /api/messages/[id] — delete a message I sent or received */
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -38,16 +39,22 @@ export async function DELETE(
   if (authError) return authError;
 
   const { id } = await params;
-  const { userId, tenantId } = session;
+  const { tenantId, userId } = session;
 
   try {
-    await prisma.notification.deleteMany({ where: { id, userId } });
+    await prisma.message.deleteMany({
+      where: {
+        id,
+        tenantId,
+        OR: [{ fromUserId: userId }, { toUserId: userId }],
+      },
+    });
     return NextResponse.json({ success: true });
   } catch (error) {
     return apiError(error, {
-      publicMessage: "Error al eliminar notificación",
-      code: "NOTIFICATION_DELETE_FAILED",
-      logContext: { tenantId },
+      publicMessage: "Error al eliminar mensaje",
+      code: "MESSAGE_DELETE_FAILED",
+      logContext: { tenantId, userId },
     });
   }
 }
