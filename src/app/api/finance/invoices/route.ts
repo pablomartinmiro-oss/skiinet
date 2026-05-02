@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { apiError } from "@/lib/api-response";
 import { validateBody, createInvoiceSchema } from "@/lib/validation";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 export async function GET(request: NextRequest) {
   const [session, authError] = await requireTenant();
@@ -55,16 +56,6 @@ export async function POST(request: NextRequest) {
     if (!validated.ok) return NextResponse.json({ error: validated.error }, { status: 400 });
     const data = validated.data;
 
-    // Auto-generate invoice number
-    const year = new Date().getFullYear();
-    const last = await prisma.invoice.findFirst({
-      where: { tenantId, number: { startsWith: `FAC-${year}-` } },
-      orderBy: { number: "desc" },
-      select: { number: true },
-    });
-    const seq = last ? parseInt(last.number.split("-")[2]) + 1 : 1;
-    const number = `FAC-${year}-${String(seq).padStart(4, "0")}`;
-
     // Calculate totals
     let subtotal = 0;
     let taxAmount = 0;
@@ -80,6 +71,11 @@ export async function POST(request: NextRequest) {
     const total = subtotal + taxAmount;
 
     const invoice = await prisma.$transaction(async (tx) => {
+      const number = await generateDocumentNumber(tenantId, "invoice", {
+        tx,
+        context: "manual:create",
+        generatedBy: session.userId,
+      });
       const inv = await tx.invoice.create({
         data: {
           tenantId,
@@ -111,7 +107,7 @@ export async function POST(request: NextRequest) {
       return inv;
     });
 
-    log.info({ invoiceId: invoice.id, number }, "Invoice created");
+    log.info({ invoiceId: invoice.id, number: invoice.number }, "Invoice created");
     return NextResponse.json({ invoice }, { status: 201 });
   } catch (error) {
     return apiError(error, { publicMessage: "Error al crear factura", code: "INVOICE_CREATE_ERROR", logContext: { tenantId } });

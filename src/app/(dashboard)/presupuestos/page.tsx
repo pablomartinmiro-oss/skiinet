@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { FileText, Plus, ArrowLeft, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuotes } from "@/hooks/useQuotes";
@@ -66,6 +66,24 @@ export default function PresupuestosPage() {
     toast.success("CSV exportado");
   }, [quotes]);
 
+  const stats = useMemo(() => {
+    const all = quotes ?? [];
+    const pendientes = all.filter((q) => ["nuevo", "borrador", "en_proceso", "enviado"].includes(q.status));
+    const aceptados = all.filter((q) => q.status === "pagado");
+    const totalEUR = aceptados.reduce((s, q) => s + (q.totalAmount ?? 0), 0);
+    const pipelineEUR = pendientes.reduce((s, q) => s + (q.totalAmount ?? 0), 0);
+    return {
+      total: all.length,
+      pendientes: pendientes.length,
+      aceptados: aceptados.length,
+      totalEUR,
+      pipelineEUR,
+    };
+  }, [quotes]);
+
+  const formatEUR = (n: number) =>
+    new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+
   if (quotesLoading || productsLoading) return <PageSkeleton />;
 
   const currentQuote = selectedQuote
@@ -85,36 +103,55 @@ export default function PresupuestosPage() {
           "w-full md:w-[40%] md:min-w-[320px] border-r border-border bg-white",
           (showDetail && !debugAlwaysShow) ? "hidden md:block" : "block"
         )}>
-          <div className="flex items-center justify-between border-b border-border px-4 py-4">
-            <div>
-              <h1 className="text-lg font-bold text-slate-900">Presupuestos</h1>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {quotes?.length || 0} solicitudes
-              </p>
+          <div className="flex flex-col gap-3 border-b border-border px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-lg font-bold text-slate-900">Presupuestos</h1>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {stats.total} solicitudes
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {currentQuote && (
+                  <span className="text-xs text-blue-600 font-medium hidden sm:block">
+                    {currentQuote.clientName}
+                  </span>
+                )}
+                <button
+                  onClick={handleExportCSV}
+                  className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors min-h-[44px]"
+                  title="Exportar CSV"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">Exportar</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowNewForm(true);
+                    setSelectedQuote(null);
+                  }}
+                  className="flex items-center gap-1.5 rounded-lg bg-coral px-3 py-2 text-sm font-medium text-white hover:bg-blue-600-hover transition-colors min-h-[44px]"
+                >
+                  <Plus className="h-4 w-4" /> Nuevo
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              {currentQuote && (
-                <span className="text-xs text-blue-600 font-medium hidden sm:block">
-                  Selected: {currentQuote.clientName}
-                </span>
-              )}
-              <button
-                onClick={handleExportCSV}
-                className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors min-h-[44px]"
-                title="Exportar CSV"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Exportar</span>
-              </button>
-              <button
-                onClick={() => { 
-                  setShowNewForm(true); 
-                  setSelectedQuote(null); 
-                }}
-                className="flex items-center gap-1.5 rounded-lg bg-coral px-3 py-2 text-sm font-medium text-white hover:bg-blue-600-hover transition-colors min-h-[44px]"
-              >
-                <Plus className="h-4 w-4" /> Nuevo
-              </button>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-lg bg-amber-50 px-3 py-2">
+                <div className="text-[10px] uppercase tracking-wide text-amber-700">Pendientes</div>
+                <div className="text-base font-bold text-amber-700">{stats.pendientes}</div>
+                <div className="text-[10px] text-amber-700/70">{formatEUR(stats.pipelineEUR)}</div>
+              </div>
+              <div className="rounded-lg bg-green-50 px-3 py-2">
+                <div className="text-[10px] uppercase tracking-wide text-green-700">Aceptados</div>
+                <div className="text-base font-bold text-green-700">{stats.aceptados}</div>
+                <div className="text-[10px] text-green-700/70">{formatEUR(stats.totalEUR)}</div>
+              </div>
+              <div className="rounded-lg bg-slate-100 px-3 py-2">
+                <div className="text-[10px] uppercase tracking-wide text-slate-600">Total</div>
+                <div className="text-base font-bold text-slate-900">{stats.total}</div>
+                <div className="text-[10px] text-slate-500">presupuestos</div>
+              </div>
             </div>
           </div>
           <QuoteList
@@ -152,16 +189,6 @@ export default function PresupuestosPage() {
             />
           ) : currentQuote ? (
             <div className="h-full overflow-auto">
-              {/* Debug view - simple version */}
-              <div className="p-6 border-b border-border">
-                <h2 className="text-xl font-bold text-slate-900">{currentQuote.clientName}</h2>
-                <p className="text-slate-500">{currentQuote.clientEmail}</p>
-                <p className="text-blue-600 font-bold text-lg mt-2">{currentQuote.totalAmount} €</p>
-                <p className="text-sm text-slate-500 mt-1">Status: {currentQuote.status}</p>
-                <p className="text-sm text-slate-500">Destination: {currentQuote.destination}</p>
-                <p className="text-sm text-slate-500">Dates: {currentQuote.checkIn} to {currentQuote.checkOut}</p>
-                <p className="text-sm text-slate-500">Adults: {currentQuote.adults}, Children: {currentQuote.children}</p>
-              </div>
               <QuoteDetail
                 key={currentQuote.id}
                 quote={currentQuote}

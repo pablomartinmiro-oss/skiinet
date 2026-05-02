@@ -191,12 +191,13 @@ export async function PATCH(
       }
     }
 
-    // Auto-invoice on completada (non-quote path) — fire-and-forget
-    if (status === "completada") {
+    // Auto-invoice on confirmada or completada (non-paid-quote path) — fire-and-forget
+    if (status === "confirmada" || status === "completada") {
       autoInvoiceFromReservation(
         {
           id: reservation.id,
           clientName: reservation.clientName,
+          clientEmail: reservation.clientEmail,
           totalPrice: reservation.totalPrice,
           discount: reservation.discount,
           station: reservation.station,

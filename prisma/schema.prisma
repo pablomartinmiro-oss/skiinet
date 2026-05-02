@@ -1302,6 +1302,13 @@ model Invoice {
   paidAt        DateTime?
   pdfUrl        String?
   notes         String?
+
+  // Email + reminder tracking
+  emailSentAt    DateTime?
+  emailSentTo    String?
+  reminderCount  Int       @default(0)
+  lastReminderAt DateTime?
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

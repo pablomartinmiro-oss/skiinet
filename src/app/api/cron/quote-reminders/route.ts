@@ -7,6 +7,7 @@ import {
   processPreTripReminders,
   flagAtRiskQuotes,
 } from "@/lib/quotes/follow-up";
+import { processInvoiceReminders } from "@/lib/finance/invoice-reminders";
 import { rateLimit, getClientIP } from "@/lib/rate-limit";
 import { apiError } from "@/lib/api-response";
 
@@ -49,6 +50,9 @@ export async function GET(req: Request) {
     // 4. Flag at-risk quotes (5+ days without payment)
     const atRisk = await flagAtRiskQuotes();
 
+    // 5. Send invoice reminders (7-day intervals, max 3)
+    const invoiceReminders = await processInvoiceReminders();
+
     const elapsed = Date.now() - startTime;
 
     const summary = {
@@ -58,7 +62,9 @@ export async function GET(req: Request) {
       reviewsSent: postPayment.reviewsSent,
       preTripSent: preTrip.sent,
       atRiskFlagged: atRisk,
-      errors: reminders.errors + postPayment.errors + preTrip.errors,
+      invoiceRemindersSent: invoiceReminders.sent,
+      invoiceRemindersScanned: invoiceReminders.scanned,
+      errors: reminders.errors + postPayment.errors + preTrip.errors + invoiceReminders.errors,
       elapsedMs: elapsed,
     };
 

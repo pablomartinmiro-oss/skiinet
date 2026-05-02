@@ -1,12 +1,12 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE X complete — Public Contact Form + Full UI/UX Overhaul
+- **Phase:** PHASE AH complete — Presupuestos & Facturación Automática (Fase 3)
 - **Step:** Ready for push
 - **Live URL:** https://crm-dash-prod.up.railway.app
 - **Last pushed commit:** cb6fa70 (2026-03-18)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
-- **Date:** 2026-03-22
+- **Date:** 2026-05-02
 
 ## What the App Does Today
 
@@ -439,6 +439,29 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 - **Verify**: `curl https://openclaw-production-50e4.up.railway.app/api/storefront/public/skicenter/products | jq '.products | length'` should return ≥ 43.
 - **Audit**: `npx tsc --noEmit` → 0 errors.
 
+### Phase AH: Presupuestos & Facturación Automática Fase 3 (2026-05-02) ✅
+- **Goal**: complete the end-to-end Quote → Reservation → Invoice flow with auto-billing, fiscal-grade PDFs, automated emails, reminder loops, and centralised numbering.
+- **Auto-invoice on confirmation** (`src/app/api/reservations/[id]/route.ts`): the PATCH handler now triggers `autoInvoiceFromReservation` whenever a reservation transitions into `confirmada` (in addition to `completada`). Quotes that were already paid still own billing — the auto-invoice helper detects that case and skips.
+- **Auto-invoice helpers refactored**:
+  - `src/lib/finance/auto-invoice-from-quote.ts` and `src/lib/invoices/auto-invoice-from-reservation.ts` now both delegate numbering to `generateDocumentNumber(tenantId, "invoice", { tx })` from `src/lib/documents/numbering.ts`. The legacy "FAC-YYYY-NNNN" lookup-and-increment code is gone — atomic upsert via `DocumentCounter` is the single source of truth, with audit rows in `DocumentNumberLog`.
+  - Both helpers now compute correct fiscal totals: gross is treated as IVA-included, subtotal = gross / 1.21, tax = gross − subtotal. Per-line `lineTotal` stores the net contribution so totals reconcile.
+  - Both helpers fire-and-forget the client invoice email after creation via the new `sendInvoiceEmail` helper.
+- **Manual invoice route** (`src/app/api/finance/invoices/route.ts`): also switched to `generateDocumentNumber` (context `manual:create`).
+- **Tenant fiscal data resolver** (`src/lib/tenant/fiscal.ts` — NEW): `getTenantFiscalData(tenantId, "quote" | "invoice")` returns `{ companyName, companyNif, companyAddress, companyPhone, companyEmail, logoUrl, headerColor, accentColor, footerText, legalText }` by reading the matching `PdfTemplate` row, falling back to tenant name + sensible defaults.
+- **Quote PDF** (`src/app/api/quotes/[id]/pdf/route.ts`): now pulls fiscal data from `getTenantFiscalData(_, "quote")`. Header shows tenant logo (if uploaded) or text brand, NIF + address. Colours come from PdfTemplate. New "Condiciones generales" block uses `legalText` or a sensible default. Footer prints NIF/contact.
+- **Invoice PDF** (`src/app/api/finance/invoices/[id]/pdf/route.ts`): rewritten to HTML (Spanish fiscal compliance). Logo + NIF + address in header, "Factura" badge, status badge, client block, line table, **IVA breakdown grouped by tax rate** (base imponible al X% / IVA X%), legal text + footer with NIF. Auto-prints via `window.print()`.
+- **Invoice email**:
+  - `src/lib/finance/invoice-email.ts` (NEW): `sendInvoiceEmail({ tenantId, invoiceId, to, clientName, isReminder?, reminderNumber? })` — uses `buildInvoiceEmailHTML` with tenant fiscal data (name + email + phone), payment URL points at the new HTML invoice PDF route. Records `emailSentAt` / `emailSentTo` on first send, increments `reminderCount` + sets `lastReminderAt` on reminders.
+  - Both auto-invoice paths fire it on creation (non-blocking).
+- **Invoice reminders**:
+  - `src/lib/finance/invoice-reminders.ts` (NEW): `processInvoiceReminders()` — scans invoices in `sent`/`draft` status with `issuedAt ≤ now − 7d` and `reminderCount < 3`. Throttles to one email per 7-day window. Resolves recipient email from `Invoice.emailSentTo` → `Invoice.client.email` → reservation client. Returns `{ sent, errors, scanned }`.
+  - Wired into the daily cron (`src/app/api/cron/quote-reminders/route.ts`): the response body now includes `invoiceRemindersSent`, `invoiceRemindersScanned`.
+- **Schema migration** `20260502000000_invoice_reminders` — adds `emailSentAt`, `emailSentTo`, `reminderCount`, `lastReminderAt` to `Invoice` (idempotent `ADD COLUMN IF NOT EXISTS`).
+- **Numbering atomicity fix** (`src/lib/documents/numbering.ts`): the `tx` parameter type widened to `Prisma.TransactionClient | typeof prisma` so it composes correctly inside `prisma.$transaction(async (tx) => …)`.
+- **Presupuestos dashboard panel** (`src/app/(dashboard)/presupuestos/page.tsx`): list-panel header now shows three stat tiles — Pendientes (count + pipeline €), Aceptados (count + revenue €), Total — alongside the existing search + status pill filters in `QuoteList`. Removed the leftover "Debug view" block + duplicated header.
+- **Numeración fiscal**: already centralised on `DocumentCounter` (per-tenant, per-type, per-year, atomic). Each generated number is logged in `DocumentNumberLog` with `context` so manual/auto/reset paths are auditable. Year rollover happens automatically on the first call of the new year (counter row keyed on `(tenantId, documentType, year)`).
+- **Audit**: `npx tsc --noEmit` → 0 errors. `npx eslint` clean across modified files (only 2 pre-existing unused-arg warnings in `QuoteDetail.tsx`).
+
 ### Phase AG: Presupuestos Module Fixes (2026-04-30) ✅
 - **PDF endpoint** (`/api/quotes/[id]/pdf`): print-ready HTML quote document at the URL the email already references. Auth: `requireTenant` + `requireModule("booking")`, scoped by `tenantId`. Renders tenant name, quote number (`Q-XXXXXXXX`), client + trip info, full line-items table with per-item variables (modalidad, nivel, sector, idioma, horario, tipoCliente, fecha, días, notas), subtotal/discounts/total, payment instructions (Redsys link if available + IBAN), expiry date, footer with contact info. `@media print` CSS strips chrome; `<script>window.print()</script>` auto-triggers Save-as-PDF. Returns `text/html`.
 - **`en_proceso` quote status** added to `updateQuoteSchema` enum in `src/lib/validation/booking.ts` so the QuoteDetail UI can transition a converted quote without the API rejecting it.
@@ -460,6 +483,7 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 6. `20260320000000_product_system_upgrade` — QuoteItem per-product fields, Task model, Quote cancellation fields
 7. `20260322000000_quote_followup_tracking` — Quote follow-up tracking fields (lastReminderStep, crossSellSentAt, reviewSentAt, preTripStep)
 8. `20260322100000_contact_submission` — ContactSubmission model for public contact form (rate limiting index)
+9. `20260502000000_invoice_reminders` — Invoice email + reminder tracking fields (emailSentAt, emailSentTo, reminderCount, lastReminderAt)
 
 ## Known Issues
 - No Postgres running locally — need `docker-compose up db redis` before migrations

@@ -14,8 +14,9 @@
 
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import type { Prisma } from "@/generated/prisma/client";
 
-type TransactionClient = typeof prisma;
+type TransactionClient = Prisma.TransactionClient | typeof prisma;
 
 const SEQUENCE_PADDING = 4;
 

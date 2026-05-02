@@ -4,10 +4,9 @@ import { requireTenant } from "@/lib/auth/guard";
 import { requireModule } from "@/lib/modules/guard";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/api-response";
+import { getTenantFiscalData } from "@/lib/tenant/fiscal";
 
 const IBAN = "ES58 0182 2900 5402 0182 7221";
-const COMPANY_PHONE = "639 576 627";
-const COMPANY_EMAIL = "reservas@skicenter.es";
 
 function formatEUR(amount: number): string {
   return new Intl.NumberFormat("es-ES", {
@@ -82,12 +81,12 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const [quote, tenant] = await Promise.all([
+    const [quote, fiscal] = await Promise.all([
       prisma.quote.findFirst({
         where: { id, tenantId },
         include: { items: true },
       }),
-      prisma.tenant.findUnique({ where: { id: tenantId } }),
+      getTenantFiscalData(tenantId, "quote"),
     ]);
 
     if (!quote) {
@@ -95,7 +94,19 @@ export async function GET(
     }
 
     const quoteNumber = `Q-${quote.id.slice(-8).toUpperCase()}`;
-    const tenantName = tenant?.name ?? "SkiCenter";
+    const tenantName = fiscal.companyName;
+    const COMPANY_EMAIL = fiscal.companyEmail ?? "reservas@skicenter.es";
+    const COMPANY_PHONE = fiscal.companyPhone ?? "639 576 627";
+    const headerColor = fiscal.headerColor;
+    const accentColor = fiscal.accentColor;
+    const issuerLines = [
+      escapeHtml(tenantName),
+      fiscal.companyNif ? `NIF: ${escapeHtml(fiscal.companyNif)}` : "",
+      fiscal.companyAddress ? escapeHtml(fiscal.companyAddress) : "",
+    ].filter(Boolean).join("<br/>");
+    const logoBlock = fiscal.logoUrl
+      ? `<img src="${escapeHtml(fiscal.logoUrl)}" alt="${escapeHtml(tenantName)}" style="max-height:50px;display:block;margin-bottom:6px;" />`
+      : `<div class="brand">${escapeHtml(tenantName.toUpperCase())}<small>Agencia de viajes de esquí</small></div>`;
 
     const subtotal = quote.items.reduce((acc, it) => acc + it.unitPrice * it.quantity, 0);
     const discountTotal = quote.items.reduce((acc, it) => {
@@ -157,12 +168,13 @@ export async function GET(
     * { box-sizing: border-box; }
     body { margin: 0; padding: 24px; background: #FAF9F7; color: #2D2A26; font-family: 'DM Sans', Arial, sans-serif; font-size: 13px; line-height: 1.6; }
     .doc { max-width: 820px; margin: 0 auto; background: #FFFFFF; padding: 40px 48px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 2px solid #1a4a4a; margin-bottom: 24px; }
-    .brand { font-size: 22px; font-weight: 700; letter-spacing: 1px; color: #1a4a4a; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 2px solid ${headerColor}; margin-bottom: 24px; }
+    .brand { font-size: 22px; font-weight: 700; letter-spacing: 1px; color: ${headerColor}; }
     .brand small { display: block; font-size: 11px; color: #8A8580; font-weight: 400; letter-spacing: 0; margin-top: 2px; }
+    .issuer-info { font-size: 11px; color: #8A8580; margin-top: 6px; line-height: 1.5; }
     .meta { text-align: right; font-size: 12px; color: #8A8580; }
     .meta .quote-number { font-size: 18px; color: #2D2A26; font-weight: 700; letter-spacing: 1px; }
-    h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #1a4a4a; margin: 24px 0 8px; }
+    h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: ${headerColor}; margin: 24px 0 8px; }
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-bottom: 16px; }
     .info-block { background: #f5f5f0; padding: 12px 16px; border-radius: 6px; font-size: 12px; line-height: 1.6; }
     .info-block strong { display: block; font-size: 11px; text-transform: uppercase; color: #8A8580; letter-spacing: 0.5px; margin-bottom: 4px; }
@@ -179,10 +191,12 @@ export async function GET(
     .totals .total-row td { border-top: 2px solid #2D2A26; font-weight: 700; font-size: 15px; padding-top: 10px; }
     .payment-box { margin-top: 24px; padding: 16px 20px; background: #f5f5f0; border-radius: 8px; font-size: 12px; }
     .payment-box p { margin: 6px 0; }
-    .payment-box a { color: #1a4a4a; word-break: break-all; }
-    .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eee; font-size: 11px; color: #8A8580; text-align: center; }
+    .payment-box a { color: ${headerColor}; word-break: break-all; }
+    .legal { margin-top: 24px; padding: 14px 16px; background: #f5f5f0; border-radius: 8px; font-size: 11px; color: #666; line-height: 1.6; }
+    .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #eee; font-size: 11px; color: #8A8580; text-align: center; }
     .print-bar { position: fixed; top: 12px; right: 12px; }
-    .print-bar button { background: #1a4a4a; color: #FFF; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
+    .print-bar button { background: ${headerColor}; color: #FFF; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
+    .item-name strong { color: ${accentColor}; }
     @media print {
       body { padding: 0; background: #FFFFFF; }
       .doc { box-shadow: none; padding: 24px; max-width: none; }
@@ -195,11 +209,12 @@ export async function GET(
   <div class="print-bar"><button onclick="window.print()">Imprimir / Guardar PDF</button></div>
   <div class="doc">
     <div class="header">
-      <div class="brand">
-        ${escapeHtml(tenantName.toUpperCase())}
-        <small>Agencia de viajes de esquí</small>
+      <div>
+        ${logoBlock}
+        <div class="issuer-info">${issuerLines}</div>
       </div>
       <div class="meta">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8A8580;">Presupuesto</div>
         <div class="quote-number">${quoteNumber}</div>
         <div>Emitido: ${formatDate(quote.createdAt)}</div>
         ${quote.expiresAt ? `<div>Validez: ${formatDate(quote.expiresAt)}</div>` : ""}
@@ -253,9 +268,14 @@ export async function GET(
       ${expiryBlock}
     </div>
 
+    <h2>Condiciones generales</h2>
+    <div class="legal">
+      ${fiscal.legalText ? escapeHtml(fiscal.legalText) : `Este presupuesto está sujeto a disponibilidad y a las condiciones generales de contratación. Los precios incluyen IVA cuando aplica. La aceptación implica la conformidad con la política de cancelación: gratuita hasta 15 días antes de la fecha de inicio; cancelaciones posteriores no son reembolsables salvo emisión de bono. Para confirmar la reserva es necesario el pago íntegro o señal acordada.`}
+    </div>
+
     <div class="footer">
-      ${escapeHtml(tenantName)} · ${COMPANY_EMAIL} · ${COMPANY_PHONE}<br/>
-      Documento generado automáticamente — ${quoteNumber}
+      ${escapeHtml(tenantName)}${fiscal.companyNif ? ` · NIF ${escapeHtml(fiscal.companyNif)}` : ""} · ${escapeHtml(COMPANY_EMAIL)} · ${escapeHtml(COMPANY_PHONE)}<br/>
+      ${fiscal.footerText ? escapeHtml(fiscal.footerText) : `Documento generado automáticamente — ${quoteNumber}`}
     </div>
   </div>
   <script>
