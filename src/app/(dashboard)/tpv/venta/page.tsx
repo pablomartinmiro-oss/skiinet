@@ -55,9 +55,19 @@ export default function TpvVentaPage() {
   const filteredProducts = useMemo(() => {
     if (!products) return [];
     const cats = TPV_CATEGORIES[activeTab].categories;
-    return products
+    const sorted = products
       .filter((p) => p.isActive && cats.includes(p.category))
-      .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+      .sort((a, b) => {
+        if (b.isPresentialSale !== a.isPresentialSale) return Number(b.isPresentialSale) - Number(a.isPresentialSale);
+        return a.sortOrder - b.sortOrder || a.name.localeCompare(b.name);
+      });
+    const seen = new Set<string>();
+    return sorted.filter((p) => {
+      const key = `${p.name}|${p.category}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }, [products, activeTab]);
 
   const total = useMemo(

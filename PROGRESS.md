@@ -1,12 +1,20 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AN complete — QA bug sweep (14 fixes from audit)
+- **Phase:** PHASE AO complete — QA follow-up (2 more bug fixes)
 - **Step:** Ready to push
 - **Live URL:** https://crm-dash-prod.up.railway.app
-- **Last pushed commit:** afbd81a (2026-05-02)
+- **Last pushed commit:** 710d352 (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
+
+## Phase AO (2026-05-02) — QA follow-up fixes
+Two more bugs from QA audit.
+
+- **TPV productos triplicados**: `filteredProducts` useMemo in `/tpv/venta/page.tsx` now deduplicates by `name|category` after the category filter. Sort puts `isPresentialSale=true` first so the "presentational" variant wins when there are duplicates across stations.
+- **Finanzas "Ingresos mes" = 0€** (seed fix): `DEMO_INVOICES` FAC-2026-0004 and FAC-2026-0005 had `paidDaysAgo: 14` and `paidDaysAgo: 9` — both landing in April 2026. Updated to `paidDaysAgo: 1` and `paidDaysAgo: 0` respectively so they fall in May 2026 (current month). Dashboard shows ≥ 960€ in "Ingresos mes" after next seed run.
+
+**Audit**: `tsc --noEmit` → 0 errors.
 
 ## Phase AN (2026-05-02) — QA bug sweep
 Fourteen bugs from the QA audit, fixed end to end. `tsc --noEmit` and `eslint` clean across all touched files.
