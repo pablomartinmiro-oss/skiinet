@@ -25,7 +25,7 @@ export default defineConfig({
         test: {
           name: "node",
           environment: "node",
-          include: ["__tests__/**/*.test.ts"],
+          include: ["__tests__/**/*.test.ts", "tests/**/*.test.ts"],
           setupFiles: ["./__tests__/setup.ts"],
           env: sharedEnv,
         },
@@ -36,7 +36,7 @@ export default defineConfig({
           name: "dom",
           globals: true,
           environment: "jsdom",
-          include: ["__tests__/**/*.test.tsx"],
+          include: ["__tests__/**/*.test.tsx", "tests/**/*.test.tsx"],
           setupFiles: ["./vitest.setup.ts"],
           env: sharedEnv,
         },

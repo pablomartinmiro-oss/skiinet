@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Search, MapPin, Calendar, Users, Clock, FormInput, Check } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { Search, MapPin, Calendar, Users, Clock, FormInput, Check, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Quote } from "@/hooks/useQuotes";
 import { STATIONS } from "../../reservas/_components/constants";
+import { exportToCSV } from "@/lib/export/csv";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgClass: string }> = {
   nuevo: { label: "Nuevo", color: "text-gray-600", bgClass: "bg-gray-100" },
@@ -15,6 +16,16 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bgClass: str
   expirado: { label: "Expirado", color: "text-muted-red", bgClass: "bg-muted-red-light" },
   cancelado: { label: "Cancelado", color: "text-gray-500", bgClass: "bg-gray-200" },
 };
+
+const QUOTE_CSV_COLUMNS = [
+  { key: "id", label: "Nº Presupuesto", format: (v: unknown) => `#${String(v).slice(-4).toUpperCase()}` },
+  { key: "clientName", label: "Cliente" },
+  { key: "clientEmail", label: "Email" },
+  { key: "destination", label: "Destino", format: (v: unknown) => STATIONS.find((s) => s.value === v)?.label ?? String(v) },
+  { key: "status", label: "Estado", format: (v: unknown) => STATUS_CONFIG[v as string]?.label ?? String(v) },
+  { key: "totalAmount", label: "Total", format: (v: unknown) => (v as number).toFixed(2) },
+  { key: "createdAt", label: "Fecha", format: (v: unknown) => new Date(v as string).toLocaleDateString("es-ES") },
+] as const;
 
 const FILTER_TABS = [
   { key: "", label: "Todos" },
@@ -46,6 +57,14 @@ interface QuoteListProps {
 export function QuoteList({ quotes, selectedId, onSelect }: QuoteListProps) {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("");
+
+  const handleExportCsv = useCallback((filteredQuotes: Quote[]) => {
+    exportToCSV(
+      filteredQuotes as unknown as Record<string, unknown>[],
+      `presupuestos-${new Date().toISOString().slice(0, 10)}.csv`,
+      QUOTE_CSV_COLUMNS as unknown as { key: string; label: string; format?: (v: unknown) => string }[]
+    );
+  }, []);
 
   const filtered = useMemo(() => {
     let result = quotes;
@@ -128,6 +147,19 @@ export function QuoteList({ quotes, selectedId, onSelect }: QuoteListProps) {
             />
           ))
         )}
+      </div>
+
+      {/* Count + Export */}
+      <div className="flex items-center justify-between border-t border-border px-3 py-2">
+        <span className="text-xs text-slate-500">
+          {filtered.length} de {quotes.length} presupuestos
+        </span>
+        <button
+          onClick={() => handleExportCsv(filtered)}
+          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-slate-500 hover:text-blue-600 hover:bg-slate-100 transition-colors"
+        >
+          <Download className="h-3 w-3" /> CSV
+        </button>
       </div>
     </div>
   );

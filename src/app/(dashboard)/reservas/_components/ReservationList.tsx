@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Reservation } from "@/hooks/useReservations";
 import { STATIONS, STATUS_CONFIG, SOURCE_CONFIG, formatDate, formatEUR, getStationLabel } from "./constants";
 import { Badge } from "@/components/ui/badge";
+import { exportToCSV } from "@/lib/export/csv";
 
 interface ReservationListProps {
   reservations: Reservation[] | undefined;
@@ -59,12 +60,16 @@ function getDateRange(filter: string): { from: Date; to: Date } | null {
   }
 }
 
-function escapeCsv(val: string): string {
-  if (val.includes(",") || val.includes('"') || val.includes("\n")) {
-    return `"${val.replace(/"/g, '""')}"`;
-  }
-  return val;
-}
+const RESERVATION_CSV_COLUMNS = [
+  { key: "activityDate", label: "Fecha", format: (v: unknown) => new Date(v as string).toLocaleDateString("es-ES") },
+  { key: "clientName", label: "Cliente" },
+  { key: "clientEmail", label: "Email" },
+  { key: "clientPhone", label: "Teléfono" },
+  { key: "station", label: "Estación", format: (v: unknown) => getStationLabel(v as string) },
+  { key: "status", label: "Estado", format: (v: unknown) => STATUS_CONFIG[v as keyof typeof STATUS_CONFIG]?.label ?? String(v) },
+  { key: "totalPrice", label: "Importe", format: (v: unknown) => (v as number).toFixed(2) },
+  { key: "couponCode", label: "Cupón", format: (v: unknown) => String(v ?? "") },
+] as const;
 
 export function ReservationList({ reservations, loading, selectedId, onSelect, emptyLabel }: ReservationListProps) {
   const [search, setSearch] = useState("");
@@ -121,27 +126,11 @@ export function ReservationList({ reservations, loading, selectedId, onSelect, e
   }, [reservations, search, statusFilter, dateFilter, stationFilter, customFrom, customTo]);
 
   const handleExportCsv = useCallback(() => {
-    if (filtered.length === 0) return;
-    const headers = ["Nombre", "Teléfono", "Email", "Estación", "Fecha", "Estado", "Origen", "Precio", "Cupón"];
-    const rows = filtered.map((r) => [
-      escapeCsv(r.clientName),
-      escapeCsv(r.clientPhone),
-      escapeCsv(r.clientEmail),
-      escapeCsv(getStationLabel(r.station)),
-      new Date(r.activityDate).toLocaleDateString("es-ES"),
-      escapeCsv(STATUS_CONFIG[r.status as keyof typeof STATUS_CONFIG]?.label ?? r.status),
-      escapeCsv(SOURCE_CONFIG[r.source as keyof typeof SOURCE_CONFIG]?.label ?? r.source),
-      r.totalPrice.toFixed(2),
-      escapeCsv(r.couponCode ?? ""),
-    ]);
-    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `reservas-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportToCSV(
+      filtered as unknown as Record<string, unknown>[],
+      `reservas-${new Date().toISOString().slice(0, 10)}.csv`,
+      RESERVATION_CSV_COLUMNS as unknown as { key: string; label: string; format?: (v: unknown) => string }[]
+    );
   }, [filtered]);
 
   if (loading) {

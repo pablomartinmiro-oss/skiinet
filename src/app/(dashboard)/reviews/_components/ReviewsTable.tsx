@@ -67,28 +67,28 @@ export default function ReviewsTable({ reviews }: { reviews: Review[] }) {
   const handleApprove = async (r: Review) => {
     try {
       await updateReview.mutateAsync({ id: r.id, status: "approved" });
-      toast.success("Resena aprobada");
+      toast.success("Reseña aprobada");
     } catch {
-      toast.error("Error al aprobar resena");
+      toast.error("Error al aprobar reseña");
     }
   };
 
   const handleReject = async (r: Review) => {
     try {
       await updateReview.mutateAsync({ id: r.id, status: "rejected" });
-      toast.success("Resena rechazada");
+      toast.success("Reseña rechazada");
     } catch {
-      toast.error("Error al rechazar resena");
+      toast.error("Error al rechazar reseña");
     }
   };
 
   const handleDelete = async (r: Review) => {
-    if (!confirm(`Eliminar la resena de "${r.authorName}"?`)) return;
+    if (!confirm(`Eliminar la reseña de "${r.authorName}"?`)) return;
     try {
       await deleteReview.mutateAsync(r.id);
-      toast.success("Resena eliminada");
+      toast.success("Reseña eliminada");
     } catch {
-      toast.error("Error al eliminar resena");
+      toast.error("Error al eliminar reseña");
     }
   };
 
@@ -103,7 +103,7 @@ export default function ReviewsTable({ reviews }: { reviews: Review[] }) {
                   Autor
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">
-                  Puntuacion
+                  Puntuación
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">
                   Tipo

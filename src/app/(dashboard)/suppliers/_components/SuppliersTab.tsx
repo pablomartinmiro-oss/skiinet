@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Truck } from "lucide-react";
 import { toast } from "sonner";
 import {
   useSuppliers,
+  useSettlements,
   useCreateSupplier,
   useUpdateSupplier,
   useDeleteSupplier,
@@ -44,8 +45,10 @@ const commTypeLabel: Record<string, string> = {
   percentage: "Porcentaje",
   fixed: "Coste fijo/pax",
   margin: "Margen",
-  hybrid: "Hibrido",
+  hybrid: "Híbrido",
 };
+
+const fmt = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
 
 function commissionDisplay(s: Supplier): string {
   switch (s.commissionType) {
@@ -62,6 +65,7 @@ function commissionDisplay(s: Supplier): string {
 
 export default function SuppliersTab() {
   const { data, isLoading } = useSuppliers();
+  const { data: setData } = useSettlements();
   const createSup = useCreateSupplier();
   const updateSup = useUpdateSupplier();
   const deleteSup = useDeleteSupplier();
@@ -72,6 +76,13 @@ export default function SuppliersTab() {
 
   if (isLoading) return <PageSkeleton />;
   const suppliers = data?.suppliers || [];
+  const allSettlements = setData?.settlements || [];
+
+  function pendingAmount(supplierId: string): number {
+    return allSettlements
+      .filter((s) => s.supplierId === supplierId && s.status !== "paid")
+      .reduce((acc, s) => acc + s.netAmount, 0);
+  }
 
   const handleAdd = () => {
     setEditing(null);
@@ -128,7 +139,7 @@ export default function SuppliersTab() {
           className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Anadir Proveedor
+          Añadir Proveedor
         </button>
       </div>
 
@@ -153,10 +164,10 @@ export default function SuppliersTab() {
                     NIF
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">
-                    Comision
+                    Comisión
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">
-                    Metodo pago
+                    Método pago
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">
                     Frecuencia
@@ -165,76 +176,88 @@ export default function SuppliersTab() {
                     Estado
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">
+                    Pendiente
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8E4DE]">
-                {suppliers.map((s) => (
-                  <tr
-                    key={s.id}
-                    className="hover:bg-[#FAF9F7]/30 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4 text-[#8A8580]" />
-                        <div>
-                          <span className="font-medium text-sm text-[#2D2A26]">
-                            {s.fiscalName}
-                          </span>
-                          {s.commercialName && (
-                            <p className="text-xs text-[#8A8580]">
-                              {s.commercialName}
-                            </p>
-                          )}
+                {suppliers.map((s) => {
+                  const pending = pendingAmount(s.id);
+                  return (
+                    <tr
+                      key={s.id}
+                      className="hover:bg-[#FAF9F7]/30 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Truck className="h-4 w-4 text-[#8A8580]" />
+                          <div>
+                            <span className="font-medium text-sm text-[#2D2A26]">
+                              {s.fiscalName}
+                            </span>
+                            {s.commercialName && (
+                              <p className="text-xs text-[#8A8580]">
+                                {s.commercialName}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="rounded-[6px] bg-[#FAF9F7] px-2 py-0.5 text-xs font-mono text-[#8A8580]">
-                        {s.nif}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center text-sm text-[#2D2A26]">
-                      <span className="text-xs text-[#8A8580]">
-                        {commTypeLabel[s.commissionType] ?? s.commissionType}
-                      </span>{" "}
-                      {commissionDisplay(s)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#8A8580]">
-                      {paymentLabel[s.paymentMethod] || s.paymentMethod}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#8A8580]">
-                      {freqLabel[s.settlementFrequency] ||
-                        s.settlementFrequency}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span
-                        className={`inline-flex rounded-[6px] px-2 py-0.5 text-xs font-medium ${statusBadge[s.status] || "bg-gray-100 text-gray-500"}`}
-                      >
-                        {statusLabel[s.status] || s.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(s)}
-                          className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-[#FAF9F7] hover:text-[#E87B5A] transition-colors"
-                          title="Editar"
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="rounded-[6px] bg-[#FAF9F7] px-2 py-0.5 text-xs font-mono text-[#8A8580]">
+                          {s.nif}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center text-sm text-[#2D2A26]">
+                        <span className="text-xs text-[#8A8580]">
+                          {commTypeLabel[s.commissionType] ?? s.commissionType}
+                        </span>{" "}
+                        {commissionDisplay(s)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#8A8580]">
+                        {paymentLabel[s.paymentMethod] || s.paymentMethod}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#8A8580]">
+                        {freqLabel[s.settlementFrequency] || s.settlementFrequency}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span
+                          className={`inline-flex rounded-[6px] px-2 py-0.5 text-xs font-medium ${statusBadge[s.status] || "bg-gray-100 text-gray-500"}`}
                         >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(s)}
-                          className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-red-50 hover:text-[#C75D4A] transition-colors"
-                          title="Eliminar"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {statusLabel[s.status] || s.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm font-medium">
+                        {pending > 0 ? (
+                          <span className="text-[#D4A853]">{fmt.format(pending)}</span>
+                        ) : (
+                          <span className="text-[#8A8580]">—</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleEdit(s)}
+                            className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-[#FAF9F7] hover:text-[#E87B5A] transition-colors"
+                            title="Editar"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(s)}
+                            className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-red-50 hover:text-[#C75D4A] transition-colors"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -8,6 +8,7 @@ import {
   User,
   CalendarDays,
   FileText,
+  Package,
   Loader2,
 } from "lucide-react";
 
@@ -15,6 +16,7 @@ interface SearchResult {
   contacts: Array<{ id: string; name: string | null; email: string | null; phone: string | null }>;
   reservations: Array<{ id: string; clientName: string; station: string; status: string; activityDate: string }>;
   quotes: Array<{ id: string; clientName: string; destination: string; status: string; totalAmount: number }>;
+  products: Array<{ id: string; name: string; category: string; station: string; price: number }>;
 }
 
 export function GlobalSearch() {
@@ -78,7 +80,8 @@ export function GlobalSearch() {
   const total =
     (results?.contacts.length ?? 0) +
     (results?.reservations.length ?? 0) +
-    (results?.quotes.length ?? 0);
+    (results?.quotes.length ?? 0) +
+    (results?.products.length ?? 0);
 
   return (
     <div ref={ref} className="relative max-w-md flex-1">
@@ -160,6 +163,23 @@ export function GlobalSearch() {
                       title={q.clientName}
                       subtitle={`${q.destination.replace(/_/g, " ")} · ${q.totalAmount.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}`}
                       badge={q.status}
+                    />
+                  ))}
+                </ResultSection>
+              )}
+
+              {/* Products */}
+              {results && results.products.length > 0 && (
+                <ResultSection
+                  label="Catálogo"
+                  icon={<Package className="h-3.5 w-3.5" />}
+                >
+                  {results.products.map((p) => (
+                    <ResultItem
+                      key={p.id}
+                      onClick={() => navigate("/catalogo")}
+                      title={p.name}
+                      subtitle={`${p.category}${p.station ? ` · ${p.station}` : ""} · ${p.price.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}`}
                     />
                   ))}
                 </ResultSection>

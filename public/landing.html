@@ -163,6 +163,24 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 .fin-bar.exp{background:rgba(248,113,113,0.3)}
 .fin-bar-label{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:.4rem;color:var(--gray-500);white-space:nowrap}
 
+/* Operaciones del día */
+.ops-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.ops-stat{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:6px;padding:8px 6px;text-align:center}
+.ops-stat .os-label{font-size:.45rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.ops-stat .os-value{font-size:.95rem;font-weight:700;color:var(--snow);font-family:var(--font-mono)}
+.ops-stat.ok .os-value{color:var(--green)}
+.ops-stat.warn .os-value{color:#FBB324}
+.ops-stat.info .os-value{color:var(--blue)}
+.ops-rows{display:flex;flex-direction:column;gap:4px}
+.ops-row{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(255,255,255,0.02);border-radius:5px;font-size:.55rem}
+.ops-row .or-icon{font-size:.7rem;margin-right:6px}
+.ops-row .or-text{color:var(--snow);flex:1;font-weight:500}
+.ops-row .or-meta{color:var(--gray-500);font-family:var(--font-mono);font-size:.5rem}
+.ops-row .or-pill{font-size:.45rem;padding:2px 6px;border-radius:100px;font-weight:500;margin-left:6px}
+.or-pill.live{background:rgba(52,211,153,0.12);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.or-pill.due{background:rgba(251,191,36,0.1);color:#FBB324;border:1px solid rgba(251,191,36,0.2)}
+.or-pill.new{background:rgba(79,142,247,0.1);color:var(--blue);border:1px solid rgba(79,142,247,0.2)}
+
 /* Storefront */
 .sf-preview{border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
 .sf-hero{height:80px;background:linear-gradient(135deg,rgba(79,142,247,0.2),rgba(0,212,255,0.15));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
@@ -381,7 +399,8 @@ footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
         <div class="db-layout">
           <!-- Sidebar -->
           <div class="db-sidebar">
-            <div class="db-sidebar-item active" data-module="leads"><span class="si-icon">🎯</span>Leads</div>
+            <div class="db-sidebar-item active" data-module="operaciones"><span class="si-icon">⚡</span>Operaciones</div>
+            <div class="db-sidebar-item" data-module="leads"><span class="si-icon">🎯</span>Leads</div>
             <div class="db-sidebar-item" data-module="presupuestos"><span class="si-icon">📋</span>Presupuestos</div>
             <div class="db-sidebar-item" data-module="reservas"><span class="si-icon">📅</span>Reservas</div>
             <div class="db-sidebar-item" data-module="escuela"><span class="si-icon">👨‍🏫</span>Escuela</div>
@@ -394,8 +413,27 @@ footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
           <!-- Main content -->
           <div class="db-main">
 
+            <!-- OPERACIONES DEL DÍA -->
+            <div class="db-module-content active" id="mod-operaciones">
+              <div class="db-module-title">⚡ Operaciones — Hoy 12 Ene</div>
+              <div class="ops-stats">
+                <div class="ops-stat info"><div class="os-label">Clases ahora</div><div class="os-value">8</div></div>
+                <div class="ops-stat ok"><div class="os-label">Alquileres</div><div class="os-value">23</div></div>
+                <div class="ops-stat info"><div class="os-label">Check-ins</div><div class="os-value">5</div></div>
+                <div class="ops-stat warn"><div class="os-label">Sin pagar</div><div class="os-value">3</div></div>
+                <div class="ops-stat ok"><div class="os-label">Leads nuevos</div><div class="os-value">12</div></div>
+              </div>
+              <div class="ops-rows">
+                <div class="ops-row"><span class="or-icon">⛷️</span><span class="or-text">Cursillo Niños — Pedro</span><span class="or-meta">10:30</span><span class="or-pill live">EN VIVO</span></div>
+                <div class="ops-row"><span class="or-icon">🎿</span><span class="or-text">Pack Esquí Familiar — devolver</span><span class="or-meta">14:00</span><span class="or-pill due">PRONTO</span></div>
+                <div class="ops-row"><span class="or-icon">🏨</span><span class="or-text">Check-in Habitación 204 — García</span><span class="or-meta">15:00</span><span class="or-pill new">PRÓX.</span></div>
+                <div class="ops-row"><span class="or-icon">💰</span><span class="or-text">Factura F-2026-0041 — Carlos López</span><span class="or-meta">€890</span><span class="or-pill due">PEND.</span></div>
+                <div class="ops-row"><span class="or-icon">🎯</span><span class="or-text">Lead nuevo — Ana Martínez (score 95)</span><span class="or-meta">12:14</span><span class="or-pill new">NEW</span></div>
+              </div>
+            </div>
+
             <!-- LEADS -->
-            <div class="db-module-content active" id="mod-leads">
+            <div class="db-module-content" id="mod-leads">
               <div class="db-module-title">🎯 Pipeline de Leads</div>
               <div class="kanban">
                 <div class="kanban-col">
@@ -767,6 +805,18 @@ footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center}
         <div class="module-card"><span class="icon">🍽️</span><h3>Restaurante</h3><p>Turnos, cierres, reservas de mesa y gestión de personal</p><span class="badge badge-ready">✅ Listo</span></div>
         <div class="module-card"><span class="icon">💆</span><h3>Spa</h3><p>Tratamientos, recursos, slots y plantillas de horario</p><span class="badge badge-ready">✅ Listo</span></div>
         <div class="module-card"><span class="icon">📑</span><h3>REAV</h3><p>Expedientes REAV, costes, documentos y trazabilidad legal</p><span class="badge badge-ready">✅ Listo</span></div>
+      </div>
+    </div>
+
+    <!-- Sprint 6 — Avanzado (Fases 3-5) -->
+    <div class="sprint-group sprint-blue reveal">
+      <div class="sprint-label blue">Sprint 6 — Avanzado</div>
+      <div class="modules-grid">
+        <div class="module-card"><span class="icon">🧾</span><h3>Facturación Auto (F3)</h3><p>Auto-factura al confirmar reserva, PDF fiscal con IVA desglosado, recordatorios automáticos cada 7 días</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">📱</span><h3>Portal Profesor (F4)</h3><p>App móvil para fichaje GPS, planning del día, notificaciones push y chat interno entre instructores</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">🔗</span><h3>Disponibilidad cruzada (F5)</h3><p>Motor único que comprueba alquiler + hotel + clases + profesores en paralelo. Cascada al confirmar/cancelar</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">⚡</span><h3>Operaciones del día</h3><p>Dashboard único con clases ahora, alquileres activos, check-ins, facturas pendientes y leads nuevos</p><span class="badge badge-ready">✅ Listo</span></div>
+        <div class="module-card"><span class="icon">👤</span><h3>Cliente unificado</h3><p>Vista 360º con presupuestos, reservas, alquileres, clases, facturas y mensajes en un solo lugar</p><span class="badge badge-ready">✅ Listo</span></div>
       </div>
     </div>
   </div>

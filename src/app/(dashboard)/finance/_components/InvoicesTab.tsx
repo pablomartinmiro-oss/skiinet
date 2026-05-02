@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Pencil, Trash2, FileText } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Plus, Pencil, Trash2, FileText, Download } from "lucide-react";
 import { toast } from "sonner";
 import {
   useInvoices,
@@ -11,6 +11,24 @@ import {
 import type { Invoice } from "@/hooks/useFinance";
 import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
 import InvoiceModal from "./InvoiceModal";
+import { exportToCSV } from "@/lib/export/csv";
+
+const INVOICE_STATUS_LABELS: Record<string, string> = {
+  draft: "Borrador",
+  sent: "Enviada",
+  paid: "Pagada",
+  cancelled: "Cancelada",
+};
+
+const INVOICE_CSV_COLUMNS = [
+  { key: "number", label: "Nº Factura" },
+  { key: "client", label: "Cliente", format: (v: unknown) => (v as { name: string } | null)?.name ?? "Sin cliente" },
+  { key: "status", label: "Estado", format: (v: unknown) => INVOICE_STATUS_LABELS[v as string] ?? String(v) },
+  { key: "subtotal", label: "Subtotal", format: (v: unknown) => (v as number).toFixed(2) },
+  { key: "taxAmount", label: "IVA", format: (v: unknown) => (v as number).toFixed(2) },
+  { key: "total", label: "Total", format: (v: unknown) => (v as number).toFixed(2) },
+  { key: "createdAt", label: "Fecha emisión", format: (v: unknown) => new Date(v as string).toLocaleDateString("es-ES") },
+] as const;
 
 const STATUS_OPTIONS = [
   { value: "", label: "Todos" },
@@ -51,6 +69,15 @@ export default function InvoicesTab() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Invoice | null>(null);
+
+  const handleExportCsv = useCallback(() => {
+    const rows = data?.invoices ?? [];
+    exportToCSV(
+      rows as unknown as Record<string, unknown>[],
+      `facturas-${new Date().toISOString().slice(0, 10)}.csv`,
+      INVOICE_CSV_COLUMNS as unknown as { key: string; label: string; format?: (v: unknown) => string }[]
+    );
+  }, [data]);
 
   if (isLoading) return <PageSkeleton />;
 
@@ -107,13 +134,22 @@ export default function InvoicesTab() {
             {invoices.length} factura{invoices.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Nueva Factura
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCsv}
+            className="flex items-center gap-2 rounded-[10px] border border-[#E8E4DE] bg-white px-4 py-2.5 text-sm font-medium text-[#2D2A26] hover:bg-[#FAF9F7] transition-colors"
+          >
+            <Download className="h-4 w-4" />
+            Exportar CSV
+          </button>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Nueva Factura
+          </button>
+        </div>
       </div>
 
       {invoices.length === 0 ? (
