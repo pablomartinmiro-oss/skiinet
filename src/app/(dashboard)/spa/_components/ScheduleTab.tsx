@@ -196,7 +196,7 @@ export default function ScheduleTab() {
           {templates.length} plantilla{templates.length !== 1 ? "s" : ""} para {DAYS.find((d) => d.value === selectedDay)?.label}
         </p>
         <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors">
-          <Plus className="h-4 w-4" /> Anadir Plantilla
+          <Plus className="h-4 w-4" /> Añadir Plantilla
         </button>
       </div>
 

@@ -4,7 +4,11 @@ import { Lock, MapPin } from "lucide-react";
 import type { TimeEntry } from "@/hooks/useInstructors";
 
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Madrid",
+  });
 }
 
 function formatMinutes(min: number): string {
@@ -51,7 +55,7 @@ export default function TimeEntryTable({ entries }: Props) {
                 )}
               </td>
               <td className="px-4 py-3 text-[#2D2A26]">
-                {new Date(entry.date).toLocaleDateString("es-ES")}
+                {new Date(entry.date).toLocaleDateString("es-ES", { timeZone: "Europe/Madrid" })}
               </td>
               <td className="px-4 py-3 text-[#2D2A26]">
                 <div className="flex items-center gap-1.5">

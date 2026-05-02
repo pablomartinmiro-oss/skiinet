@@ -9,7 +9,7 @@ import EmailConfigTab from "./_components/EmailConfigTab";
 const TABS = [
   { key: "plataformas", label: "Plataformas", icon: Ticket },
   { key: "canjes", label: "Canjes", icon: RotateCcw },
-  { key: "email", label: "Configuracion Email", icon: Mail },
+  { key: "email", label: "Configuración Email", icon: Mail },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];

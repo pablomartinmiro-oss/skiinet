@@ -8,7 +8,7 @@ import SalesTab from "./_components/SalesTab";
 
 const TABS = [
   { key: "registers", label: "Cajas", icon: Monitor },
-  { key: "sessions", label: "Sesiones", icon: Clock },
+  { key: "sessions", label: "Sesiónes", icon: Clock },
   { key: "sales", label: "Ventas", icon: Receipt },
 ] as const;
 

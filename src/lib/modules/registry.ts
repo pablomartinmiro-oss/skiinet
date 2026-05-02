@@ -211,14 +211,14 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
   },
   reviews: {
     slug: "reviews",
-    name: "Resenas",
+    name: "Reseñas",
     icon: "Star",
-    description: "Resenas y valoraciones de clientes",
+    description: "Reseñas y valoraciones de clientes",
     dependencies: [],
     isCore: false,
     section: "online",
     navItems: [
-      { label: "Resenas", href: "/reviews", icon: "Star", permission: null },
+      { label: "Reseñas", href: "/reviews", icon: "Star", permission: null },
     ],
     permissions: ["reviews:view", "reviews:moderate"],
   },

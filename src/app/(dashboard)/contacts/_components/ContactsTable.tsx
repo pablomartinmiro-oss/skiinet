@@ -113,7 +113,7 @@ export function ContactsTable({ contacts }: ContactsTableProps) {
               Email <SortIcon col="email" sortKey={sortKey} sortDir={sortDir} />
             </button>
           </TableHead>
-          <TableHead>Telefono</TableHead>
+          <TableHead>Teléfono</TableHead>
           <TableHead>Origen</TableHead>
           <TableHead>Etiquetas</TableHead>
           <TableHead>

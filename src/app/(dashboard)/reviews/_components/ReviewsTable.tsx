@@ -36,18 +36,25 @@ const ENTITY_LABELS: Record<string, string> = {
 };
 
 function StarRating({ rating }: { rating: number }) {
+  // Coerce defensively in case the API returns a string or null
+  const r = Math.max(0, Math.min(5, Number(rating) || 0));
   return (
-    <div className="flex items-center gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={`h-3.5 w-3.5 ${
-            i < rating
-              ? "fill-[#D4A853] text-[#D4A853]"
-              : "text-[#E8E4DE]"
-          }`}
-        />
-      ))}
+    <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            className={`h-3.5 w-3.5 ${
+              i < r
+                ? "fill-[#D4A853] text-[#D4A853]"
+                : "text-[#E8E4DE]"
+            }`}
+          />
+        ))}
+      </div>
+      <span className="text-xs font-semibold text-[#2D2A26] tabular-nums">
+        {r > 0 ? r.toFixed(1) : "—"}
+      </span>
     </div>
   );
 }

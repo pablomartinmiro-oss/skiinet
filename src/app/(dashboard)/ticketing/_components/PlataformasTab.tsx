@@ -205,7 +205,7 @@ export default function PlataformasTab() {
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#8A8580]">{platforms.length} plataforma{platforms.length !== 1 ? "s" : ""}</p>
         <button onClick={handleAdd} className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors">
-          <Plus className="h-4 w-4" /> Anadir Plataforma
+          <Plus className="h-4 w-4" /> Añadir Plataforma
         </button>
       </div>
 

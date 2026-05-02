@@ -171,7 +171,7 @@ export default function CloseSessionModal({
             </div>
           </>
         ) : (
-          <p className="text-sm text-[#C75D4A]">Sesion no encontrada</p>
+          <p className="text-sm text-[#C75D4A]">Sesión no encontrada</p>
         )}
       </div>
     </div>

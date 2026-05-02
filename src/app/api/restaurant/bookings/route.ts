@@ -42,10 +42,8 @@ export async function GET(request: NextRequest) {
     const bookings = await prisma.restaurantBooking.findMany({
       where,
       include: {
-        restaurant: { select: { id: true, title: true } },
-        client: {
-          select: { id: true, name: true, email: true },
-        },
+        restaurant: { select: { id: true, title: true, depositPerGuest: true } },
+        client: { select: { id: true, name: true, email: true, phone: true } },
       },
       orderBy: [{ date: "asc" }, { time: "asc" }],
     });
@@ -99,11 +97,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Upsert client when caller passed inline contact info instead of a clientId
+    let clientId = data.clientId ?? null;
+    if (!clientId && data.clientName) {
+      const existing = data.clientEmail
+        ? await prisma.client.findFirst({
+            where: { tenantId, email: data.clientEmail },
+            select: { id: true },
+          })
+        : data.clientPhone
+          ? await prisma.client.findFirst({
+              where: { tenantId, phone: data.clientPhone },
+              select: { id: true },
+            })
+          : null;
+      if (existing) {
+        clientId = existing.id;
+      } else {
+        const created = await prisma.client.create({
+          data: {
+            tenantId,
+            name: data.clientName,
+            email: data.clientEmail ?? null,
+            phone: data.clientPhone ?? null,
+          },
+          select: { id: true },
+        });
+        clientId = created.id;
+      }
+    }
+
     const booking = await prisma.restaurantBooking.create({
       data: {
         tenantId,
         restaurantId: data.restaurantId,
-        clientId: data.clientId ?? null,
+        clientId,
         date: data.date,
         time: data.time,
         guestCount: data.guestCount,
@@ -111,6 +139,10 @@ export async function POST(request: NextRequest) {
         status: data.status,
         depositStatus: data.depositStatus,
         operationalNotes: data.operationalNotes ?? null,
+      },
+      include: {
+        restaurant: { select: { id: true, title: true, depositPerGuest: true } },
+        client: { select: { id: true, name: true, email: true, phone: true } },
       },
     });
 

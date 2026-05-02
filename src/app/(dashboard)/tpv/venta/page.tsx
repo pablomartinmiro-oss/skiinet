@@ -96,7 +96,7 @@ export default function TpvVentaPage() {
 
   const handleCharge = async (paymentMethods: PaymentMethods) => {
     if (!activeSession) {
-      toast.error("Selecciona una sesion de caja");
+      toast.error("Selecciona una sesión de caja");
       return;
     }
     if (cart.length === 0) {
@@ -147,7 +147,7 @@ export default function TpvVentaPage() {
             No hay sesiones abiertas
           </h2>
           <p className="mb-6 text-sm text-[#8A8580]">
-            Abre una sesion de caja antes de empezar a vender.
+            Abre una sesión de caja antes de empezar a vender.
           </p>
           <Link
             href="/tpv?tab=sessions"

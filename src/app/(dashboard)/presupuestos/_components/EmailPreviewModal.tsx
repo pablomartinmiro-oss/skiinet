@@ -105,7 +105,7 @@ export function EmailPreviewModal({ quote, items, isOpen, onClose }: EmailPrevie
     <ul><li>• Transferencia bancaria: ES12 3456 7890 1234 5678 9012</li><li>• Enlace de pago: se enviará tras la confirmación</li></ul>
     <p class="expiry">Este presupuesto tiene validez hasta el ${formatDate(expiryDate)}.</p>
   </div>
-  <div class="section terms"><h4>Términos y condiciones:</h4><p>El presupuesto incluye IVA. Los precios pueden variar según disponibilidad. La reserva se confirma con el pago del 30% del total. Cancelación gratuita hasta 15 días antes de la llegada. Para cancelaciones posteriores se aplicará una penalización del 50%. No shows: 100% del importe.</p></div>
+  <div class="section terms"><h4>Términos y condiciones:</h4><p>El presupuesto incluye IVA. Los precios pueden variar según disponibilidad. La reserva se confirma con el pago del 30% del total. Cancelación gratuita hasta 15 días antes de la llegada. Para cancelaciónes posteriores se aplicará una penalización del 50%. No shows: 100% del importe.</p></div>
   <div class="footer"><p class="company">Skicenter Spain</p><p class="contact">info@skicenter.es · +34 900 123 456 · www.skicenter.es</p></div>
 </div></body></html>`);
     printWindow.document.close();
@@ -246,7 +246,7 @@ export function EmailPreviewModal({ quote, items, isOpen, onClose }: EmailPrevie
               <p>
                 El presupuesto incluye IVA. Los precios pueden variar según disponibilidad.
                 La reserva se confirma con el pago del 30% del total. Cancelación gratuita
-                hasta 15 días antes de la llegada. Para cancelaciones posteriores se aplicará
+                hasta 15 días antes de la llegada. Para cancelaciónes posteriores se aplicará
                 una penalización del 50%. No shows: 100% del importe.
               </p>
             </div>

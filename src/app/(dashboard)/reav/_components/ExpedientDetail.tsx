@@ -97,7 +97,7 @@ export default function ExpedientDetail({
             onClick={() => setShowCostForm(!showCostForm)}
             className="flex items-center gap-1 rounded-[10px] bg-[#E87B5A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#D56E4F] transition-colors"
           >
-            <Plus className="h-3 w-3" /> Anadir Coste
+            <Plus className="h-3 w-3" /> Añadir Coste
           </button>
         </div>
 
@@ -107,7 +107,7 @@ export default function ExpedientDetail({
               <div className="col-span-2">
                 <input
                   type="text"
-                  placeholder="Descripcion del coste"
+                  placeholder="Descripción del coste"
                   value={costForm.description}
                   onChange={(e) =>
                     setCostForm((p) => ({ ...p, description: e.target.value }))
@@ -166,7 +166,7 @@ export default function ExpedientDetail({
               <thead>
                 <tr className="border-b border-[#E8E4DE] bg-[#FAF9F7]/50">
                   <th className="px-4 py-2 text-left text-xs font-medium text-[#8A8580]">
-                    Descripcion
+                    Descripción
                   </th>
                   <th className="px-4 py-2 text-right text-xs font-medium text-[#8A8580]">
                     Importe
@@ -213,7 +213,7 @@ export default function ExpedientDetail({
             onClick={() => setShowDocForm(!showDocForm)}
             className="flex items-center gap-1 rounded-[10px] bg-[#E87B5A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#D56E4F] transition-colors"
           >
-            <Upload className="h-3 w-3" /> Anadir Documento
+            <Upload className="h-3 w-3" /> Añadir Documento
           </button>
         </div>
 

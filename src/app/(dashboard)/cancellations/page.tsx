@@ -42,7 +42,7 @@ export default function CancellationsPage() {
         quoteId: newQuoteId || null,
         reason: newReason || null,
       });
-      toast.success("Solicitud de cancelacion creada");
+      toast.success("Solicitud de cancelación creada");
       setShowCreateForm(false);
       setNewReason("");
       setNewReservationId("");
@@ -70,7 +70,7 @@ export default function CancellationsPage() {
         <div className="flex items-center gap-3">
           <XCircle className="h-6 w-6 text-[#E87B5A]" />
           <h1 className="text-2xl font-bold text-[#2D2A26]">
-            Cancelaciones
+            Cancelaciónes
           </h1>
         </div>
         <button
@@ -121,7 +121,7 @@ export default function CancellationsPage() {
         <div className="rounded-[16px] border border-[#E8E4DE] bg-white p-12 text-center">
           <XCircle className="mx-auto h-10 w-10 text-[#E8E4DE]" />
           <p className="mt-3 text-sm text-[#8A8580]">
-            No hay solicitudes de cancelacion
+            No hay solicitudes de cancelación
           </p>
         </div>
       ) : (
@@ -187,7 +187,7 @@ function CreateForm({
 }) {
   return (
     <div className="rounded-[16px] border border-[#E8E4DE] bg-white p-6 space-y-4">
-      <h3 className="text-lg font-semibold text-[#2D2A26]">Nueva solicitud de cancelacion</h3>
+      <h3 className="text-lg font-semibold text-[#2D2A26]">Nueva solicitud de cancelación</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           placeholder="ID Reserva (opcional)"
@@ -203,7 +203,7 @@ function CreateForm({
         />
       </div>
       <textarea
-        placeholder="Motivo de cancelacion"
+        placeholder="Motivo de cancelación"
         value={newReason}
         onChange={(e) => onChangeReason(e.target.value)}
         rows={3}

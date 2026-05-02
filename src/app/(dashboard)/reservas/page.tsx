@@ -28,9 +28,12 @@ export default function ReservasPage() {
 
   const { from: monthFrom, to: monthTo } = getMonthRange(calendarMonth);
 
-  // Calendar mode loads by activityDate for the visible month
+  // Calendar mode loads by activityDate for the visible month.
+  // List mode pulls the latest 500 (covers month-of-today + recent backlog) so
+  // the in-memory "Hoy" / "Esta semana" filters never come up empty just
+  // because today's reservations weren't in the most-recent 50.
   const { data: reservationsData, isLoading } = useReservations(
-    view === "calendario" ? { dateFrom: monthFrom, dateTo: monthTo, pageSize: 200 } : { pageSize: 50 }
+    view === "calendario" ? { dateFrom: monthFrom, dateTo: monthTo, pageSize: 200 } : { pageSize: 500 }
   );
   const reservations = reservationsData?.reservations;
   const { data: stats, isLoading: statsLoading } = useReservationStats();

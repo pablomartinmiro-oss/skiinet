@@ -29,6 +29,8 @@ const QUOTE_CSV_COLUMNS = [
 
 const FILTER_TABS = [
   { key: "", label: "Todos" },
+  { key: "nuevo", label: "Nuevo" },
+  { key: "en_proceso", label: "En proceso" },
   { key: "borrador", label: "Borrador" },
   { key: "enviado", label: "Enviado" },
   { key: "pagado", label: "Pagado" },

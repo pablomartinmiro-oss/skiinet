@@ -1,12 +1,35 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AM complete — Comprehensive Demo Seed (todos los módulos poblados)
-- **Step:** Pushed
+- **Phase:** PHASE AN complete — QA bug sweep (14 fixes from audit)
+- **Step:** Ready to push
 - **Live URL:** https://crm-dash-prod.up.railway.app
 - **Last pushed commit:** afbd81a (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
+
+## Phase AN (2026-05-02) — QA bug sweep
+Fourteen bugs from the QA audit, fixed end to end. `tsc --noEmit` and `eslint` clean across all touched files.
+
+**P0 críticos**
+- **REAV crash (React #310)**: `ExpedientsTable.tsx` had `useMemo` *after* an early `return <PageSkeleton />`, so the hook count flipped between renders the moment the data finished loading. Restructured so all hooks (incl. the filter `useMemo`) run unconditionally; the early return now sits below.
+- **Restaurante 0 mostrados**: `useRestaurants` hit `/api/restaurant` (no route), and the typed `Restaurant.name` / `depositPerPerson` didn't match the schema's `title` / `depositPerGuest`. URLs now go to `/api/restaurant/venues` (and matching CRUD); types renamed; `VenuesTab` + `RestaurantModal` rewritten to read/write `title` and `depositPerGuest`.
+- **Restaurante NaN€ depósito**: `RestaurantBooking` had no `depositAmount` column — frontend was reading a non-existent field. The API now includes `restaurant.depositPerGuest`; `BookingsTab` computes `depositForBooking(b) = (b.restaurant?.depositPerGuest ?? lookup) * b.guestCount` with a null fallback.
+- **Restaurante CLIENTE & RESTAURANTE columns vacíos**: API already included `restaurant: { title }` and `client: { name, email }`, but the frontend read `b.restaurant?.name` and `b.clientName`. Frontend now reads `b.restaurant?.title` and `b.client?.name`. Bonus: when the modal sends inline `clientName/clientEmail/clientPhone`, the booking POST upserts a `Client` row by email/phone (or creates one) and stores its id, so future bookings have a real client linkage instead of a silently-dropped name.
+- **Hotel Reservas tab en blanco**: `StaysTab.tsx` was a "próximamente" placeholder. Implemented a full LodgeStay listing — guest contact, room type, check-in/out, nights, occupants, importe, status pill — backed by the existing `GET /api/hotel/stays` endpoint with `useQuery`.
+
+**P1 importantes**
+- **Reservas filtro "Hoy" devolvía 0**: list-mode page was loading `pageSize: 50` and the in-memory date filter operated on that subset. If today's reservations weren't in the latest 50, "Hoy" returned 0. Bumped list-mode pageSize to 500.
+- **Finanzas "Ingresos mes" = 0€**: `/api/finance/reports` parsed `to=YYYY-MM-DD` as midnight UTC, excluding all invoices paid the same day. Now normalised to `T23:59:59.999Z`. Also extended `fetchPaidInvoices` to fall back to `issuedAt` for paid invoices missing `paidAt` (auto-invoices that bypassed the webhook).
+- **Reviews columna PUNTUACIÓN vacía**: `StarRating` rendered five outlined stars with no numeric value when ratings hadn't loaded. Added a `Math.max/Math.min` clamp + a numeric `4.0` label next to the stars so the column is always readable.
+
+**P2 menores**
+- **Fichaje timestamps UTC**: `TimeEntryTable.formatTime` and `formatDate` now pass `timeZone: "Europe/Madrid"` so wall-clock entrada/salida always shows in local time regardless of server TZ.
+- **Fichaje stats contradictorias**: `TimeEntrySummary` rewrote labels — "Horas registradas" sub: "X fichajes completos (con entrada y salida)"; "Fichajes abiertos" sub: "Con entrada pero sin salida". The two are now visibly disjoint partitions.
+- **Finanzas payment methods raw**: new `lib/finance/payment-methods.ts` with `paymentMethodLabel()` mapping `card→Tarjeta`, `cash→Efectivo`, `bizum→Bizum`, `transfer→Transferencia`, `redsys→Redsys (TPV)`, `mixed→Mixto`, `other→Otro`. Wired into `DashboardTab` (recent transactions table); ready to drop into TPV + suppliers callsites.
+- **Presupuestos sin tabs nuevo/en_proceso**: `FILTER_TABS` extended with `nuevo` and `en_proceso` so quotes in those states get a clickable filter pill instead of being hidden under "Todos".
+- **Catálogo productos duplicados**: `/api/products` now post-filters the `OR: [tenantId, null]` result by `(slug, station, category)`, preferring the tenant-scoped row over the global one. Both rows are still in the DB; the response is what's deduped.
+- **Acentos**: bulk sed across `src/app/(dashboard)/**` and `src/components/layout/` rehydrated `Anadir→Añadir`, `Telefono→Teléfono`, `Direccion→Dirección`, `Descripcion→Descripción`, `Politica→Política`, `Conversion→Conversión`, `Cancelacion→Cancelación`, `Configuracion→Configuración`, `Metodo→Método`, `Habitacion→Habitación`, `Resena(s)→Reseña(s)`, `atencion→atención`, `Sesion→Sesión`, `Deposito→Depósito`, `Montana→Montaña`, `Informacion→Información`. Module registry's `Reseñas` label corrected too.
 
 ## Phase AM (2026-05-02) — Comprehensive Demo Seed
 Ampliado el seed demo para que la cuenta `admin@demo.com` / `demo1234` tenga datos realistas en TODOS los módulos:

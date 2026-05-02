@@ -29,8 +29,31 @@ export async function GET(request: NextRequest) {
       orderBy: [{ sortOrder: "asc" }, { category: "asc" }, { name: "asc" }],
     });
 
-    log.info({ count: products.length }, "Products fetched");
-    return NextResponse.json({ products });
+    // Dedupe global ↔ tenant-scoped duplicates: when a tenant copy and a
+    // global (tenantId=null) row share slug+station+category, the
+    // tenant copy wins. Without this, the catalog showed each ski/forfait
+    // twice on tenants that ran the seed both before and after the
+    // multi-tenant cutover.
+    const dedupKey = (p: { slug: string | null; station: string; category: string; name: string }) =>
+      `${(p.slug ?? p.name).toLowerCase()}::${p.station}::${p.category}`;
+
+    const byKey = new Map<string, (typeof products)[number]>();
+    for (const p of products) {
+      const key = dedupKey(p);
+      const existing = byKey.get(key);
+      if (!existing) {
+        byKey.set(key, p);
+        continue;
+      }
+      // Tenant-scoped wins over global
+      if (existing.tenantId === null && p.tenantId !== null) {
+        byKey.set(key, p);
+      }
+    }
+    const deduped = Array.from(byKey.values());
+
+    log.info({ count: deduped.length, raw: products.length }, "Products fetched");
+    return NextResponse.json({ products: deduped });
   } catch (error) {
     return apiError(error, { publicMessage: "Failed to fetch products", code: "PRODUCTS_ERROR", logContext: { tenantId } });
   }

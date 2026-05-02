@@ -116,7 +116,7 @@ export default function SupplierFormModal({ editing, form, setForm, onClose, onS
           <div className="grid grid-cols-2 gap-4">
             <TxtField label="Email" field="email" form={form} setForm={setForm}
               placeholder="contacto@empresa.com" type="email" />
-            <TxtField label="Telefono" field="phone" form={form} setForm={setForm}
+            <TxtField label="Teléfono" field="phone" form={form} setForm={setForm}
               placeholder="+34 600 000 000" />
           </div>
           {/* Commission type */}
@@ -142,7 +142,7 @@ export default function SupplierFormModal({ editing, form, setForm, onClose, onS
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={lCls}>Metodo pago</label>
+              <label className={lCls}>Método pago</label>
               <select value={form.paymentMethod}
                 onChange={(e) => setForm((p) => ({ ...p, paymentMethod: e.target.value }))}
                 className={sCls}>

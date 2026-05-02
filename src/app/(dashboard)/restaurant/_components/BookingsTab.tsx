@@ -66,7 +66,7 @@ function BookingModal({ restaurants, isOpen, onClose, onSave }: {
             <label className="block text-sm font-medium text-[#2D2A26] mb-1">Restaurante</label>
             <select value={form.restaurantId} onChange={(e) => setForm((p) => ({ ...p, restaurantId: e.target.value }))} className={inputCls} required>
               <option value="">Seleccionar restaurante...</option>
-              {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}
+              {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.title}</option>))}
             </select>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -93,7 +93,7 @@ function BookingModal({ restaurants, isOpen, onClose, onSave }: {
               <input type="email" value={form.clientEmail ?? ""} onChange={(e) => setForm((p) => ({ ...p, clientEmail: e.target.value || null }))} className={inputCls} placeholder="Opcional" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#2D2A26] mb-1">Telefono</label>
+              <label className="block text-sm font-medium text-[#2D2A26] mb-1">Teléfono</label>
               <input type="tel" value={form.clientPhone ?? ""} onChange={(e) => setForm((p) => ({ ...p, clientPhone: e.target.value || null }))} className={inputCls} placeholder="Opcional" />
             </div>
           </div>
@@ -155,8 +155,8 @@ export default function BookingsTab() {
   const handleDepositChange = async (booking: RestaurantBooking, depositStatus: string) => {
     try {
       await updateBooking.mutateAsync({ id: booking.id, depositStatus });
-      toast.success("Deposito actualizado");
-    } catch { toast.error("Error al actualizar deposito"); }
+      toast.success("Depósito actualizado");
+    } catch { toast.error("Error al actualizar depósito"); }
   };
 
   const handleDelete = async (booking: RestaurantBooking) => {
@@ -165,7 +165,13 @@ export default function BookingsTab() {
     catch { toast.error("Error al eliminar reserva"); }
   };
 
-  const restName = (id: string) => restaurants.find((r) => r.id === id)?.name || "--";
+  const restName = (id: string) => restaurants.find((r) => r.id === id)?.title || "—";
+  const depositForBooking = (b: RestaurantBooking): number => {
+    const perGuest = b.restaurant?.depositPerGuest
+      ?? restaurants.find((r) => r.id === b.restaurantId)?.depositPerGuest
+      ?? 0;
+    return perGuest * b.guestCount;
+  };
 
   return (
     <div className="space-y-4">
@@ -175,7 +181,7 @@ export default function BookingsTab() {
           <label className="block text-sm font-medium text-[#2D2A26] mb-1">Restaurante</label>
           <select value={filterRestaurant} onChange={(e) => setFilterRestaurant(e.target.value)} className={inputCls}>
             <option value="">Todos</option>
-            {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}
+            {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.title}</option>))}
           </select>
         </div>
         <div>
@@ -219,7 +225,7 @@ export default function BookingsTab() {
                   <th className="px-4 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Comensales</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Cliente</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Estado</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Deposito</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Depósito</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Notas</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Acciones</th>
                 </tr>
@@ -230,11 +236,11 @@ export default function BookingsTab() {
                   const depositBadge = DEPOSIT_BADGES[b.depositStatus] || DEPOSIT_BADGES.pending;
                   return (
                     <tr key={b.id} className="hover:bg-[#FAF9F7]/30 transition-colors">
-                      <td className="px-4 py-3 text-sm text-[#2D2A26]">{b.restaurant?.name || restName(b.restaurantId)}</td>
+                      <td className="px-4 py-3 text-sm text-[#2D2A26]">{b.restaurant?.title || restName(b.restaurantId)}</td>
                       <td className="px-4 py-3 text-sm text-[#2D2A26]">{formatDate(b.date)}</td>
                       <td className="px-4 py-3 text-sm text-[#8A8580]">{b.time}</td>
                       <td className="px-4 py-3 text-center text-sm text-[#8A8580]">{b.guestCount}</td>
-                      <td className="px-4 py-3 text-sm text-[#2D2A26]">{b.clientName}</td>
+                      <td className="px-4 py-3 text-sm text-[#2D2A26]">{b.client?.name ?? "—"}</td>
                       <td className="px-4 py-3 text-center">
                         <select value={b.status} onChange={(e) => handleStatusChange(b, e.target.value)}
                           className={`rounded-[6px] px-2 py-0.5 text-xs font-medium border-0 cursor-pointer ${statusBadge.color}`}>
@@ -245,7 +251,7 @@ export default function BookingsTab() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex flex-col items-center gap-0.5">
-                          <span className="text-xs text-[#8A8580]">{fmt.format(b.depositAmount)}</span>
+                          <span className="text-xs text-[#8A8580]">{fmt.format(depositForBooking(b))}</span>
                           <select value={b.depositStatus} onChange={(e) => handleDepositChange(b, e.target.value)}
                             className={`rounded-[6px] px-2 py-0.5 text-xs font-medium border-0 cursor-pointer ${depositBadge.color}`}>
                             <option value="pending">Pendiente</option>
@@ -253,8 +259,8 @@ export default function BookingsTab() {
                           </select>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-[#8A8580] max-w-[160px] truncate" title={b.specialRequests || b.notes || ""}>
-                        {b.specialRequests || b.notes || "--"}
+                      <td className="px-4 py-3 text-xs text-[#8A8580] max-w-[160px] truncate" title={b.specialRequests || b.operationalNotes || ""}>
+                        {b.specialRequests || b.operationalNotes || "—"}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button onClick={() => handleDelete(b)} className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-red-50 hover:text-[#C75D4A] transition-colors" title="Eliminar">

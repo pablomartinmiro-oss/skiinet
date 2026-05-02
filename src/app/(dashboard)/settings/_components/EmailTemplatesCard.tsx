@@ -25,7 +25,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Proveedores: "bg-[#8A8580]/15 text-[#8A8580]",
   Tienda: "bg-[#E87B5A]/15 text-[#E87B5A]",
   Presupuestos: "bg-blue-100 text-blue-700",
-  Cancelaciones: "bg-[#C75D4A]/15 text-[#C75D4A]",
+  Cancelaciónes: "bg-[#C75D4A]/15 text-[#C75D4A]",
   Bonos: "bg-purple-100 text-purple-700",
 };
 

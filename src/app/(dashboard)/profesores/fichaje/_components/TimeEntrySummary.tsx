@@ -8,33 +8,39 @@ interface Props {
 }
 
 export default function TimeEntrySummary({ entries }: Props) {
-  const completedEntries = entries.filter((e) => e.clockOut);
+  // A fichaje is COMPLETO when it has clockIn AND clockOut.
+  // ABIERTO  when it has clockIn but NOT clockOut.
+  // These are mutually exclusive partitions of `entries` — the previous label
+  // ("X fichajes completos" buried under "Horas totales") + a second card
+  // titled "Fichajes abiertos" made it look like the same number was counted
+  // twice. Each card now states the partition explicitly.
+  const completedEntries = entries.filter((e) => e.clockIn && e.clockOut);
+  const openEntries = entries.filter((e) => e.clockIn && !e.clockOut);
+  const lockedEntries = entries.filter((e) => e.lockedAt);
   const totalNetMinutes = completedEntries.reduce((s, e) => s + e.netMinutes, 0);
   const totalHours = (totalNetMinutes / 60).toFixed(1);
   const uniqueInstructors = new Set(entries.map((e) => e.instructorId)).size;
-  const openEntries = entries.filter((e) => !e.clockOut);
-  const lockedEntries = entries.filter((e) => e.lockedAt);
 
   const cards = [
     {
       icon: Clock,
-      label: "Horas totales",
+      label: "Horas registradas",
       value: `${totalHours}h`,
-      sub: `${completedEntries.length} fichajes completos`,
+      sub: `${completedEntries.length} fichaje${completedEntries.length === 1 ? "" : "s"} completo${completedEntries.length === 1 ? "" : "s"} (con entrada y salida)`,
       color: "#E87B5A",
     },
     {
       icon: Users,
-      label: "Profesores",
+      label: "Profesores con fichajes",
       value: String(uniqueInstructors),
-      sub: `${lockedEntries.length} fichajes bloqueados`,
+      sub: `${lockedEntries.length} bloqueado${lockedEntries.length === 1 ? "" : "s"}`,
       color: "#5B8C6D",
     },
     {
       icon: AlertTriangle,
       label: "Fichajes abiertos",
       value: String(openEntries.length),
-      sub: openEntries.length > 0 ? "Pendientes de salida" : "Todo en orden",
+      sub: openEntries.length > 0 ? "Con entrada pero sin salida" : "Todo en orden",
       color: openEntries.length > 0 ? "#D4A853" : "#8A8580",
     },
   ];

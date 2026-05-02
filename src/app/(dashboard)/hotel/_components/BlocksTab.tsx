@@ -63,7 +63,7 @@ export default function BlocksTab() {
       {/* Filters */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div>
-          <label className="block text-sm font-medium text-[#2D2A26] mb-1">Habitacion</label>
+          <label className="block text-sm font-medium text-[#2D2A26] mb-1">Habitación</label>
           <select value={filterRoom} onChange={(e) => setFilterRoom(e.target.value)} className={inputCls}>
             <option value="">Todas</option>
             {rooms.map((r) => (<option key={r.id} value={r.id}>{r.title}</option>))}
@@ -80,7 +80,7 @@ export default function BlocksTab() {
         <div className="flex items-end">
           <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors w-full justify-center">
             <Plus className="h-4 w-4" />
-            Anadir Bloqueo
+            Añadir Bloqueo
           </button>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function BlocksTab() {
         <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
           <ShieldBan className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay bloqueos registrados</p>
-          <p className="text-xs text-[#8A8580] mt-1">Crea un bloqueo para reservar o inhabilitar habitaciones</p>
+          <p className="text-xs text-[#8A8580] mt-1">Crea un bloqueo para reservar o inhabilitar habitaciónes</p>
         </div>
       ) : (
         <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
@@ -101,7 +101,7 @@ export default function BlocksTab() {
               <thead>
                 <tr className="border-b border-[#E8E4DE] bg-[#FAF9F7]/50">
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Fecha</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Tipo habitacion</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Tipo habitación</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Unidades</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Motivo</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Acciones</th>

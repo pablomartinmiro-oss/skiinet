@@ -35,10 +35,10 @@ export default function ResolveModal({ requestId, onClose }: Props) {
         voucherExpiration: voucherExpiration || null,
         notes: notes || undefined,
       });
-      toast.success("Cancelacion resuelta correctamente");
+      toast.success("Cancelación resuelta correctamente");
       onClose();
     } catch {
-      toast.error("Error al resolver cancelacion");
+      toast.error("Error al resolver cancelación");
     }
   };
 
@@ -48,7 +48,7 @@ export default function ResolveModal({ requestId, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-semibold text-[#2D2A26]">
-            Resolver cancelacion
+            Resolver cancelación
           </h3>
           <button
             onClick={onClose}

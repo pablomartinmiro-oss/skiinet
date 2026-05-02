@@ -68,12 +68,14 @@ function useDelById(basePath: string, keys: string[][]) {
 }
 
 // ==================== RESTAURANTS ====================
+// Schema field is `title` (matches Prisma model). Frontend used to call it
+// `name` which produced empty rows + a 0-restaurants display.
 export interface Restaurant {
   id: string;
-  name: string;
+  title: string;
   slug: string;
   capacity: number;
-  depositPerPerson: number;
+  depositPerGuest: number;
   operatingDays: number[];
   active: boolean;
   description: string | null;
@@ -82,7 +84,7 @@ export interface Restaurant {
 }
 
 export function useRestaurants(active?: boolean) {
-  const url = buildUrl("/api/restaurant", {
+  const url = buildUrl("/api/restaurant/venues", {
     active: active !== undefined ? String(active) : undefined,
   });
   return useQuery<{ restaurants: Restaurant[] }>({
@@ -94,25 +96,25 @@ export function useRestaurants(active?: boolean) {
 export function useRestaurant(id: string) {
   return useQuery<{ restaurant: Restaurant }>({
     queryKey: ["restaurant", id],
-    queryFn: () => fetchJSON(`/api/restaurant/${id}`),
+    queryFn: () => fetchJSON(`/api/restaurant/venues/${id}`),
     enabled: !!id,
   });
 }
 
 type CreateRestaurantInput = {
-  name: string; slug?: string; capacity: number; depositPerPerson: number;
+  title: string; slug?: string; capacity: number; depositPerGuest: number;
   operatingDays: number[]; description?: string | null; active?: boolean;
 };
 type UpdateRestaurantInput = {
-  id: string; name?: string; slug?: string; capacity?: number;
-  depositPerPerson?: number; operatingDays?: number[];
+  id: string; title?: string; slug?: string; capacity?: number;
+  depositPerGuest?: number; operatingDays?: number[];
   description?: string | null; active?: boolean;
 };
 
 const restKeys = [["restaurants"]];
-export const useCreateRestaurant = () => useMut<CreateRestaurantInput>("/api/restaurant", "POST", restKeys);
-export const useUpdateRestaurant = () => useMutWithId<UpdateRestaurantInput>("/api/restaurant", "PATCH", restKeys);
-export const useDeleteRestaurant = () => useDelById("/api/restaurant", restKeys);
+export const useCreateRestaurant = () => useMut<CreateRestaurantInput>("/api/restaurant/venues", "POST", restKeys);
+export const useUpdateRestaurant = () => useMutWithId<UpdateRestaurantInput>("/api/restaurant/venues", "PATCH", restKeys);
+export const useDeleteRestaurant = () => useDelById("/api/restaurant/venues", restKeys);
 
 // ==================== SHIFTS ====================
 export interface Shift {
@@ -123,7 +125,7 @@ export interface Shift {
   endTime: string;
   maxCapacity: number;
   slotDuration: number;
-  restaurant?: { name: string };
+  restaurant?: { title: string };
 }
 
 export function useShifts(restaurantId?: string) {
@@ -154,7 +156,7 @@ export interface Closure {
   restaurantId: string;
   date: string;
   reason: string;
-  restaurant?: { name: string };
+  restaurant?: { title: string };
 }
 
 export function useClosures(restaurantId?: string, from?: string, to?: string) {
@@ -171,21 +173,22 @@ export const useCreateClosure = () => useMut<CreateClosureInput>("/api/restauran
 export const useDeleteClosure = () => useDelById("/api/restaurant/closures", closureKeys);
 
 // ==================== BOOKINGS ====================
+// API returns `restaurant: { id, title }` and `client: { id, name, email }`
+// (see /api/restaurant/bookings include). Deposit amount is computed from
+// the restaurant's depositPerGuest × guestCount on the client side.
 export interface RestaurantBooking {
   id: string;
   restaurantId: string;
+  clientId: string | null;
   date: string;
   time: string;
   guestCount: number;
-  clientName: string;
-  clientEmail: string | null;
-  clientPhone: string | null;
   status: "confirmed" | "cancelled" | "no_show";
   depositStatus: "pending" | "paid";
-  depositAmount: number;
   specialRequests: string | null;
-  notes: string | null;
-  restaurant?: { name: string };
+  operationalNotes: string | null;
+  restaurant?: { id: string; title: string; depositPerGuest?: number };
+  client?: { id: string; name: string; email: string | null; phone?: string | null } | null;
   createdAt: string;
 }
 
@@ -202,12 +205,12 @@ export function useRestaurantBookings(
 type CreateBookingInput = {
   restaurantId: string; date: string; time: string; guestCount: number;
   clientName: string; clientEmail?: string | null; clientPhone?: string | null;
-  specialRequests?: string | null; notes?: string | null;
+  specialRequests?: string | null;
 };
 type UpdateBookingInput = {
   id: string; status?: string; depositStatus?: string;
   guestCount?: number; time?: string; specialRequests?: string | null;
-  notes?: string | null;
+  operationalNotes?: string | null;
 };
 
 const bookingKeys = [["restaurantBookings"]];
@@ -225,7 +228,7 @@ export interface RestaurantStaff {
   userId: string;
   role: "staff" | "manager" | "chef";
   user?: { name: string; email: string };
-  restaurant?: { name: string };
+  restaurant?: { title: string };
   createdAt: string;
 }
 

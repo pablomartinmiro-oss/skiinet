@@ -280,7 +280,7 @@ function ProfileModal({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Telefono</label>
+            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Teléfono</label>
             <input type="text" value={form.clientPhone} onChange={(e) => setForm((p) => ({ ...p, clientPhone: e.target.value }))} className={inputCls} />
           </div>
           <div className="grid grid-cols-3 gap-4">

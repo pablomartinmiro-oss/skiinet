@@ -57,7 +57,7 @@ function SettingModal({
       <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-4">
           <h2 className="text-lg font-semibold text-[#2D2A26]">
-            {setting ? "Editar Configuracion" : "Nueva Configuracion"}
+            {setting ? "Editar Configuración" : "Nueva Configuración"}
           </h2>
           <button
             onClick={onClose}
@@ -149,10 +149,10 @@ export default function ConfigTab() {
     try {
       const value = JSON.parse(d.valueJson) as Record<string, unknown>;
       await upsertSetting.mutateAsync({ key: d.key, value });
-      toast.success("Configuracion guardada");
+      toast.success("Configuración guardada");
       setModalOpen(false);
     } catch {
-      toast.error("Error al guardar configuracion");
+      toast.error("Error al guardar configuración");
     }
   };
 
@@ -163,7 +163,7 @@ export default function ConfigTab() {
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#8A8580]">
           {settings.length} clave{settings.length !== 1 ? "s" : ""} de
-          configuracion
+          configuración
         </p>
         <button
           onClick={handleAdd}
@@ -177,7 +177,7 @@ export default function ConfigTab() {
         <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
           <Settings className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">
-            No hay configuraciones del sitio
+            No hay configuraciónes del sitio
           </p>
           <p className="text-xs text-[#8A8580] mt-1">
             Anade claves como nombre del sitio, colores, etc.

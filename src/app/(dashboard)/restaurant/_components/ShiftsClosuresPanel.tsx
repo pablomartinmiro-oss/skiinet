@@ -65,7 +65,7 @@ export default function ShiftsClosuresPanel({ restaurant }: { restaurant: Restau
             <Clock className="h-3.5 w-3.5" /> Turnos
           </h4>
           <button onClick={() => setShowShiftForm(!showShiftForm)} className="text-xs text-[#E87B5A] hover:text-[#D56E4F] font-medium">
-            {showShiftForm ? "Cancelar" : "+ Anadir turno"}
+            {showShiftForm ? "Cancelar" : "+ Añadir turno"}
           </button>
         </div>
         {shifts.length > 0 && (
@@ -133,7 +133,7 @@ export default function ShiftsClosuresPanel({ restaurant }: { restaurant: Restau
             <Ban className="h-3.5 w-3.5" /> Cierres programados
           </h4>
           <button onClick={() => setShowClosureForm(!showClosureForm)} className="text-xs text-[#E87B5A] hover:text-[#D56E4F] font-medium">
-            {showClosureForm ? "Cancelar" : "+ Anadir cierre"}
+            {showClosureForm ? "Cancelar" : "+ Añadir cierre"}
           </button>
         </div>
         {closures.length > 0 ? (

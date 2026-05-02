@@ -165,7 +165,7 @@ export default function InvoiceModal({ invoice, isOpen, onClose }: Props) {
                 <div key={i} className="flex gap-2 items-end">
                   <div className="flex-1">
                     <label className="text-xs text-[#8A8580]">
-                      Descripcion
+                      Descripción
                     </label>
                     <input
                       type="text"
@@ -259,7 +259,7 @@ export default function InvoiceModal({ invoice, isOpen, onClose }: Props) {
                 className="flex items-center gap-1 text-sm text-[#E87B5A] hover:text-[#D56E4F] transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
-                Anadir linea
+                Añadir linea
               </button>
             </div>
           )}

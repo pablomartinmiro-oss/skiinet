@@ -95,7 +95,7 @@ export default function PackLinesRow({ pack }: { pack: LegoPack }) {
               onClick={() => setAdding(!adding)}
               className="flex items-center gap-1 text-xs text-[#E87B5A] hover:text-[#D56E4F] font-medium transition-colors"
             >
-              <Plus className="h-3.5 w-3.5" /> Anadir linea
+              <Plus className="h-3.5 w-3.5" /> Añadir linea
             </button>
           </div>
 
@@ -158,14 +158,14 @@ export default function PackLinesRow({ pack }: { pack: LegoPack }) {
                 type="submit"
                 className="rounded-[10px] bg-[#E87B5A] px-3 py-2 text-xs font-medium text-white hover:bg-[#D56E4F] transition-colors"
               >
-                Anadir
+                Añadir
               </button>
             </form>
           )}
 
           {lines.length === 0 ? (
             <p className="text-xs text-[#8A8580] py-2">
-              Sin lineas. Anade productos, habitaciones o tratamientos.
+              Sin lineas. Anade productos, habitaciónes o tratamientos.
             </p>
           ) : (
             <div className="bg-white rounded-[10px] border border-[#E8E4DE] overflow-hidden">

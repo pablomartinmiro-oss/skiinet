@@ -84,7 +84,7 @@ export function StructuredParticipantEditor({ reservationId }: Props) {
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-1 rounded-lg bg-[#E87B5A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#D56E4F]">
-          <Plus className="h-3 w-3" /> Anadir
+          <Plus className="h-3 w-3" /> Añadir
         </button>
       </div>
 

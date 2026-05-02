@@ -123,7 +123,7 @@ export function LeadList({
               </th>
               <SortHeader label="Nombre" k="name" sortKey={sortKey} sortDir={sortDir} onSort={setSort} />
               <th className="px-3 py-2.5 text-left">Email</th>
-              <th className="px-3 py-2.5 text-left">Telefono</th>
+              <th className="px-3 py-2.5 text-left">Teléfono</th>
               <th className="px-3 py-2.5 text-left">Origen</th>
               <SortHeader label="Estado" k="status" sortKey={sortKey} sortDir={sortDir} onSort={setSort} />
               <SortHeader label="Score" k="score" sortKey={sortKey} sortDir={sortDir} onSort={setSort} align="right" />

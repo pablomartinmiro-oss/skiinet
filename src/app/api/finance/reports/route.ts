@@ -37,7 +37,10 @@ export async function GET(req: NextRequest) {
   }
 
   const dateFrom = from ? new Date(from) : new Date(new Date().getFullYear(), 0, 1);
-  const dateTo = to ? new Date(to) : new Date();
+  // `to` arrives as YYYY-MM-DD which `new Date()` parses as midnight UTC, i.e.
+  // start-of-day. Without this normalisation, invoices paid on the same day
+  // were excluded from the month — the cause of the "Ingresos mes = 0€" bug.
+  const dateTo = to ? new Date(`${to}T23:59:59.999Z`) : new Date();
 
   try {
     const [invoices, expenses] = await Promise.all([
@@ -102,22 +105,28 @@ async function fetchPaidInvoices(
   from: Date,
   to: Date
 ): Promise<InvoiceRow[]> {
+  // Some auto-invoiced rows lack `paidAt` (paid via Redsys → webhook may have
+  // missed). Fall back to `issuedAt` so genuine paid invoices still count.
   const rows = await prisma.invoice.findMany({
     where: {
       tenantId,
       status: "paid",
-      paidAt: { gte: from, lte: to },
+      OR: [
+        { paidAt: { gte: from, lte: to } },
+        { paidAt: null, issuedAt: { gte: from, lte: to } },
+      ],
     },
     select: {
       id: true,
       total: true,
       paidAt: true,
+      issuedAt: true,
       clientId: true,
       status: true,
       lines: { select: { description: true, lineTotal: true } },
     },
   });
-  return rows;
+  return rows.map((r) => ({ ...r, paidAt: r.paidAt ?? r.issuedAt }));
 }
 
 async function fetchExpenses(

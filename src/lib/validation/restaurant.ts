@@ -40,9 +40,15 @@ export const createClosureSchema = z.object({
 });
 
 // ==================== BOOKINGS ====================
+// Accepts either an explicit `clientId` OR an inline `clientName` + contact
+// info. The route upserts a Client row when only the inline data is given so
+// the CLIENTE column never renders empty.
 export const createRestaurantBookingSchema = z.object({
   restaurantId: z.string().min(1),
   clientId: z.string().optional().nullable(),
+  clientName: z.string().max(200).optional().nullable(),
+  clientEmail: z.string().email().optional().nullable(),
+  clientPhone: z.string().max(50).optional().nullable(),
   date: z.coerce.date(),
   time: z.string().min(1),
   guestCount: z.number().int().min(1).max(100),

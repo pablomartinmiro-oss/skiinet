@@ -16,9 +16,9 @@ const inputCls =
   "w-full rounded-[10px] border border-[#E8E4DE] px-3 py-2 text-sm text-[#2D2A26] placeholder:text-[#8A8580] focus:border-[#E87B5A] focus:outline-none focus:ring-1 focus:ring-[#E87B5A]";
 
 export interface RestaurantFormData {
-  name: string;
+  title: string;
   capacity: number;
-  depositPerPerson: number;
+  depositPerGuest: number;
   operatingDays: number[];
   description: string | null;
   active: boolean;
@@ -34,8 +34,8 @@ interface Props {
 export default function RestaurantModal({ restaurant, isOpen, onClose, onSave }: Props) {
   const [form, setForm] = useState<RestaurantFormData>(() =>
     restaurant
-      ? { name: restaurant.name, capacity: restaurant.capacity, depositPerPerson: restaurant.depositPerPerson, operatingDays: restaurant.operatingDays, description: restaurant.description, active: restaurant.active }
-      : { name: "", capacity: 40, depositPerPerson: 0, operatingDays: [1, 2, 3, 4, 5, 6, 0], description: null, active: true }
+      ? { title: restaurant.title, capacity: restaurant.capacity, depositPerGuest: restaurant.depositPerGuest, operatingDays: restaurant.operatingDays, description: restaurant.description, active: restaurant.active }
+      : { title: "", capacity: 40, depositPerGuest: 0, operatingDays: [1, 2, 3, 4, 5, 6, 0], description: null, active: true }
   );
 
   if (!isOpen) return null;
@@ -68,7 +68,7 @@ export default function RestaurantModal({ restaurant, isOpen, onClose, onSave }:
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div>
             <label className="block text-sm font-medium text-[#2D2A26] mb-1">Nombre</label>
-            <input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} className={inputCls} placeholder="Ej: Restaurante La Montana" required />
+            <input type="text" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className={inputCls} placeholder="Ej: Restaurante La Montaña" required />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -76,8 +76,8 @@ export default function RestaurantModal({ restaurant, isOpen, onClose, onSave }:
               <input type="number" min="1" value={form.capacity} onChange={(e) => setForm((p) => ({ ...p, capacity: parseInt(e.target.value) || 1 }))} className={inputCls} required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#2D2A26] mb-1">Deposito/persona (EUR)</label>
-              <input type="number" min="0" step="0.01" value={form.depositPerPerson} onChange={(e) => setForm((p) => ({ ...p, depositPerPerson: parseFloat(e.target.value) || 0 }))} className={inputCls} required />
+              <label className="block text-sm font-medium text-[#2D2A26] mb-1">Depósito/persona (EUR)</label>
+              <input type="number" min="0" step="0.01" value={form.depositPerGuest} onChange={(e) => setForm((p) => ({ ...p, depositPerGuest: parseFloat(e.target.value) || 0 }))} className={inputCls} required />
             </div>
           </div>
           <div>
@@ -92,8 +92,8 @@ export default function RestaurantModal({ restaurant, isOpen, onClose, onSave }:
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Descripcion</label>
-            <input type="text" value={form.description ?? ""} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value || null }))} className={inputCls} placeholder="Descripcion opcional" />
+            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Descripción</label>
+            <input type="text" value={form.description ?? ""} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value || null }))} className={inputCls} placeholder="Descripción opcional" />
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="rest-active" checked={form.active} onChange={(e) => setForm((p) => ({ ...p, active: e.target.checked }))} className="h-4 w-4 rounded border-[#E8E4DE] text-[#E87B5A] focus:ring-[#E87B5A]" />

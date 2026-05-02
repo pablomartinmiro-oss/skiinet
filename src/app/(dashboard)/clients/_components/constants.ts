@@ -19,7 +19,7 @@ export const CLIENT_LANGUAGES: { value: ClientLanguage; label: string }[] = [
 
 export const SOURCES = [
   "Web",
-  "Telefono",
+  "Teléfono",
   "Email",
   "Groupon",
   "Referido",

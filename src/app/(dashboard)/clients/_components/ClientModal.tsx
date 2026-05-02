@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 
-const SOURCES = ["Web", "Telefono", "Email", "Groupon", "Referido", "Presencial", "Otro"];
+const SOURCES = ["Web", "Teléfono", "Email", "Groupon", "Referido", "Presencial", "Otro"];
 
 interface ClientModalProps {
   client?: Client | null;
@@ -77,7 +77,7 @@ export function ClientModal({ client, onClose, onSave, saving }: ClientModalProp
             <Field label="Email">
               <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="email@ejemplo.com" />
             </Field>
-            <Field label="Telefono">
+            <Field label="Teléfono">
               <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+34 600..." />
             </Field>
           </div>
@@ -96,8 +96,8 @@ export function ClientModal({ client, onClose, onSave, saving }: ClientModalProp
               </select>
             </Field>
           </div>
-          <Field label="Direccion">
-            <Input value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Direccion completa" />
+          <Field label="Dirección">
+            <Input value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Dirección completa" />
           </Field>
           <Field label="Notas">
             <textarea

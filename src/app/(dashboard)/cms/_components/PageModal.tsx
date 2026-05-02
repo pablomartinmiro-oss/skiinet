@@ -112,7 +112,7 @@ export default function PageModal({
                 setForm((p) => ({ ...p, metaDescription: e.target.value }))
               }
               className={inputCls}
-              placeholder="Descripcion para buscadores"
+              placeholder="Descripción para buscadores"
             />
           </div>
           <div className="flex items-center gap-2">

@@ -72,7 +72,7 @@ export default function IncidentForm({ groupCellId, onClose }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Descripcion *</label>
+            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Descripción *</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               rows={3} className={inputClass} placeholder="Describe la incidencia..." />
           </div>

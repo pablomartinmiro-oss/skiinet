@@ -3,7 +3,7 @@ import type { Client } from "@/hooks/useClients";
 const HEADERS = [
   "Nombre",
   "Email",
-  "Telefono",
+  "Teléfono",
   "DNI",
   "Nivel",
   "Estacion",

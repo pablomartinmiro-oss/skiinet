@@ -70,7 +70,7 @@ export default function LessonDetailPopup({ activity, onClose }: Props) {
               <Row icon={<Clock className="h-3.5 w-3.5" />} label="Horario" value={r.schedule} />
             )}
             {r?.clientPhone && (
-              <Row icon={<Phone className="h-3.5 w-3.5" />} label="Telefono" value={r.clientPhone} />
+              <Row icon={<Phone className="h-3.5 w-3.5" />} label="Teléfono" value={r.clientPhone} />
             )}
             {Array.isArray(participants) && (
               <Row

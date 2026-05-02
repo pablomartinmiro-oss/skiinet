@@ -60,19 +60,19 @@ export default function RoomTypesTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#8A8580]">
-          {rooms.length} tipo{rooms.length !== 1 ? "s" : ""} de habitacion
+          {rooms.length} tipo{rooms.length !== 1 ? "s" : ""} de habitación
         </p>
         <button onClick={handleAdd} className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors">
           <Plus className="h-4 w-4" />
-          Anadir Habitacion
+          Añadir Habitación
         </button>
       </div>
 
       {rooms.length === 0 ? (
         <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
           <BedDouble className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
-          <p className="text-sm text-[#8A8580]">No hay tipos de habitacion creados</p>
-          <p className="text-xs text-[#8A8580] mt-1">Crea tu primer tipo de habitacion para gestionar el hotel</p>
+          <p className="text-sm text-[#8A8580]">No hay tipos de habitación creados</p>
+          <p className="text-xs text-[#8A8580] mt-1">Crea tu primer tipo de habitación para gestionar el hotel</p>
         </div>
       ) : (
         <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">

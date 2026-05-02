@@ -99,7 +99,7 @@ export function LeadForm({
                 className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm"
               />
             </Field>
-            <Field label="Telefono">
+            <Field label="Teléfono">
               <input
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}

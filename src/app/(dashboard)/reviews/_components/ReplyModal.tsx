@@ -59,7 +59,7 @@ export default function ReplyModal({
       <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-4">
           <h2 className="text-lg font-semibold text-[#2D2A26]">
-            Responder Resena
+            Responder Reseña
           </h2>
           <button
             onClick={onClose}

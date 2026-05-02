@@ -58,7 +58,7 @@ export default function RoomTypeModal({ room, isOpen, onClose, onSave }: Props) 
       <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-4">
           <h2 className="text-lg font-semibold text-[#2D2A26]">
-            {room ? "Editar Habitacion" : "Nueva Habitacion"}
+            {room ? "Editar Habitación" : "Nueva Habitación"}
           </h2>
           <button onClick={onClose} className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-[#FAF9F7] transition-colors">
             <X className="h-5 w-5" />
@@ -85,8 +85,8 @@ export default function RoomTypeModal({ room, isOpen, onClose, onSave }: Props) 
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Descripcion</label>
-            <input type="text" value={form.description ?? ""} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value || null }))} className={inputCls} placeholder="Descripcion opcional" />
+            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Descripción</label>
+            <input type="text" value={form.description ?? ""} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value || null }))} className={inputCls} placeholder="Descripción opcional" />
           </div>
           <div>
             <label className="block text-sm font-medium text-[#2D2A26] mb-1">URLs de imagenes (una por linea)</label>
@@ -101,7 +101,7 @@ export default function RoomTypeModal({ room, isOpen, onClose, onSave }: Props) 
               Cancelar
             </button>
             <button type="submit" className="rounded-[10px] bg-[#E87B5A] px-4 py-2 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors">
-              {room ? "Guardar Cambios" : "Crear Habitacion"}
+              {room ? "Guardar Cambios" : "Crear Habitación"}
             </button>
           </div>
         </form>

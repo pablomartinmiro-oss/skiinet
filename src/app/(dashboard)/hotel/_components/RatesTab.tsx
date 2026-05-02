@@ -92,7 +92,7 @@ export default function RatesTab() {
 
   const handleSave = async () => {
     if (!selectedRoom || !selectedSeason) {
-      toast.error("Selecciona tipo de habitacion y temporada");
+      toast.error("Selecciona tipo de habitación y temporada");
       return;
     }
     try {
@@ -119,14 +119,14 @@ export default function RatesTab() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium text-[#2D2A26] mb-1">
-            Tipo de habitacion
+            Tipo de habitación
           </label>
           <select
             value={selectedRoom}
             onChange={(e) => setSelectedRoom(e.target.value)}
             className="w-full rounded-[10px] border border-[#E8E4DE] px-3 py-2 text-sm text-[#2D2A26] focus:border-[#E87B5A] focus:outline-none focus:ring-1 focus:ring-[#E87B5A]"
           >
-            <option value="">Seleccionar habitacion...</option>
+            <option value="">Seleccionar habitación...</option>
             {rooms.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.title}
@@ -158,7 +158,7 @@ export default function RatesTab() {
         <div className="rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-12 text-center">
           <Euro className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">
-            Selecciona un tipo de habitacion y una temporada
+            Selecciona un tipo de habitación y una temporada
           </p>
           <p className="text-xs text-[#8A8580] mt-1">
             Para configurar las tarifas por dia de la semana

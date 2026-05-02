@@ -63,21 +63,25 @@ export default function ExpedientsTable() {
   const [opFilter,   setOpFilter]   = useState("todos");
   const [page,       setPage]       = useState(1);
 
-  if (isLoading || invLoading) return <PageSkeleton />;
-
-  const expedients = data?.expedients     ?? [];
-  const invoices   = invoiceData?.invoices ?? [];
-  const resetPage  = () => setPage(1);
-
+  // All hooks must run on every render — derive `filtered` from `data`
+  // directly so the useMemo never sits behind a conditional return below
+  // (was the source of the React #310 crash).
   const filtered = useMemo(() => {
+    const all = data?.expedients ?? [];
     const q = search.trim().toLowerCase();
-    return expedients.filter((e) => {
+    return all.filter((e) => {
       if (opFilter !== "todos" && e.operationType !== opFilter) return false;
       if (!q) return true;
       return (e.invoice?.number ?? "").toLowerCase().includes(q)
           || (OP_LABELS[e.operationType] ?? e.operationType).toLowerCase().includes(q);
     });
-  }, [expedients, search, opFilter]);
+  }, [data?.expedients, search, opFilter]);
+
+  if (isLoading || invLoading) return <PageSkeleton />;
+
+  const expedients = data?.expedients     ?? [];
+  const invoices   = invoiceData?.invoices ?? [];
+  const resetPage = () => setPage(1);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage   = Math.min(page, totalPages);

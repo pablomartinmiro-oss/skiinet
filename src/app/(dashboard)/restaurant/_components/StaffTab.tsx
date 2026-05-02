@@ -58,7 +58,7 @@ function AssignModal({ restaurants, isOpen, onClose, onSave }: {
             <label className="block text-sm font-medium text-[#2D2A26] mb-1">Restaurante</label>
             <select value={form.restaurantId} onChange={(e) => setForm((p) => ({ ...p, restaurantId: e.target.value }))} className={inputCls} required>
               <option value="">Seleccionar restaurante...</option>
-              {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}
+              {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.title}</option>))}
             </select>
           </div>
           <div>
@@ -123,7 +123,7 @@ export default function StaffTab() {
     } catch { toast.error("Error al desasignar personal"); }
   };
 
-  const restName = (id: string) => restaurants.find((r) => r.id === id)?.name || "--";
+  const restName = (id: string) => restaurants.find((r) => r.id === id)?.title || "--";
 
   return (
     <div className="space-y-4">
@@ -133,7 +133,7 @@ export default function StaffTab() {
           <label className="block text-sm font-medium text-[#2D2A26] mb-1">Restaurante</label>
           <select value={filterRestaurant} onChange={(e) => setFilterRestaurant(e.target.value)} className={inputCls}>
             <option value="">Todos</option>
-            {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}
+            {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.title}</option>))}
           </select>
         </div>
         <div />
@@ -187,7 +187,7 @@ export default function StaffTab() {
                           {badge.label}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#2D2A26]">{s.restaurant?.name || restName(s.restaurantId)}</td>
+                      <td className="px-6 py-4 text-sm text-[#2D2A26]">{s.restaurant?.title || restName(s.restaurantId)}</td>
                       <td className="px-6 py-4 text-right">
                         <button onClick={() => handleUnassign(s)} className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-red-50 hover:text-[#C75D4A] transition-colors" title="Desasignar">
                           <Trash2 className="h-4 w-4" />

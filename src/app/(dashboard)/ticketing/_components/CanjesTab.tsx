@@ -97,7 +97,7 @@ function RedemptionModal({ redemption, isOpen, onClose, onSave }: {
               <input type="email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} className={inputCls} placeholder="cliente@email.com" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#2D2A26] mb-1">Telefono</label>
+              <label className="block text-sm font-medium text-[#2D2A26] mb-1">Teléfono</label>
               <input type="text" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} className={inputCls} placeholder="+34 600..." />
             </div>
           </div>

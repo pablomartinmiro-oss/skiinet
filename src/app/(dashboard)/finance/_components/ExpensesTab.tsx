@@ -170,7 +170,7 @@ export default function ExpensesTab() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Concepto</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Categoria</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Importe</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Metodo pago</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Método pago</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Estado</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Acciones</th>
                 </tr>
@@ -219,13 +219,13 @@ export default function ExpensesTab() {
                 <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Fecha</label><input type="date" value={form.date} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))} className={inputCls} required /></div>
                 <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Categoria</label><select value={form.categoryId} onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))} className={inputCls} required><option value="">Seleccionar...</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
               </div>
-              <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Concepto</label><input type="text" value={form.concept} onChange={(e) => setForm((p) => ({ ...p, concept: e.target.value }))} className={inputCls} placeholder="Descripcion del gasto" required /></div>
+              <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Concepto</label><input type="text" value={form.concept} onChange={(e) => setForm((p) => ({ ...p, concept: e.target.value }))} className={inputCls} placeholder="Descripción del gasto" required /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Centro de coste</label><select value={form.costCenterId} onChange={(e) => setForm((p) => ({ ...p, costCenterId: e.target.value }))} className={inputCls}><option value="">Ninguno</option>{costCenters.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                 <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Importe (EUR)</label><input type="number" min="0" step="0.01" value={form.amount} onChange={(e) => setForm((p) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))} className={inputCls} required /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Metodo pago</label><select value={form.paymentMethod} onChange={(e) => setForm((p) => ({ ...p, paymentMethod: e.target.value }))} className={inputCls}><option value="transfer">Transferencia</option><option value="card">Tarjeta</option><option value="cash">Efectivo</option><option value="direct_debit">Domiciliacion</option></select></div>
+                <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Método pago</label><select value={form.paymentMethod} onChange={(e) => setForm((p) => ({ ...p, paymentMethod: e.target.value }))} className={inputCls}><option value="transfer">Transferencia</option><option value="card">Tarjeta</option><option value="cash">Efectivo</option><option value="direct_debit">Domiciliacion</option></select></div>
                 <div><label className="block text-sm font-medium text-[#2D2A26] mb-1">Estado</label><select value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))} className={inputCls}><option value="pending">Pendiente</option><option value="justified">Justificado</option><option value="accounted">Contabilizado</option></select></div>
               </div>
               <div className="flex justify-end gap-3 pt-2">

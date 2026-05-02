@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useFinanceDashboard, useFinanceReports } from "@/hooks/useFinance";
 import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
+import { paymentMethodLabel } from "@/lib/finance/payment-methods";
 
 const fmt = new Intl.NumberFormat("es-ES", {
   style: "currency",
@@ -247,7 +248,7 @@ export default function DashboardTab() {
                 <tr className="border-b border-[#E8E4DE] text-left text-xs text-[#8A8580]">
                   <th className="pb-2 pr-4 font-medium">Fecha</th>
                   <th className="pb-2 pr-4 font-medium">Factura</th>
-                  <th className="pb-2 pr-4 font-medium">Metodo</th>
+                  <th className="pb-2 pr-4 font-medium">Método</th>
                   <th className="pb-2 text-right font-medium">Importe</th>
                 </tr>
               </thead>
@@ -263,7 +264,7 @@ export default function DashboardTab() {
                     <td className="py-2.5 pr-4 text-[#8A8580]">
                       {tx.invoice?.number ?? "-"}
                     </td>
-                    <td className="py-2.5 pr-4 text-[#2D2A26]">{tx.method}</td>
+                    <td className="py-2.5 pr-4 text-[#2D2A26]">{paymentMethodLabel(tx.method)}</td>
                     <td className="py-2.5 text-right font-semibold text-[#2D2A26]">
                       {fmt.format(tx.amount)}
                     </td>

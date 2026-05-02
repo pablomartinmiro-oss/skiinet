@@ -41,7 +41,7 @@ export default function VenuesTab() {
   const handleEdit = (r: Restaurant) => { setEditing(r); setModalOpen(true); };
 
   const handleDelete = async (r: Restaurant) => {
-    if (!confirm(`Eliminar el restaurante "${r.name}"?`)) return;
+    if (!confirm(`Eliminar el restaurante "${r.title}"?`)) return;
     try { await deleteRest.mutateAsync(r.id); toast.success("Restaurante eliminado"); }
     catch { toast.error("Error al eliminar restaurante"); }
   };
@@ -66,7 +66,7 @@ export default function VenuesTab() {
           {restaurants.length} restaurante{restaurants.length !== 1 ? "s" : ""}
         </p>
         <button onClick={handleAdd} className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors">
-          <Plus className="h-4 w-4" /> Anadir Restaurante
+          <Plus className="h-4 w-4" /> Añadir Restaurante
         </button>
       </div>
 
@@ -85,7 +85,7 @@ export default function VenuesTab() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider w-8"></th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Nombre</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Capacidad</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Deposito/persona</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Depósito/persona</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Dias operacion</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Estado</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Acciones</th>
@@ -103,11 +103,11 @@ export default function VenuesTab() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <UtensilsCrossed className="h-4 w-4 text-[#8A8580]" />
-                          <span className="font-medium text-sm text-[#2D2A26]">{r.name}</span>
+                          <span className="font-medium text-sm text-[#2D2A26]">{r.title}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center text-sm text-[#8A8580]">{r.capacity}</td>
-                      <td className="px-6 py-4 text-right text-sm text-[#2D2A26]">{fmt.format(r.depositPerPerson)}</td>
+                      <td className="px-6 py-4 text-right text-sm text-[#2D2A26]">{fmt.format(r.depositPerGuest ?? 0)}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-1">{formatDays(r.operatingDays)}</div>
                       </td>

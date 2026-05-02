@@ -141,7 +141,7 @@ export default function SalesTab() {
           <Receipt className="mx-auto h-10 w-10 text-[#8A8580] mb-3" />
           <p className="text-sm text-[#8A8580]">No hay ventas registradas</p>
           <p className="text-xs text-[#8A8580] mt-1">
-            Las ventas se crean desde una sesion abierta
+            Las ventas se crean desde una sesión abierta
           </p>
         </div>
       ) : (
@@ -252,7 +252,7 @@ function SaleDetailModal({ sale, onClose }: { sale: TpvSale; onClose: () => void
               <table className="w-full">
                 <thead>
                   <tr className="bg-[#FAF9F7]/50 text-xs text-[#8A8580]">
-                    <th className="px-3 py-2 text-left">Descripcion</th>
+                    <th className="px-3 py-2 text-left">Descripción</th>
                     <th className="px-3 py-2 text-center">Cant.</th>
                     <th className="px-3 py-2 text-right">P. Unit.</th>
                     <th className="px-3 py-2 text-right">Total</th>

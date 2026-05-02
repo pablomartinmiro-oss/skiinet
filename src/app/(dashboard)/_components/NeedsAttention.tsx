@@ -72,7 +72,7 @@ export function NeedsAttention({ quotes, loading }: NeedsAttentionProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/10">
             <AlertTriangle className="h-4 w-4 text-amber-700" />
           </div>
-          <h2 className="text-base font-semibold text-slate-900">Necesita atencion</h2>
+          <h2 className="text-base font-semibold text-slate-900">Necesita atención</h2>
         </div>
         <div className="space-y-2">
           {[1, 2].map((i) => (
@@ -91,7 +91,7 @@ export function NeedsAttention({ quotes, loading }: NeedsAttentionProps) {
             <AlertTriangle className="h-4 w-4 text-green-700" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Necesita atencion</h2>
+            <h2 className="text-base font-semibold text-slate-900">Necesita atención</h2>
             <p className="text-xs text-slate-500">Sin elementos pendientes</p>
           </div>
         </div>
@@ -106,7 +106,7 @@ export function NeedsAttention({ quotes, loading }: NeedsAttentionProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/10">
             <AlertTriangle className="h-4 w-4 text-amber-700" />
           </div>
-          <h2 className="text-base font-semibold text-slate-900">Necesita atencion</h2>
+          <h2 className="text-base font-semibold text-slate-900">Necesita atención</h2>
         </div>
         <span className="rounded-full bg-gold/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
           {urgent.length}

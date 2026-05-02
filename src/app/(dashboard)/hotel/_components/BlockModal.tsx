@@ -54,9 +54,9 @@ export default function BlockModal({ rooms, isOpen, onClose, onSave }: Props) {
         </div>
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Tipo de habitacion</label>
+            <label className="block text-sm font-medium text-[#2D2A26] mb-1">Tipo de habitación</label>
             <select value={form.roomTypeId} onChange={(e) => setForm((p) => ({ ...p, roomTypeId: e.target.value }))} className={inputCls} required>
-              <option value="">Seleccionar habitacion...</option>
+              <option value="">Seleccionar habitación...</option>
               {rooms.map((r) => (
                 <option key={r.id} value={r.id}>{r.title}</option>
               ))}

@@ -110,7 +110,7 @@ export default function RegistersTab() {
           className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Anadir Caja
+          Añadir Caja
         </button>
       </div>
 
@@ -130,8 +130,8 @@ export default function RegistersTab() {
                 <tr className="border-b border-[#E8E4DE] bg-[#FAF9F7]/50">
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Nombre</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Ubicacion</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Sesiones</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Sesion abierta</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Sesiónes</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#8A8580] uppercase tracking-wider">Sesión abierta</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-[#8A8580] uppercase tracking-wider">Estado</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-[#8A8580] uppercase tracking-wider">Acciones</th>
                 </tr>
@@ -151,7 +151,7 @@ export default function RegistersTab() {
                       {(() => {
                         const open = openByRegister.get(reg.id);
                         if (!open) {
-                          return <span className="text-xs text-[#8A8580]">Sin sesion abierta</span>;
+                          return <span className="text-xs text-[#8A8580]">Sin sesión abierta</span>;
                         }
                         return (
                           <div className="flex flex-col gap-0.5">

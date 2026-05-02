@@ -143,7 +143,7 @@ export default function BatchRedemptionModal({ isOpen, onClose }: Props) {
                   <div className="grid grid-cols-3 gap-3">
                     <input type="text" value={row.code} onChange={(e) => updateRow(idx, "code", e.target.value)} className={inputCls} placeholder="Codigo cupon" />
                     <input type="email" value={row.email} onChange={(e) => updateRow(idx, "email", e.target.value)} className={inputCls} placeholder="Email (opcional)" />
-                    <input type="text" value={row.phone} onChange={(e) => updateRow(idx, "phone", e.target.value)} className={inputCls} placeholder="Telefono (opt)" />
+                    <input type="text" value={row.phone} onChange={(e) => updateRow(idx, "phone", e.target.value)} className={inputCls} placeholder="Teléfono (opt)" />
                   </div>
                   <div className="flex items-center gap-2">
                     <label className="flex items-center gap-2 rounded-[10px] border border-dashed border-[#E8E4DE] px-3 py-2 text-xs text-[#8A8580] hover:border-[#E87B5A] hover:text-[#E87B5A] cursor-pointer transition-colors">
@@ -161,7 +161,7 @@ export default function BatchRedemptionModal({ isOpen, onClose }: Props) {
 
               <div className="flex items-center justify-between pt-2">
                 <button onClick={addRow} disabled={rows.length >= 10} className="flex items-center gap-1 text-sm text-[#E87B5A] hover:text-[#D56E4F] disabled:opacity-50 transition-colors">
-                  <Plus className="h-4 w-4" /> Anadir cupon ({rows.length}/10)
+                  <Plus className="h-4 w-4" /> Añadir cupon ({rows.length}/10)
                 </button>
                 <button
                   onClick={handleSubmit}

@@ -388,7 +388,7 @@ export default function CreateGroupModal({ date, station, instructors, onClose }
               {validStudents.length < form.maxParticipants && (
                 <button type="button" onClick={addStudentRow}
                   className="flex items-center gap-1 rounded-lg bg-[#E87B5A]/10 px-2 py-1 text-[10px] font-medium text-[#E87B5A] hover:bg-[#E87B5A]/20">
-                  <Plus className="h-3 w-3" /> Anadir
+                  <Plus className="h-3 w-3" /> Añadir
                 </button>
               )}
             </div>
@@ -406,7 +406,7 @@ export default function CreateGroupModal({ date, station, instructors, onClose }
                     <input type="number" min={3} max={99} value={s.age} onChange={(e) => updateStudent(idx, "age", e.target.value)}
                       placeholder="Edad" className={`${inputClass} text-xs py-1.5`} />
                     <input value={s.phone} onChange={(e) => updateStudent(idx, "phone", e.target.value)}
-                      placeholder="Telefono" className={`${inputClass} text-xs py-1.5`} />
+                      placeholder="Teléfono" className={`${inputClass} text-xs py-1.5`} />
                   </div>
                   {students.length > 1 && (
                     <button type="button" onClick={() => removeStudentRow(idx)}

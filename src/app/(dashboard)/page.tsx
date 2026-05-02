@@ -253,7 +253,7 @@ export default function DashboardHome() {
 
         <div className="animate-fade-in card-hover rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-slate-900">Embudo de Conversion</h2>
+            <h2 className="text-base font-semibold text-slate-900">Embudo de Conversión</h2>
             <span className="text-xs text-slate-500">{allQuotes.length} presupuestos</span>
           </div>
           <FunnelChart quotes={allQuotes} totalReservations={resStats?.weekly.totalReservations ?? 0} />

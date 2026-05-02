@@ -104,13 +104,13 @@ export default function PackEditModal({
           </div>
           <div>
             <label className="block text-sm font-medium text-[#2D2A26] mb-1">
-              Descripcion
+              Descripción
             </label>
             <textarea
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               className={inputCls + " min-h-[80px]"}
-              placeholder="Descripcion opcional"
+              placeholder="Descripción opcional"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">

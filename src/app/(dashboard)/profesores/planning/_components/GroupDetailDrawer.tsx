@@ -131,7 +131,7 @@ export default function GroupDetailDrawer({ groupId, onClose, instructors }: Pro
                 <button onClick={() => setShowAddParticipant(true)}
                   className="flex items-center gap-1 rounded-lg bg-[#E87B5A]/10 px-2 py-1 text-[10px] font-medium text-[#E87B5A] hover:bg-[#E87B5A]/20 transition-colors">
                   <UserPlus className="h-3 w-3" />
-                  Anadir alumno
+                  Añadir alumno
                 </button>
               )}
             </div>
@@ -142,7 +142,7 @@ export default function GroupDetailDrawer({ groupId, onClose, instructors }: Pro
                 <p className="text-xs text-[#8A8580] mb-2">Sin participantes en este grupo</p>
                 <button onClick={() => setShowAddParticipant(true)}
                   className="rounded-lg bg-[#E87B5A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#D56E4F]">
-                  <Plus className="inline h-3 w-3 mr-1" />Anadir primer alumno
+                  <Plus className="inline h-3 w-3 mr-1" />Añadir primer alumno
                 </button>
               </div>
             ) : (
@@ -271,7 +271,7 @@ function AddParticipantForm({ groupId, discipline, level, language, onClose }: {
   return (
     <div className="border-t-2 border-[#E87B5A] bg-[#FAF9F7] p-5">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-[#2D2A26]">Anadir alumno (walk-in)</h3>
+        <h3 className="text-sm font-semibold text-[#2D2A26]">Añadir alumno (walk-in)</h3>
         <button onClick={onClose} className="text-xs text-[#8A8580] hover:text-[#2D2A26]">Cancelar</button>
       </div>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -285,7 +285,7 @@ function AddParticipantForm({ groupId, discipline, level, language, onClose }: {
           <input type="number" value={form.age} onChange={(e) => set("age", e.target.value)}
             placeholder="Edad" min={3} max={99} className={`w-20 ${inputClass}`} />
           <input value={form.phone} onChange={(e) => set("phone", e.target.value)}
-            placeholder="Telefono contacto" className={inputClass} />
+            placeholder="Teléfono contacto" className={inputClass} />
         </div>
         <div className="flex gap-2">
           <select value={form.discipline} onChange={(e) => set("discipline", e.target.value)} className={inputClass}>
@@ -308,7 +308,7 @@ function AddParticipantForm({ groupId, discipline, level, language, onClose }: {
         </div>
         <button type="submit" disabled={addMutation.isPending}
           className="w-full rounded-lg bg-[#E87B5A] py-2 text-sm font-medium text-white hover:bg-[#D56E4F] disabled:opacity-50">
-          {addMutation.isPending ? "Anadiendo..." : "Anadir al grupo"}
+          {addMutation.isPending ? "Añadiendo..." : "Añadir al grupo"}
         </button>
       </form>
     </div>

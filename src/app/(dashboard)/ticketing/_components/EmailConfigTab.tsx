@@ -55,7 +55,7 @@ function ConfigModal({ config, isOpen, onClose, onSave }: {
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-4">
           <h2 className="text-lg font-semibold text-[#2D2A26]">
-            {config ? "Editar Configuracion" : "Nueva Configuracion"}
+            {config ? "Editar Configuración" : "Nueva Configuración"}
           </h2>
           <button onClick={onClose} className="rounded-[10px] p-1.5 text-[#8A8580] hover:bg-[#FAF9F7] transition-colors">
             <X className="h-5 w-5" />
@@ -118,7 +118,7 @@ function ConfigModal({ config, isOpen, onClose, onSave }: {
               type="submit"
               className="rounded-[10px] bg-[#E87B5A] px-4 py-2 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors"
             >
-              {config ? "Guardar Cambios" : "Crear Configuracion"}
+              {config ? "Guardar Cambios" : "Crear Configuración"}
             </button>
           </div>
         </form>
@@ -144,19 +144,19 @@ export default function EmailConfigTab() {
   const handleToggle = async (c: CouponEmailConfig) => {
     try {
       await updateCfg.mutateAsync({ id: c.id, enabled: !c.enabled });
-      toast.success(c.enabled ? "Configuracion deshabilitada" : "Configuracion habilitada");
+      toast.success(c.enabled ? "Configuración deshabilitada" : "Configuración habilitada");
     } catch {
-      toast.error("Error al actualizar configuracion");
+      toast.error("Error al actualizar configuración");
     }
   };
 
   const handleDelete = async (c: CouponEmailConfig) => {
-    if (!confirm("Eliminar esta configuracion de email?")) return;
+    if (!confirm("Eliminar esta configuración de email?")) return;
     try {
       await deleteCfg.mutateAsync(c.id);
-      toast.success("Configuracion eliminada");
+      toast.success("Configuración eliminada");
     } catch {
-      toast.error("Error al eliminar configuracion");
+      toast.error("Error al eliminar configuración");
     }
   };
 
@@ -164,14 +164,14 @@ export default function EmailConfigTab() {
     try {
       if (d.id) {
         await updateCfg.mutateAsync({ id: d.id, ...d });
-        toast.success("Configuracion actualizada");
+        toast.success("Configuración actualizada");
       } else {
         await createCfg.mutateAsync(d);
-        toast.success("Configuracion creada");
+        toast.success("Configuración creada");
       }
       setModalOpen(false);
     } catch {
-      toast.error("Error al guardar configuracion");
+      toast.error("Error al guardar configuración");
     }
   };
 
@@ -189,7 +189,7 @@ export default function EmailConfigTab() {
           onClick={handleAdd}
           className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors"
         >
-          <Plus className="h-4 w-4" /> Anadir Regla
+          <Plus className="h-4 w-4" /> Añadir Regla
         </button>
       </div>
 

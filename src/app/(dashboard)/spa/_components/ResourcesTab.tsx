@@ -135,7 +135,7 @@ export default function ResourcesTab() {
           </p>
         </div>
         <button onClick={handleAdd} className="flex items-center gap-2 rounded-[10px] bg-[#E87B5A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#D56E4F] transition-colors">
-          <Plus className="h-4 w-4" /> Anadir Recurso
+          <Plus className="h-4 w-4" /> Añadir Recurso
         </button>
       </div>
 
