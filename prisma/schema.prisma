@@ -485,6 +485,7 @@ model QuoteItem {
   name        String   // Snapshot of product name
   description String?
   category    String?  // Product category snapshot: forfait, alquiler, clase_particular, etc.
+  moduleType  String?  // "catalog" | "rental" | "hotel" | "spa" | "instructor" — derived from category, drives cascade logic
   quantity    Int      @default(1)
   unitPrice   Float
   discount    Float    @default(0) // percentage 0-100

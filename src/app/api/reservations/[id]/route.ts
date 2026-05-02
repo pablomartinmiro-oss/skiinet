@@ -9,6 +9,7 @@ import { autoInvoiceFromReservation } from "@/lib/invoices/auto-invoice-from-res
 import { sendEmail } from "@/lib/email/client";
 import { buildReservationConfirmationHTML } from "@/lib/email/templates/reservation-confirmation";
 import { buildReservationCancellationHTML } from "@/lib/email/templates/reservation-cancellation";
+import { emitEvent } from "@/lib/events";
 
 const log = logger.child({ module: "reservations/[id]" });
 
@@ -209,6 +210,18 @@ export async function PATCH(
       ).catch((err) => rlog.warn({ err }, "Auto-invoice failed (non-blocking)"));
     }
 
+    // Cross-module fan-out via event bus
+    if (statusChanged && status === "confirmada") {
+      emitEvent(tenantId, "reservation_confirmed", { reservationId: reservation.id }).catch(
+        (err) => rlog.warn({ err }, "reservation_confirmed event failed (non-blocking)")
+      );
+    } else if (statusChanged && (status === "cancelada" || status === "sin_disponibilidad")) {
+      emitEvent(tenantId, "reservation_cancelled", {
+        reservationId: reservation.id,
+        reason: status,
+      }).catch((err) => rlog.warn({ err }, "reservation_cancelled event failed (non-blocking)"));
+    }
+
     // Email notifications on status change (fire-and-forget)
     if (sendsEmail) {
       const lite: ReservationLite = {
@@ -268,6 +281,10 @@ export async function DELETE(
 
     if (wasConfirmed) {
       await adjustCapacity(tenantId, existing.station, existing.activityDate, -1);
+      emitEvent(tenantId, "reservation_cancelled", {
+        reservationId: id,
+        reason: "eliminada",
+      }).catch((err) => rlog.warn({ err }, "reservation_cancelled event failed (non-blocking)"));
     }
 
     rlog.info({ wasConfirmed }, "Reservation soft-deleted");

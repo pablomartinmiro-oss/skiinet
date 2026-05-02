@@ -6,6 +6,11 @@ import { logger } from "@/lib/logger";
 import { apiError } from "@/lib/api-response";
 import { validateBody, quoteItemSchema, bulkReplaceQuoteItemsSchema } from "@/lib/validation";
 import type { Prisma } from "@/generated/prisma/client";
+import { categoryToModule } from "@/lib/quotes/category-to-module";
+import {
+  checkCrossModuleAvailability,
+  type AvailabilityItem,
+} from "@/lib/availability/cross-module";
 
 export async function POST(
   request: NextRequest,
@@ -45,6 +50,11 @@ export async function POST(
         name: body.name,
         description: data.description || null,
         category: body.category || null,
+        moduleType: categoryToModule({
+          category: body.category,
+          alojamientoNombre: body.alojamientoNombre,
+          regimen: body.regimen,
+        }),
         quantity,
         unitPrice,
         discount,
@@ -130,6 +140,11 @@ export async function PUT(
           name: itemData.name,
           description: itemData.description ?? null,
           category: itemData.category ?? null,
+          moduleType: categoryToModule({
+            category: itemData.category,
+            alojamientoNombre: itemData.alojamientoNombre,
+            regimen: itemData.regimen,
+          }),
           quantity,
           unitPrice,
           discount,
@@ -167,7 +182,34 @@ export async function PUT(
     });
 
     log.info({ quoteId, itemCount: items.length }, "Quote items replaced");
-    return NextResponse.json({ items, totalAmount });
+
+    // Advisory cross-module availability snapshot for UI banners (non-blocking)
+    let availability: Awaited<ReturnType<typeof checkCrossModuleAvailability>> | null = null;
+    try {
+      const checkItems = items
+        .filter((it) => it.productId && it.startDate)
+        .map<AvailabilityItem | null>((it) => {
+          if (it.moduleType === "rental" && it.productId) {
+            return null; // Need RentalInventory id, not Product id — skip until UI passes it
+          }
+          if (it.moduleType === "instructor" && it.productId) {
+            return { type: "class", productId: it.productId, qty: it.numPersons ?? it.quantity };
+          }
+          return null;
+        })
+        .filter((x): x is AvailabilityItem => x !== null);
+      if (checkItems.length > 0) {
+        availability = await checkCrossModuleAvailability(
+          tenantId,
+          quote.checkIn,
+          checkItems
+        );
+      }
+    } catch (err) {
+      log.warn({ err }, "Availability snapshot failed (non-blocking)");
+    }
+
+    return NextResponse.json({ items, totalAmount, availability });
   } catch (error) {
     return apiError(error, {
       publicMessage: "Failed to update items",

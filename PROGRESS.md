@@ -1,7 +1,7 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AI complete — Portal del Profesor (Fase 4)
+- **Phase:** PHASE AJ complete — Interconexión de Módulos (Fase 5)
 - **Step:** Ready for push
 - **Live URL:** https://crm-dash-prod.up.railway.app
 - **Last pushed commit:** cb6fa70 (2026-03-18)
@@ -439,6 +439,42 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 - **Verify**: `curl https://openclaw-production-50e4.up.railway.app/api/storefront/public/skicenter/products | jq '.products | length'` should return ≥ 43.
 - **Audit**: `npx tsc --noEmit` → 0 errors.
 
+### Phase AJ: Interconexión de Módulos — Cross-Module Plumbing (2026-05-02) ✅
+- **Goal**: turn the platform from "modules side-by-side" into "modules that talk". A reservation that bundles class + rental + hotel must (a) verify availability across all three before saving, (b) when confirmed, fan out to per-module sub-records (RentalOrder + LodgeStay + ActivityBooking), (c) free inventory back when cancelled, all driven by a small in-process event bus.
+- **Cross-module availability**:
+  - `src/lib/availability/cross-module.ts` — `checkCrossModuleAvailability(tenantId, date, items[])` runs all checks in parallel via `Promise.all`. Per-item `AvailabilitySlot` returns `{ ok, reason, available, requested, nextAvailableDate? }`. Item shapes: `{type:'class',productId,qty}`, `{type:'rental',inventoryId,qty}`, `{type:'hotel',roomTypeId,nights,units?}`, `{type:'instructor',level,qty,startTime?,endTime?}`.
+  - Class check uses `StationCapacity` and probes 14 days ahead for next free slot.
+  - Rental check subtracts active overlapping `RentalOrder` items from `RentalInventory.availableQuantity` (worst-case during the window).
+  - Hotel check uses `RoomType.capacity` as a proxy for total units and subtracts overlapping `LodgeStay` (status `reservada`/`checkin`) plus summed `RoomBlock.unitCount`.
+  - Instructor check counts active `Instructor` rows minus those with `GroupCell` overlapping the date+time slot.
+- **API**:
+  - `POST /api/availability/cross-module` — Zod-discriminated body, calls the checker.
+  - `GET /api/availability/rental?date=&productId=&station=&equipmentType=&qualityTier=` — when `productId` is given the route resolves equipment type + tier from the Product, then returns each matching `RentalInventory` pool with `effectiveAvailable = availableQuantity − blockedByOverlappingOrders`.
+- **Reserva unificada (cascade)**:
+  - `src/lib/reservations/cascade.ts` — `cascadeOnConfirm(tenantId, reservationId)` reads `Reservation.services`, buckets each service by resolved `moduleType` and creates: a single `RentalOrder` (with one `RentalOrderItem` per requested unit) for all rental items, one `LodgeStay` per hotel item, and a placeholder `ActivityBooking` for all instructor items (planning later assigns the actual monitor + `GroupCell`). Decrements `RentalInventory.availableQuantity` inside the same transaction. Idempotent — looks up existing sub-records before re-creating.
+  - `cascadeOnCancel` releases inventory by re-incrementing the matching pools, sets `RentalOrder.status="CANCELLED"`, soft-cancels overlapping `ActivityBooking` rows, and flips matching `LodgeStay` rows to `cancelada`.
+- **Inventario conectado**:
+  - On confirm, `cascadeOnConfirm` decrements `RentalInventory.availableQuantity` per (equipmentType, qualityTier) tuple.
+  - On cancel/cancellation/`reservation_cancelled` event, `cascadeOnCancel` re-increments (clamped to `totalQuantity`).
+  - `GET /api/availability/rental` returns the **effective** available stock for a given date (raw availableQuantity minus active overlapping orders).
+- **Quote ↔ module mapping**:
+  - New `QuoteItem.moduleType` column (`catalog | rental | hotel | spa | instructor`) — written on every item create/replace via `categoryToModule()` (`src/lib/quotes/category-to-module.ts`). Schema migration `20260502200000_phase5_cross_module` adds the column + a `(quoteId, moduleType)` index.
+  - `PUT /api/quotes/[id]/items` now also returns an advisory `availability` snapshot (non-blocking) so the UI can show a "no hay plazas" warning before the quote is sent.
+- **Cliente unificado**:
+  - `GET /api/clientes/[id]/history` — returns `{ client, totals, quotes, reservations, rentalOrders, classes, invoices, messages }`. Cross-module match is done by client email + phone (so legacy reservations without a `clientId` still surface). Class history is fetched via `OperationalUnit.reservationId IN (...)` → `GroupCell`. Messages are only included when the client's email maps to a `User`.
+  - New page `/clientes/[id]` — header card + 6 tabs: Resumen / Reservas / Alquiler / Clases / Facturas / Mensajes. Lifetime total + visit count in the header. Each list item links back into the relevant module.
+- **Dashboard operacional del día**:
+  - `GET /api/operations/today` — single `Promise.all` returning `classesNow`, `rentalsActive`, `reservationsToday`, `invoicesUnpaid`, `leadsNew` plus a `totals` block (incl. `invoicesUnpaidAmount`).
+  - New page `/operaciones/hoy` — 5 stat cards on top, then 5 sectioned panels (Clases / Equipos / Check-ins / Facturas / Leads). Auto-refresh every 60s via `useQuery({ refetchInterval: 60_000 })`. Empty states + status pills throughout.
+- **Eventos cross-module**:
+  - `src/lib/events/emitter.ts` — typed in-process emitter. Generic `Handler<T>` API but stored in a `Map<EventType, AnyHandler[]>` to avoid TS variance noise. Supports `on(type, handler)` (returns unsubscribe) and `await emitEvent(tenantId, type, payload)` with `Promise.allSettled` semantics + per-handler error logging. Event types: `reservation_confirmed`, `reservation_cancelled`, `rental_returned`, `class_completed`, `invoice_paid`.
+  - `src/lib/events/handlers.ts` registers the cross-module fan-out: `reservation_confirmed → cascadeOnConfirm + notifyOwners` (in-app notification when classes need a monitor), `reservation_cancelled → cascadeOnCancel`. Other events log-only for now.
+  - `src/lib/events/index.ts` is a side-effect module that calls `registerEventHandlers()` once per process.
+  - Wired into `PATCH /api/reservations/[id]`: status → `confirmada` emits `reservation_confirmed`; status → `cancelada`/`sin_disponibilidad` emits `reservation_cancelled`; soft-DELETE on a previously confirmed reservation also emits `reservation_cancelled`.
+- **Schema migration** `20260502200000_phase5_cross_module`: idempotent `ADD COLUMN IF NOT EXISTS "moduleType"` on `QuoteItem` + `(quoteId, moduleType)` index.
+- **Audit**: `tsc --noEmit` clean (`NODE_OPTIONS=--max-old-space-size=8192`); `eslint` clean across all new files.
+- **Operational note**: hotel availability uses `RoomType.capacity` as a proxy for room count because the schema does not (yet) have an explicit "total physical units" field. When the hotel module grows, swap that line for the proper field — the rest of the checker is unchanged.
+
 ### Phase AI: Portal del Profesor — Mobile-First, Geolocalización, Notificaciones, Chat (2026-05-02) ✅
 - **Goal**: complete the 20% missing on the instructor portal — mobile UX, fichaje GPS, in-app notifications, internal chat. Most of the portal already existed (sidebar/topbar swap by role + dedicated `/profesores/*` pages).
 - **Mobile-first layout**:
@@ -545,6 +581,8 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 7. `20260322000000_quote_followup_tracking` — Quote follow-up tracking fields (lastReminderStep, crossSellSentAt, reviewSentAt, preTripStep)
 8. `20260322100000_contact_submission` — ContactSubmission model for public contact form (rate limiting index)
 9. `20260502000000_invoice_reminders` — Invoice email + reminder tracking fields (emailSentAt, emailSentTo, reminderCount, lastReminderAt)
+10. `20260502100000_instructor_portal_phase4` — Clock-out geolocation on InstructorTimeEntry + Message model for internal chat
+11. `20260502200000_phase5_cross_module` — QuoteItem.moduleType + index for cross-module reservation cascade
 
 ## Known Issues
 - No Postgres running locally — need `docker-compose up db redis` before migrations
