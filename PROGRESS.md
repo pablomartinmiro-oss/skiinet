@@ -4,7 +4,7 @@
 - **Phase:** PHASE AM complete — Comprehensive Demo Seed (todos los módulos poblados)
 - **Step:** Pushed
 - **Live URL:** https://crm-dash-prod.up.railway.app
-- **Last pushed commit:** (pending push)
+- **Last pushed commit:** afbd81a (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
 
