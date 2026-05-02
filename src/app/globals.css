@@ -243,15 +243,23 @@
 
   /* ── Premium badge variants (pill, semantic) ── */
   .badge-pill {
-    @apply inline-flex items-center rounded-full text-[0.65rem] font-medium px-2.5 py-0.5 border whitespace-nowrap;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 0.125rem 0.625rem;
+    border-width: 1px;
+    border-style: solid;
+    white-space: nowrap;
     letter-spacing: 0.01em;
   }
-  .badge-amber  { @apply badge-pill bg-amber-50 text-amber-700 border-amber-200; }
-  .badge-blue   { @apply badge-pill bg-blue-50 text-blue-700 border-blue-200; }
-  .badge-green  { @apply badge-pill bg-emerald-50 text-emerald-700 border-emerald-200; }
-  .badge-red    { @apply badge-pill bg-red-50 text-red-700 border-red-200; }
-  .badge-slate  { @apply badge-pill bg-slate-100 text-slate-600 border-slate-200; }
-  .badge-violet { @apply badge-pill bg-violet-50 text-violet-700 border-violet-200; }
+  .badge-amber  { @apply bg-amber-50 text-amber-700 border-amber-200; }
+  .badge-blue   { @apply bg-blue-50 text-blue-700 border-blue-200; }
+  .badge-green  { @apply bg-emerald-50 text-emerald-700 border-emerald-200; }
+  .badge-red    { @apply bg-red-50 text-red-700 border-red-200; }
+  .badge-slate  { @apply bg-slate-100 text-slate-600 border-slate-200; }
+  .badge-violet { @apply bg-violet-50 text-violet-700 border-violet-200; }
 
   /* ── Sidebar nav item — premium dark ── */
   .nav-item {
