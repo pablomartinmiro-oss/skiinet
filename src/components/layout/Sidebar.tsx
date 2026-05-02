@@ -118,17 +118,31 @@ export function Sidebar({ unreadCount = 0, todayReservations = 0 }: { unreadCoun
   let lastSection = "";
   const renderedModules = new Set<string>();
 
+  const sidebarBorder = "border-white/[0.06]";
+  const itemHover = "hover:bg-white/[0.05] hover:text-slate-200";
+  const subBadge = "h-[18px] min-w-[18px] justify-center rounded-full px-1.5 text-[10px] font-semibold bg-[#4F8EF7]/20 text-[#4F8EF7] border-0";
+
   return (
-    <aside className={cn("flex h-screen flex-col border-r border-[#162032] bg-[#0C1220] transition-all duration-200", collapsed ? "w-16" : "w-[240px]")}>
-      <div className="flex h-14 items-center border-b border-border px-4">
+    <aside className={cn("flex h-screen flex-col border-r bg-[#0F172A] transition-all duration-200", sidebarBorder, collapsed ? "w-16" : "w-[240px]")}>
+      <div className={cn("flex h-14 items-center border-b px-4", sidebarBorder)}>
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/20 text-blue-400"><Mountain className="h-4 w-4" /></div>
+          <div className="flex items-center gap-2.5">
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-[#4F8EF7]/15 text-[#4F8EF7]">
+              <Mountain className="h-4 w-4" />
+              <span className="absolute -right-0.5 -top-0.5 flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,212,255,0.8)]" />
+              </span>
+            </div>
             <span className="text-[15px] font-bold text-white tracking-tight">Skicenter</span>
           </div>
         )}
-        {collapsed && <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-[10px] bg-blue-600 text-white"><Mountain className="h-4 w-4" /></div>}
-        <button onClick={() => setCollapsed(!collapsed)} className={cn("rounded-md p-1.5 text-slate-500 hover:bg-[#162032] hover:text-slate-300", collapsed ? "mx-auto mt-2" : "ml-auto")}>
+        {collapsed && (
+          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-[#4F8EF7]/15 text-[#4F8EF7]">
+            <Mountain className="h-4 w-4" />
+          </div>
+        )}
+        <button onClick={() => setCollapsed(!collapsed)} className={cn("rounded-md p-1.5 text-slate-500 transition-colors hover:bg-white/[0.05] hover:text-slate-300", collapsed ? "mx-auto mt-2" : "ml-auto")}>
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
@@ -141,7 +155,7 @@ export function Sidebar({ unreadCount = 0, todayReservations = 0 }: { unreadCoun
           let sectionHeader: React.ReactNode = null;
           if (item.sectionLabel && item.section !== lastSection && !collapsed) {
             lastSection = item.section;
-            sectionHeader = <div key={`s-${item.section}`} className="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{item.sectionLabel}</div>;
+            sectionHeader = <div key={`s-${item.section}`} className="px-3 pb-1.5 pt-5 text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-slate-600">{item.sectionLabel}</div>;
           } else if (item.section !== lastSection) { lastSection = item.section; }
 
           if (isGrouped) {
@@ -154,31 +168,31 @@ export function Sidebar({ unreadCount = 0, todayReservations = 0 }: { unreadCoun
               <div key={`g-${item.moduleSlug}`}>
                 {sectionHeader}
                 <button onClick={() => toggleModule(item.moduleSlug)}
-                  className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm font-medium transition-all",
-                    isExpanded ? "text-white" : "text-slate-400 hover:bg-[#162032] hover:text-slate-200",
+                  className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-[13.5px] font-medium transition-all",
+                    isExpanded ? "text-white" : cn("text-slate-500", itemHover),
                     collapsed && "justify-center px-2")}
                   title={collapsed ? item.moduleName : undefined}>
-                  <ModIcon className={cn("h-5 w-5 shrink-0", isExpanded ? "text-blue-400" : "text-slate-500")} />
+                  <ModIcon className={cn("h-[18px] w-[18px] shrink-0", isExpanded ? "text-[#4F8EF7]" : "text-slate-500")} />
                   {!collapsed && (
                     <>
                       <span className="flex-1 text-left">{item.moduleName}</span>
-                      <ChevronDown className={cn("h-3.5 w-3.5 text-slate-500 transition-transform", isExpanded && "rotate-180")} />
+                      <ChevronDown className={cn("h-3.5 w-3.5 text-slate-600 transition-transform", isExpanded && "rotate-180")} />
                     </>
                   )}
                 </button>
                 {isExpanded && !collapsed && (
-                  <div className="ml-4 space-y-0.5 border-l border-slate-700/50 pl-2 mt-0.5">
+                  <div className="ml-[15px] space-y-0.5 border-l border-white/[0.06] pl-3 mt-0.5">
                     {moduleItems.map((sub) => {
                       const isActive = sub.href === "/" ? pathname === "/" : pathname.startsWith(sub.href);
                       const SubIcon = sub.icon;
                       const bc = getBadgeCount(sub);
                       return (
                         <Link key={sub.href} href={sub.href}
-                          className={cn("flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all",
-                            isActive ? "bg-[#162032] text-white" : "text-slate-400 hover:bg-[#162032]/60 hover:text-slate-200")}>
-                          <SubIcon className={cn("h-4 w-4 shrink-0", isActive ? "text-blue-400" : "text-slate-500")} />
+                          className={cn("flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[12.5px] font-medium transition-all",
+                            isActive ? "bg-[#4F8EF7]/15 text-white" : cn("text-slate-500", itemHover))}>
+                          <SubIcon className={cn("h-[15px] w-[15px] shrink-0", isActive ? "text-[#4F8EF7]" : "text-slate-500")} />
                           <span className="flex-1">{sub.label}</span>
-                          {bc > 0 && <Badge variant="secondary" className="h-4 min-w-4 justify-center rounded-full px-1 text-[10px]">{bc}</Badge>}
+                          {bc > 0 && <Badge variant="secondary" className={subBadge}>{bc}</Badge>}
                         </Link>
                       );
                     })}
@@ -195,32 +209,40 @@ export function Sidebar({ unreadCount = 0, todayReservations = 0 }: { unreadCoun
             <div key={item.href}>
               {sectionHeader}
               <Link href={item.href}
-                className={cn("group relative flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm font-medium transition-all",
-                  isActive ? "bg-[#162032] text-white" : "text-slate-400 hover:bg-[#162032] hover:text-slate-200",
-                  collapsed && "justify-center px-2")}
+                className={cn("group relative flex items-center gap-3 rounded-[10px] px-3 py-2 text-[13.5px] font-medium transition-all border-l-2 border-transparent",
+                  isActive ? "bg-[#4F8EF7]/15 text-white border-[#4F8EF7]" : cn("text-slate-500", itemHover),
+                  collapsed && "justify-center px-2 border-l-0")}
                 title={collapsed ? item.label : undefined}>
-                <Icon className={cn("h-5 w-5 shrink-0", isActive ? "text-blue-400" : "text-slate-500")} />
+                <Icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-[#4F8EF7]" : "text-slate-500")} />
                 {!collapsed && (
                   <>
                     <span className="flex-1">{item.label}</span>
-                    {bc > 0 && <Badge variant={item.href === "/comms" || item.href === "/presupuestos" ? "destructive" : "secondary"} className="h-5 min-w-5 justify-center rounded-full px-1 text-xs">{bc > 99 ? "99+" : bc}</Badge>}
+                    {bc > 0 && <Badge variant="secondary" className={subBadge}>{bc > 99 ? "99+" : bc}</Badge>}
                   </>
                 )}
-                {collapsed && bc > 0 && <span className="absolute right-1 top-0.5 h-2 w-2 rounded-full bg-destructive" />}
+                {collapsed && bc > 0 && <span className="absolute right-1 top-0.5 h-2 w-2 rounded-full bg-[#4F8EF7]" />}
               </Link>
             </div>
           );
         })}
       </nav>
 
-      <div className="border-t border-border p-3">
+      <div className={cn("border-t p-3", sidebarBorder)}>
         {!collapsed ? (
           <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-sage" /></span>
-            <p className="truncate text-xs text-slate-500">Skicenter v1.0</p>
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            <p className="truncate text-[11px] font-medium text-slate-500">Skicenter v1.0</p>
           </div>
         ) : (
-          <div className="flex justify-center"><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-sage" /></span></div>
+          <div className="flex justify-center">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+          </div>
         )}
       </div>
     </aside>

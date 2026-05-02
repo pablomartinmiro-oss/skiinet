@@ -27,39 +27,36 @@ export function Topbar() {
     : "??";
 
   return (
-    <header className="flex h-12 items-center gap-4 border-b border-slate-100 bg-white/95 backdrop-blur-sm px-6">
-      {/* Global Search */}
+    <header className="flex h-14 items-center gap-4 border-b border-slate-100 bg-white/95 backdrop-blur-md px-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
       <GlobalSearch />
 
       <div className="ml-auto flex items-center gap-3">
-        {/* Notification Bell */}
         <NotificationBell />
 
-        {/* User Menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg p-1 transition-colors hover:bg-muted">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-700 text-xs font-semibold text-white">
+          <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg p-1 pr-2.5 transition-colors hover:bg-slate-50">
+            <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
+              <AvatarFallback className="bg-gradient-to-br from-[#4F8EF7] to-[#6BA0F9] text-xs font-semibold text-white">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div className="hidden text-left md:block">
-              <p className="text-sm font-medium leading-none text-slate-900">
+              <p className="text-[13px] font-semibold leading-none text-slate-900">
                 {user?.name ?? "Usuario"}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="mt-0.5 text-[11px] text-slate-500">
                 {user?.roleName ?? ""}
               </p>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl">
+          <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-lg">
             <DropdownMenuItem className="gap-2 rounded-lg">
               <User className="h-4 w-4" />
               Perfil
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="gap-2 rounded-lg text-danger"
+              className="gap-2 rounded-lg text-red-600"
               onClick={() => signOut({ callbackUrl: "/login" })}
             >
               <LogOut className="h-4 w-4" />

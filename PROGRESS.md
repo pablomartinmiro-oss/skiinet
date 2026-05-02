@@ -1,7 +1,7 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AH complete — Presupuestos & Facturación Automática (Fase 3)
+- **Phase:** PHASE AI complete — Portal del Profesor (Fase 4)
 - **Step:** Ready for push
 - **Live URL:** https://crm-dash-prod.up.railway.app
 - **Last pushed commit:** cb6fa70 (2026-03-18)
@@ -439,6 +439,37 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
 - **Verify**: `curl https://openclaw-production-50e4.up.railway.app/api/storefront/public/skicenter/products | jq '.products | length'` should return ≥ 43.
 - **Audit**: `npx tsc --noEmit` → 0 errors.
 
+### Phase AI: Portal del Profesor — Mobile-First, Geolocalización, Notificaciones, Chat (2026-05-02) ✅
+- **Goal**: complete the 20% missing on the instructor portal — mobile UX, fichaje GPS, in-app notifications, internal chat. Most of the portal already existed (sidebar/topbar swap by role + dedicated `/profesores/*` pages).
+- **Mobile-first layout**:
+  - New `InstructorBottomNav` (`src/components/layout/InstructorBottomNav.tsx`): 5 fixed tabs (Mi Día / Fichaje / Clases / Ingresos / Perfil). Visible only on `<md`. Uses `pb-[env(safe-area-inset-bottom)]`, 60px touch targets, active indicator stripe.
+  - `(dashboard)/layout.tsx` adapts main padding for instructors (`p-4 pb-24 md:p-7 md:pb-7`) so the bottom nav doesn't cover content; sidebar still hidden on mobile via `hidden md:block`.
+  - `InstructorTopbar`: now `min-h-[56px]`, `px-4 md:px-6`, hides the user name on mobile, exposes the bell + message badge with 40×40 touch targets.
+  - `ClockWidget` on `/profesores/mi-portal`: stacks vertically on mobile, full-width buttons with `min-h-[56px]` and active-press feedback (`active:scale-[0.99]`); reverts to inline on `sm+`.
+- **Geolocalización en fichaje**:
+  - New `src/lib/geo/browser.ts` — `getCurrentCoords()` wraps `navigator.geolocation.getCurrentPosition` with 6s timeout, returns `null` on denial/error/unsupported (never throws).
+  - Both `ClockWidget` (mi-portal) and `ClockInOutWidget` (fichaje) capture coords on entrada AND salida, send `{geoLat, geoLon}` for clock-in and `{clockOutLat, clockOutLon}` for clock-out. Toast confirms when location was captured.
+  - `clockOutSchema` (`src/lib/validation/instructors.ts`) now accepts `clockOutLat`/`clockOutLon`; PATCH route stores them.
+  - `useClockOut` hook accepts the new geo fields; `TimeEntry` type extended with `geoLat/geoLon/clockOutLat/clockOutLon`.
+  - Schema migration adds `clockOutLat Float?` + `clockOutLon Float?` to `InstructorTimeEntry`.
+  - Admin `TimeEntryTable`: new "Con ubicación" pill (sage green, `MapPin` icon) next to entrada/salida times when coords are present, with the lat/lng in the `title` attribute.
+- **Notificaciones in-app**:
+  - `Notification` model + `GET /api/notifications` already existed. Added missing `DELETE /api/notifications/[id]` handler.
+  - `useDeleteNotification()` hook added.
+  - New `src/lib/notifications/create.ts` — `createNotification()` helper, fire-and-forget, swallow-and-log errors.
+  - New `InstructorNotificationBell` component — unread badge (1–9 / "9+"), dropdown with grouped time-ago (1m/1h/1d), per-item mark-read + delete buttons that appear on hover, "Marcar todas" link.
+  - Wired into the planning groups PATCH (`/api/planning/groups/[id]`): when `instructorId` transitions to a non-null value (and differs from previous), creates a `clase_asignada` notification on the assigned instructor's user with date, time slot, station, discipline + level.
+- **Chat interno**:
+  - New `Message` Prisma model (`fromUserId`, `toUserId`, `body`, `isRead`, `readAt`, `createdAt` + 3 indexes) wired into `Tenant.messages` and `User.messagesSent`/`messagesReceived` relations.
+  - `GET /api/messages` (default returns inbox grouped by peer with last message + unread count + total; `?with=<userId>` returns the full thread newest-last) + `POST` (sends + creates a `new_message` notification for the recipient).
+  - `PATCH /api/messages/[id]` marks as read (idempotent, only the recipient can mark their own); `DELETE` allows either side to delete.
+  - New `useMessages.ts` hook: `useConversations`, `useThread`, `useSendMessage`, `useMarkMessageRead`, `useDeleteMessage`. Inbox refetches every 30s, threads every 15s.
+  - New page `/profesores/mensajes` — two-pane layout (conversation list + thread). Mobile: list collapses when a thread opens (with a "Volver" arrow back). Auto-scroll to bottom on new messages. Auto-mark-read on open. Enter sends, Shift+Enter newline. Suspense-wrapped because it reads `?to=<userId>` from `useSearchParams`.
+  - `InstructorMessageBadge` in the topbar shows total unread, links to `/profesores/mensajes`.
+  - Admin/manager view: "Enviar mensaje" button on `/profesores/[id]` (in `InstructorProfileCard`) deep-links to `/profesores/mensajes?to=<userId>`. Also added a `Mensajes` entry in the desktop `InstructorSidebar`.
+- **Schema migration** `20260502100000_instructor_portal_phase4`: idempotent `ADD COLUMN IF NOT EXISTS` for the geo columns + `CREATE TABLE IF NOT EXISTS "Message"` with FKs to Tenant/User and three indexes.
+- **Audit**: `npx tsc --noEmit` clean.
+
 ### Phase AH: Presupuestos & Facturación Automática Fase 3 (2026-05-02) ✅
 - **Goal**: complete the end-to-end Quote → Reservation → Invoice flow with auto-billing, fiscal-grade PDFs, automated emails, reminder loops, and centralised numbering.
 - **Auto-invoice on confirmation** (`src/app/api/reservations/[id]/route.ts`): the PATCH handler now triggers `autoInvoiceFromReservation` whenever a reservation transitions into `confirmada` (in addition to `completada`). Quotes that were already paid still own billing — the auto-invoice helper detects that case and skips.
@@ -470,6 +501,36 @@ A fully functional multi-tenant CRM dashboard for Skicenter ski travel agencies,
   - **Atomic conversion** in `prisma.$transaction`: creates the reservation and updates the source quote (status → `en_proceso` for `nuevo|borrador|en_proceso`, otherwise preserved; `internalNotes` appended with `Convertido a reserva el <ISO>`).
   - **Full per-item variable copy**: services array now carries every QuoteItem field (productId, category, description, startDate/endDate, numDays/numPersons, ageDetails, station, modalidad, nivel, sector, idioma, horario, puntoEncuentro, tipoCliente, gama, casco, tipoActividad, regimen, alojamientoNombre, seguroIncluido, tallaBotas, alturaPeso, dni, notes) — no more dropped data.
   - **Dynamic schedule**: picks the first non-empty `horario` across QuoteItems; falls back to `10:00-13:00` only if none provided. No more universal hardcode.
+- **Audit**: `npx tsc --noEmit` → 0 errors.
+
+### Phase AI: Premium Light Dashboard — Refined Design System (2026-05-02) ✅
+- **Goal**: lift the dashboard from generic shadcn defaults to a premium, magazine-quality light theme matching the visual standard of `public/landing.html` (dashboard mockups). Light theme only — no dark mode.
+- **Design tokens (`src/app/globals.css`)**:
+  - Primary blue tightened to `#4F8EF7` (matches landing); hover `#6BA0F9`. All legacy `#0066FF` references rerouted (incl. `--coral` alias, `--ring`, `--accent-foreground`, `--chart-1`).
+  - Sidebar bg lifted to `#0F172A` (Linear/Vercel-style premium navy); border `rgba(255,255,255,0.06)`; accent `rgba(255,255,255,0.05)` for hover.
+  - Shadow tokens reauthored — sm `0 1px 3px rgba(15,23,42,0.06)`, md `0 4px 16px rgba(15,23,42,0.08)`, lg `0 8px 32px rgba(15,23,42,0.10)`. New `--shadow-blue-glow` for primary-button hover.
+  - New utility classes: `.card-premium`, `.btn-primary-glow`, `.stat-label`, `.stat-value`. Existing `.badge-*` extended with `.badge-pill` foundation + `.badge-violet`.
+  - `.nav-item` rewritten — left-border accent (`border-l-2 border-[#4F8EF7]`) on active state; bg `rgba(79,142,247,0.15)`; hover `rgba(255,255,255,0.05)`.
+  - `.table-linear` premium: header `bg-slate-50/50` + uppercase tracking-wider, row hover `slate-50/80`, first col text-slate-900.
+- **Sidebar (`src/components/layout/Sidebar.tsx`)**:
+  - Bg `#0F172A`, borders `white/[0.06]`. Logo dot — animated cyan ping (`bg-cyan-400 shadow-[0_0_8px]`).
+  - Active item: `bg-[#4F8EF7]/15 text-white border-l-2 border-[#4F8EF7]`; icon turns `#4F8EF7`.
+  - Hover: `bg-white/[0.05] text-slate-200`. Normal: `text-slate-500`.
+  - Section labels: `text-[0.6rem] uppercase tracking-[0.14em] text-slate-600`.
+  - Badge counters use `bg-[#4F8EF7]/20 text-[#4F8EF7]` (no more red destructive for unread/draft counts).
+  - Footer status pulse switched to `bg-emerald-400`.
+- **Topbar (`src/components/layout/Topbar.tsx`)**:
+  - Height `h-14`; `border-b border-slate-100 shadow-sm` for premium drop. Avatar gradient `from-[#4F8EF7] to-[#6BA0F9]` + `ring-2 ring-white shadow-sm`. Dropdown content `shadow-lg`.
+- **Badge (`src/components/ui/badge.tsx`)**:
+  - Pill shape default (`rounded-full px-2.5 py-0.5 text-[0.65rem]`).
+  - 6 new semantic variants: `success`, `warning`, `info`, `danger`, `neutral`, `violet` — all with light-50 bg + 700 text + 200 border per the spec (borrador→warning, enviado→info, pagado/aceptado→success, cancelado→danger).
+- **Table (`src/components/ui/table.tsx`)**:
+  - `<TableHeader>` → `bg-slate-50/50 [&_tr]:border-slate-100`. `<TableHead>` → uppercase, tracking `0.06em`, `text-[0.65rem] font-semibold`, `text-slate-500`. `<TableRow>` → border-slate-100, hover slate-50/80. `<TableCell>` → first child `font-medium text-slate-900`, others `text-sm text-slate-600`.
+- **Card / Button / Input / Select / Textarea primitives**:
+  - Card: `border border-slate-100 shadow-sm hover:shadow-md`. Replaces the ring-foreground/10 outline.
+  - Button (default): primary blue with `shadow-sm` → `hover:bg-[#6BA0F9] hover:shadow-blue-glow`.
+  - Input/Textarea/Select trigger: `h-9 border-slate-200 bg-white hover:border-slate-300 focus:border-[#4F8EF7] focus:ring-[3px] focus:ring-[#4F8EF7]/20` — consistent across all form primitives.
+- **No page-level rewrites required** — design system updates cascade through every existing usage. Pages already wired to `--primary`, `--card`, badge variants, and table primitives inherit the polish automatically.
 - **Audit**: `npx tsc --noEmit` → 0 errors.
 
 ### Next: TBD
