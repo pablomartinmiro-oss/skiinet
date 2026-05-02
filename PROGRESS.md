@@ -1,12 +1,23 @@
 # Skiinet (OpenClaw) — Build Progress
 
 ## Current Status
-- **Phase:** PHASE AO complete — QA follow-up (2 more bug fixes)
+- **Phase:** PHASE AP complete — Operaciones dashboard rebuild + sidebar trim
 - **Step:** Ready to push
 - **Live URL:** https://crm-dash-prod.up.railway.app
 - **Last pushed commit:** 710d352 (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
 - **Date:** 2026-05-02
+
+## Phase AP (2026-05-02) — Operaciones dashboard rebuild + sidebar trim
+Operaciones section reduced to three top-level items: **Dashboard Operaciones**, **Escuela** (expandable group), **Alquiler**.
+
+- **Sidebar trim**: hotel, spa and restaurant modules keep their pages and APIs but their `navItems` are now empty in `MODULE_REGISTRY`, so they no longer show in the sidebar.
+- **New `operations` module**: `isCore: true` registry entry whose only navItem is `Dashboard Operaciones → /operaciones/hoy`. Always enabled, owner/manager only.
+- **Registry order**: `instructors` placed before `rental` so the section renders in the requested order: Dashboard Operaciones → Escuela → Alquiler.
+- **API extended (`/api/operations/today`)**: now returns `classesToday` (with instructor + meeting point), `rentalsToday` (with `items[]`), and a derived `instructorsToday` aggregate (classesCount, currentStatus `en_clase`/`libre` based on Europe/Madrid wall clock, `nextClassTime`). New totals: `classesToday`, `rentalsActive`, `instructorsOnShift`, `materialPendingReturn`.
+- **Page rewrite (`/operaciones/hoy`)**: 4 stat cards (Clases hoy / Alquileres activos / Profesores en turno / Material pendiente devolucion) + Alquileres del dia table (expandable rows showing each item) + Clases de hoy table (instructor + nivel + alumnos + estacion + estado) + Profesores en turno cards grid (3 cols, libre/en clase pill + proxima clase). Warm design system: `#FAF9F7` background, `#E87B5A` coral accent, rounded-2xl cards, table skeletons per section.
+
+**Audit**: `tsc --noEmit` → 0 errors.
 
 ## Phase AO (2026-05-02) — QA follow-up fixes
 Two more bugs from QA audit.

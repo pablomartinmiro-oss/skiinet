@@ -85,9 +85,7 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
     dependencies: ["booking"],
     isCore: false,
     section: "operaciones",
-    navItems: [
-      { label: "Hotel", href: "/hotel", icon: "Building2", permission: null },
-    ],
+    navItems: [],
     permissions: ["hotel:view", "hotel:edit", "hotel:manage"],
   },
   spa: {
@@ -98,9 +96,7 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
     dependencies: ["booking"],
     isCore: false,
     section: "operaciones",
-    navItems: [
-      { label: "Spa", href: "/spa", icon: "Sparkles", permission: null },
-    ],
+    navItems: [],
     permissions: ["spa:view", "spa:edit", "spa:manage"],
   },
   restaurant: {
@@ -111,10 +107,21 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
     dependencies: [],
     isCore: false,
     section: "operaciones",
-    navItems: [
-      { label: "Restaurante", href: "/restaurant", icon: "UtensilsCrossed", permission: null },
-    ],
+    navItems: [],
     permissions: ["restaurant:view", "restaurant:edit", "restaurant:manage"],
+  },
+  operations: {
+    slug: "operations",
+    name: "Operaciones",
+    icon: "ClipboardList",
+    description: "Dashboard de operaciones del dia",
+    dependencies: [],
+    isCore: true,
+    section: "operaciones",
+    navItems: [
+      { label: "Dashboard Operaciones", href: "/operaciones/hoy", icon: "LayoutDashboard", permission: null, roles: ["Owner / Manager"] },
+    ],
+    permissions: [],
   },
   finance: {
     slug: "finance",
@@ -235,19 +242,6 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
     ],
     permissions: ["packs:view", "packs:edit"],
   },
-  rental: {
-    slug: "rental",
-    name: "Alquiler",
-    icon: "Snowflake",
-    description: "Inventario de equipos, pedidos de alquiler y perfiles de tallas",
-    dependencies: ["booking"],
-    isCore: false,
-    section: "operaciones",
-    navItems: [
-      { label: "Alquiler", href: "/alquiler", icon: "Snowflake", permission: null },
-    ],
-    permissions: ["rental:view", "rental:edit", "rental:manage"],
-  },
   instructors: {
     slug: "instructors",
     name: "Escuela",
@@ -268,6 +262,19 @@ export const MODULE_REGISTRY: Record<string, ModuleDefinition> = {
       { label: "KPIs", href: "/profesores/kpis", icon: "BarChart3", permission: null, roles: ["Owner / Manager"] },
     ],
     permissions: ["instructors:view", "instructors:edit", "instructors:manage"],
+  },
+  rental: {
+    slug: "rental",
+    name: "Alquiler",
+    icon: "Snowflake",
+    description: "Inventario de equipos, pedidos de alquiler y perfiles de tallas",
+    dependencies: ["booking"],
+    isCore: false,
+    section: "operaciones",
+    navItems: [
+      { label: "Alquiler", href: "/alquiler", icon: "Snowflake", permission: null },
+    ],
+    permissions: ["rental:view", "rental:edit", "rental:manage"],
   },
 };
 
