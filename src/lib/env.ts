@@ -40,6 +40,14 @@ const envSchema = z.object({
   // and no tenantSlug in body are rejected with 400.
   DEFAULT_TENANT_ID: z.string().optional(),
 
+  // Redsys (TPV)
+  // Production: https://sis.redsys.es/sis/realizarPago
+  // Test:       https://sis-t.redsys.es:25443/sis/realizarPago
+  REDSYS_ENVIRONMENT: z.enum(["test", "production"]).default("test"),
+  REDSYS_MERCHANT_CODE: z.string().optional(),
+  REDSYS_SECRET_KEY: z.string().optional(),
+  REDSYS_TERMINAL: z.string().optional(),
+
   // Optional
   LOG_LEVEL: z
     .enum(["debug", "info", "warn", "error"])

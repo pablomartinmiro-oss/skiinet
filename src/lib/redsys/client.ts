@@ -1,10 +1,15 @@
 import { createCipheriv, createHmac } from "node:crypto";
 import { logger } from "@/lib/logger";
+import { env } from "@/lib/env";
 
 const log = logger.child({ module: "redsys" });
 
-// Redsys configuration
-const REDSYS_URL = "https://sis.redsys.es/sis/realizarPago";
+// Redsys endpoint switches by environment.
+// Production POSTs go to sis.redsys.es; test POSTs to the sis-t sandbox.
+const REDSYS_URL =
+  env.REDSYS_ENVIRONMENT === "production"
+    ? "https://sis.redsys.es/sis/realizarPago"
+    : "https://sis-t.redsys.es:25443/sis/realizarPago";
 const CURRENCY_EUR = "978";
 const TRANSACTION_TYPE = "0"; // Standard purchase
 const SIGNATURE_VERSION = "HMAC_SHA256_V1";
@@ -44,10 +49,10 @@ export interface RedsysResponse {
 }
 
 function getConfig() {
-  const merchantCode = process.env.REDSYS_MERCHANT_CODE;
-  const secretKey = process.env.REDSYS_SECRET_KEY;
+  const merchantCode = env.REDSYS_MERCHANT_CODE;
+  const secretKey = env.REDSYS_SECRET_KEY;
   // Terminal must be zero-padded to 3 chars — Redsys requires "001" format
-  const rawTerminal = process.env.REDSYS_TERMINAL ?? "1";
+  const rawTerminal = env.REDSYS_TERMINAL ?? "1";
   const terminal = rawTerminal.padStart(3, "0");
 
   if (!merchantCode || !secretKey) {
