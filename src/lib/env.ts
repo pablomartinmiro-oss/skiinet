@@ -55,6 +55,10 @@ const envSchema = z.object({
   TWILIO_FROM_SMS: z.string().optional(),       // E.164 SMS-capable number
   TWILIO_FROM_WHATSAPP: z.string().optional(),  // "whatsapp:+E.164"
 
+  // VAPI (voice AI agents) — webhook secret for inbound call reports.
+  // Set in VAPI dashboard under Server URL → Custom Header secret.
+  VAPI_WEBHOOK_SECRET: z.string().optional(),
+
   // Optional
   LOG_LEVEL: z
     .enum(["debug", "info", "warn", "error"])
