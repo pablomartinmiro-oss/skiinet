@@ -2100,25 +2100,27 @@ model CouponEmailConfig {
 // ==================== REVIEWS ====================
 
 model Review {
-  id          String    @id @default(cuid())
-  tenantId    String
-  entityType  String    // "experience" | "hotel" | "spa" | "restaurant"
-  entityId    String
-  rating      Int       // 1-5
-  authorName  String
-  authorEmail String?
-  title       String?
-  body        String    @db.Text
-  stayDate    DateTime?
-  status      String    @default("pending") // "pending" | "approved" | "rejected"
-  reply       String?   @db.Text
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  tenantId        String
+  entityType      String    // "experience" | "hotel" | "spa" | "restaurant"
+  entityId        String
+  rating          Int       // 1-5
+  authorName      String
+  authorEmail     String?
+  title           String?
+  body            String    @db.Text
+  stayDate        DateTime?
+  status          String    @default("pending") // "pending" | "approved" | "rejected"
+  reply           String?   @db.Text
+  verifiedBooking Boolean   @default(false)  // True if authorEmail matches a Reservation
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, entityType, entityId])
   @@index([tenantId, status])
+  @@index([tenantId, verifiedBooking])
 }
 
 // ==================== PACKS ====================
