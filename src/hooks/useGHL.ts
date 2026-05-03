@@ -37,6 +37,91 @@ export function useConversations(params?: { page?: number; limit?: number }) {
   });
 }
 
+// ─── Inbox (nueva tabla Conversation, post-GHL) ─────────
+// Lee del nuevo endpoint /api/comms/conversations (Twilio/VAPI/email/voice)
+// y adapta el shape al GHLConversation que esperan los componentes UI.
+// Permite que el page de /comms muestre conversaciones legacy + nuevas
+// en la misma lista sin cambiar componentes.
+
+type InboxConversation = {
+  id: string;
+  channel: "sms" | "whatsapp" | "email" | "voice";
+  channelRef: string;
+  subject: string | null;
+  status: string;
+  assignedTo: string | null;
+  lastMessageAt: string;
+  lastMessageBody: string | null;
+  lastMessageDirection: string | null;
+  unreadCount: number;
+  lead: { id: string; name: string; email: string | null; phone: string | null } | null;
+  client: { id: string; name: string; email: string | null; phone: string | null } | null;
+};
+
+export function useInboxConversations(params?: { status?: string; channel?: string; limit?: number }) {
+  const status = params?.status ?? "open";
+  const limit = params?.limit ?? 50;
+  const channel = params?.channel;
+
+  return useQuery({
+    queryKey: ["inbox-conversations", status, channel, limit],
+    queryFn: async () => {
+      const sp = new URLSearchParams();
+      sp.set("status", status);
+      sp.set("limit", String(limit));
+      if (channel) sp.set("channel", channel);
+      const data = await fetchJSON<{ conversations: InboxConversation[] }>(
+        `/api/comms/conversations?${sp.toString()}`,
+      );
+      return data;
+    },
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useInboxMessages(conversationId: string | null) {
+  return useQuery({
+    queryKey: ["inbox-messages", conversationId],
+    queryFn: () =>
+      fetchJSON<{
+        conversation: InboxConversation;
+        messages: Array<{
+          id: string;
+          direction: "inbound" | "outbound";
+          channel: string;
+          body: string;
+          sentAt: string;
+          fromAddr: string;
+          toAddr: string;
+          status: string | null;
+        }>;
+      }>(`/api/comms/conversations/${conversationId}/messages`),
+    enabled: !!conversationId,
+  });
+}
+
+export function useInboxReply(conversationId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: string) => {
+      const res = await fetch(`/api/comms/conversations/${conversationId}/reply`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error ?? "Failed to send reply");
+      }
+      return res.json();
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["inbox-messages", conversationId] });
+      queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
+    },
+  });
+}
+
 export function useMessages(conversationId: string | null) {
   return useQuery<GHLMessagesResponse>({
     queryKey: ["messages", conversationId],

@@ -13,6 +13,9 @@ interface GHLEmptyStateProps {
     label: string;
     href: string;
   };
+  /** Bypass the GHL-connected check — useful when the page has alternative
+   *  data sources (e.g. /comms now reads from Conversation table too). */
+  disabled?: boolean;
   children: React.ReactNode;
 }
 
@@ -20,10 +23,17 @@ interface GHLEmptyStateProps {
  * Wraps page content. For non-demo tenants without GHL connected,
  * shows an empty state instead of the page content.
  * Demo tenants always see the children (they use mock data).
+ *
+ * Pass `disabled` to bypass when the page has data from a non-GHL source.
  */
-export function GHLEmptyState({ message, action, children }: GHLEmptyStateProps) {
+export function GHLEmptyState({ message, action, disabled, children }: GHLEmptyStateProps) {
   const { data: session } = useSession();
   const { data: settings, isLoading } = useTenantSettings();
+
+  // Caller has alternative data sources (Twilio inbox, etc.) — never block
+  if (disabled) {
+    return <>{children}</>;
+  }
 
   // Demo tenants always see full content
   if (session?.user?.isDemo) {
