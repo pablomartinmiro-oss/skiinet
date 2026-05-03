@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import type { Prisma } from "@/generated/prisma/client";
+import { logCrmActivityAsync } from "@/lib/crm/activity-log";
 
 const log = logger.child({ module: "leads/intake" });
 
@@ -61,9 +62,21 @@ export async function intakeLead(
     : baseData;
 
   if (input.ghlContactId) {
-    // Atomic upsert by composite unique (tenantId, ghlContactId).
-    // On re-delivery, refresh contact fields and lastContactedAt but never
-    // downgrade status/score (admin may have qualified/rejected the lead).
+    // Detect existing lead before upsert so the activity-log entry can
+    // distinguish first contact from a re-delivery. The narrow window
+    // between the findUnique and the upsert is fine — upsert itself is
+    // atomic at the DB level, so worst case the audit row says "created"
+    // for a row that was actually updated under high concurrency.
+    const existing = await prisma.lead.findUnique({
+      where: {
+        tenantId_ghlContactId: {
+          tenantId: input.tenantId,
+          ghlContactId: input.ghlContactId,
+        },
+      },
+      select: { id: true },
+    });
+
     const lead = await prisma.lead.upsert({
       where: {
         tenantId_ghlContactId: {
@@ -84,9 +97,16 @@ export async function intakeLead(
       select: { id: true },
     });
     log.info(
-      { leadId: lead.id, tenantId: input.tenantId, source: input.source },
+      { leadId: lead.id, tenantId: input.tenantId, source: input.source, existed: !!existing },
       "Lead upserted",
     );
+    logCrmActivityAsync({
+      tenantId: input.tenantId,
+      entityType: "lead",
+      entityId: lead.id,
+      action: existing ? "updated" : "created",
+      details: { source: input.source, ghlContactId: input.ghlContactId },
+    });
     return { lead };
   }
 
@@ -98,15 +118,49 @@ export async function intakeLead(
     { leadId: lead.id, tenantId: input.tenantId, source: input.source },
     "Lead created",
   );
+  logCrmActivityAsync({
+    tenantId: input.tenantId,
+    entityType: "lead",
+    entityId: lead.id,
+    action: "created",
+    details: { source: input.source },
+  });
   return { lead };
 }
 
 /**
  * Link a previously-created Lead to a Quote (after the Quote row exists).
+ * Updates Lead.quoteId (denormalised pointer) and Quote.leadId (FK relation).
+ * Logs both a status_changed activity on the lead and a linked activity on
+ * the quote so timelines on either entity reflect the conversion.
  */
 export async function linkLeadToQuote(leadId: string, quoteId: string): Promise<void> {
-  await prisma.lead.update({
+  const lead = await prisma.lead.update({
     where: { id: leadId },
     data: { quoteId, status: "calificado", convertedAt: new Date() },
+    select: { id: true, tenantId: true },
+  });
+
+  // Set Quote.leadId so the inverse relation is queryable too.
+  await prisma.quote
+    .update({
+      where: { id: quoteId },
+      data: { leadId },
+    })
+    .catch((err) => log.warn({ err, leadId, quoteId }, "Quote.leadId backfill failed"));
+
+  logCrmActivityAsync({
+    tenantId: lead.tenantId,
+    entityType: "lead",
+    entityId: lead.id,
+    action: "converted",
+    details: { quoteId },
+  });
+  logCrmActivityAsync({
+    tenantId: lead.tenantId,
+    entityType: "quote",
+    entityId: quoteId,
+    action: "linked",
+    details: { leadId },
   });
 }

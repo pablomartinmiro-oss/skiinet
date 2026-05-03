@@ -7,6 +7,7 @@ import { verifyRedsysSignature } from "@/lib/redsys/client";
 import { sendEmail } from "@/lib/email/client";
 import { buildConfirmationEmailHTML } from "@/lib/email/templates";
 import { generateTasksForPaidQuote } from "@/lib/tasks/generate";
+import { logCrmActivityAsync } from "@/lib/crm/activity-log";
 
 const log = logger.child({ route: "/api/crm/webhooks/redsys" });
 
@@ -92,6 +93,13 @@ export async function POST(request: NextRequest) {
         where: { id: quote.id },
         data: { paymentStatus: "tampering_suspected" },
       });
+      logCrmActivityAsync({
+        tenantId: quote.tenantId,
+        entityType: "quote",
+        entityId: quote.id,
+        action: "tampering_suspected",
+        details: { orderId, expectedCents, receivedCents: data.Ds_Amount },
+      });
       return NextResponse.json(
         { error: "Amount mismatch" },
         { status: 400 },
@@ -108,6 +116,19 @@ export async function POST(request: NextRequest) {
           paymentMethod: "redsys",
           paidAt: new Date(),
           paymentRef: authCode,
+        },
+      });
+
+      logCrmActivityAsync({
+        tenantId: quote.tenantId,
+        entityType: "quote",
+        entityId: quote.id,
+        action: "payment_received",
+        details: {
+          orderId,
+          authCode,
+          amountCents: data.Ds_Amount,
+          method: "redsys",
         },
       });
 
@@ -202,6 +223,13 @@ export async function POST(request: NextRequest) {
         { quoteId: quote.id, orderId, responseCode },
         "Payment failed"
       );
+      logCrmActivityAsync({
+        tenantId: quote.tenantId,
+        entityType: "quote",
+        entityId: quote.id,
+        action: "payment_failed",
+        details: { orderId, responseCode },
+      });
     }
 
     // Redsys expects 200 OK
