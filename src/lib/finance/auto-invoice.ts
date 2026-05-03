@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import type { Invoice } from "@/generated/prisma/client";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 const log = logger.child({ module: "auto-invoice" });
 
@@ -23,22 +24,7 @@ export async function createInvoiceFromTpvSale(
     throw new Error(`TpvSale ${saleId} no encontrada`);
   }
 
-  // 2. Generate next invoice number
-  const lastInvoice = await prisma.invoice.findFirst({
-    where: { tenantId },
-    orderBy: { createdAt: "desc" },
-    select: { number: true },
-  });
-
-  const year = new Date().getFullYear();
-  let seq = 1;
-  if (lastInvoice?.number) {
-    const match = lastInvoice.number.match(/FAC-\d{4}-(\d+)/);
-    if (match) seq = parseInt(match[1], 10) + 1;
-  }
-  const invoiceNumber = `FAC-${year}-${String(seq).padStart(4, "0")}`;
-
-  // 3. Calculate totals from items
+  // 2. Calculate totals from items
   const lines = sale.items.map((item) => ({
     tenantId,
     description: item.description,
@@ -53,8 +39,15 @@ export async function createInvoiceFromTpvSale(
   const taxAmount = sale.totalTax;
   const total = sale.totalAmount;
 
-  // 4. Create Invoice + InvoiceLines + Transaction in a single tx
+  // 3. Create Invoice + InvoiceLines + Transaction in a single tx.
+  //    Use atomic generateDocumentNumber inside the tx — replaces the
+  //    previous race-prone "findFirst lastInvoice + parse + increment".
   const invoice = await prisma.$transaction(async (tx) => {
+    const invoiceNumber = await generateDocumentNumber(tenantId, "invoice", {
+      tx,
+      context: "tpv_sale",
+    });
+
     const inv = await tx.invoice.create({
       data: {
         tenantId,
@@ -100,7 +93,7 @@ export async function createInvoiceFromTpvSale(
   });
 
   log.info(
-    { tenantId, saleId, invoiceId: invoice.id, invoiceNumber },
+    { tenantId, saleId, invoiceId: invoice.id, invoiceNumber: invoice.number },
     "Invoice auto-created from TPV sale"
   );
 

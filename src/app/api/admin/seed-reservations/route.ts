@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/auth/guard";
 import { apiError } from "@/lib/api-response";
 import { prisma } from "@/lib/db";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 export async function POST() {
   const [session, authError] = await requireTenant();
@@ -38,8 +39,11 @@ export async function POST() {
     ];
 
     for (const reservation of MOCK_RESERVATIONS) {
+      const number = await generateDocumentNumber(tenantId, "reservation", {
+        context: "demo_seed",
+      });
       await prisma.reservation.create({
-        data: { tenantId, ...reservation },
+        data: { tenantId, number, ...reservation },
       });
     }
 

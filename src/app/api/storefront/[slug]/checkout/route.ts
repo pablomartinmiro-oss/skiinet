@@ -7,6 +7,7 @@ import { lookupTenant } from "@/lib/storefront/tenant-lookup";
 import { validateBody, checkoutSchema } from "@/lib/validation";
 import { getCart, deleteCart } from "@/lib/storefront/cart";
 import { generateRedsysForm, generateOrderId } from "@/lib/redsys/client";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 import type { Prisma } from "@/generated/prisma/client";
 
 type RouteCtx = { params: Promise<{ slug: string }> };
@@ -107,9 +108,14 @@ export async function POST(request: NextRequest, ctx: RouteCtx) {
       );
     }
 
+    const number = await generateDocumentNumber(tenant.id, "quote", {
+      context: "storefront_checkout",
+    });
+
     const quote = await prisma.quote.create({
       data: {
         tenantId: tenant.id,
+        number,
         clientName: data.clientName,
         clientEmail: data.clientEmail,
         clientPhone: data.clientPhone ?? null,

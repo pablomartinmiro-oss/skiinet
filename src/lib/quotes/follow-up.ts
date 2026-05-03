@@ -65,6 +65,7 @@ async function sendSMS(
 interface QuoteForReminder {
   id: string;
   tenantId: string;
+  number: string | null; // Sequential PRE-2026-XXXX (preferred over id slice)
   clientName: string;
   clientEmail: string | null;
   clientPhone: string | null;
@@ -145,6 +146,7 @@ export async function processUnpaidReminders(): Promise<{
     select: {
       id: true,
       tenantId: true,
+      number: true,
       clientName: true,
       clientEmail: true,
       clientPhone: true,
@@ -190,7 +192,7 @@ async function sendReminderForStep(
   now: Date
 ): Promise<void> {
   const firstName = quote.clientName.split(" ")[0];
-  const quoteNumber = quote.id.slice(-8).toUpperCase();
+  const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
   const destination = destLabel(quote.destination);
   const paymentUrl = quote.redsysPaymentUrl ?? undefined;
 
@@ -282,7 +284,7 @@ async function sendReminderForStep(
 
 async function handleExpiry(quote: QuoteForReminder, now: Date): Promise<void> {
   const firstName = quote.clientName.split(" ")[0];
-  const quoteNumber = quote.id.slice(-8).toUpperCase();
+  const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
 
   // Send expired notification email
   if (quote.clientEmail) {
@@ -387,7 +389,7 @@ export async function processPostPaymentFollowUp(): Promise<{
         const html = buildCrossSellHTML({
           firstName,
           destination,
-          quoteNumber: quote.id.slice(-8).toUpperCase(),
+          quoteNumber: quote.number ?? quote.id.slice(-8).toUpperCase(),
           missingServices,
         });
         await sendEmail({
@@ -505,7 +507,7 @@ export async function processPreTripReminders(): Promise<{
     try {
       const firstName = quote.clientName.split(" ")[0];
       const destination = destLabel(quote.destination);
-      const quoteNumber = quote.id.slice(-8).toUpperCase();
+      const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
       const baseParams = { firstName, destination, quoteNumber };
 
       let html: string;
@@ -578,6 +580,7 @@ export async function flagAtRiskQuotes(): Promise<number> {
     select: {
       id: true,
       tenantId: true,
+      number: true,
       clientName: true,
       totalAmount: true,
     },
@@ -585,7 +588,7 @@ export async function flagAtRiskQuotes(): Promise<number> {
 
   let flagged = 0;
   for (const quote of atRiskQuotes) {
-    const quoteNumber = quote.id.slice(-8).toUpperCase();
+    const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
     await createTeamNotification(
       quote.tenantId,
       "quote_at_risk",

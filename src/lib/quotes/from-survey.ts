@@ -11,6 +11,7 @@ import { createSurveyOpportunity } from "./opportunity";
 import { getCustomFieldIdToKeyMap } from "@/lib/ghl/custom-fields";
 import { normalizeDestination } from "@/lib/destinations";
 import { intakeLead, linkLeadToQuote } from "@/lib/leads/intake";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 interface QuoteItemInput {
   productId: string | null;
@@ -349,9 +350,14 @@ export async function maybeCreateQuoteFromSurvey(tenantId: string, contactData: 
     log.warn({ err, tenantId, contactId }, "intakeLead failed; continuing with Quote creation");
   }
 
+  const number = await generateDocumentNumber(tenantId, "quote", {
+    context: "ghl_survey",
+  });
+
   const quote = await prisma.quote.create({
     data: {
       tenantId,
+      number,
       ghlContactId: contactId ?? null,
       ghlOpportunityId: opp?.opportunityId ?? null,
       ghlPipelineId: opp?.pipelineId ?? null,

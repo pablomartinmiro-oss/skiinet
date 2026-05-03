@@ -8,6 +8,7 @@ import { apiError } from "@/lib/api-response";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { computeAgeBracket } from "@/lib/planning/types";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 export const maxDuration = 30;
 
@@ -79,9 +80,12 @@ export async function POST(req: Request) {
             })).describe("Lista de participantes"),
           }),
           execute: async ({ clientName, clientPhone, clientEmail, station, activityDate, schedule, source, participants }) => {
+            const number = await generateDocumentNumber(tenantId, "reservation", {
+              context: "ai_chat",
+            });
             const reservation = await prisma.reservation.create({
               data: {
-                tenantId, clientName, clientPhone: clientPhone || "000000000",
+                tenantId, number, clientName, clientPhone: clientPhone || "000000000",
                 clientEmail: clientEmail || "", station, activityDate: new Date(activityDate),
                 schedule, source, status: "confirmada", totalPrice: 0,
               },

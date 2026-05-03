@@ -14,6 +14,7 @@ import {
   DEMO_CAPACITY,
 } from "@/lib/constants/demo-seed-data";
 import { seedExtraModules } from "@/lib/seed/seed-extra-modules";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 import { hash } from "bcryptjs";
 
 const log = logger.child({ route: "reset-demo" });
@@ -127,9 +128,13 @@ export async function POST() {
       const c = DEMO_CONTACTS[r.contactIndex];
       const activityDate = new Date(today);
       activityDate.setDate(activityDate.getDate() + r.daysOffset);
+      const resNumber = await generateDocumentNumber(tenantId, "reservation", {
+        context: "demo_seed",
+      });
       await prisma.reservation.create({
         data: {
           tenantId,
+          number: resNumber,
           ghlContactId: contactIds[r.contactIndex],
           clientName: `${c.firstName} ${c.lastName}`,
           clientPhone: c.phone,
@@ -158,9 +163,13 @@ export async function POST() {
       checkIn.setDate(checkIn.getDate() + q.checkIn);
       const checkOut = new Date(today);
       checkOut.setDate(checkOut.getDate() + q.checkOut);
+      const quoteNumber = await generateDocumentNumber(tenantId, "quote", {
+        context: "demo_seed",
+      });
       await prisma.quote.create({
         data: {
           tenantId,
+          number: quoteNumber,
           ghlContactId: contactIds[q.contactIndex],
           clientName: `${c.firstName} ${c.lastName}`,
           clientEmail: c.email,

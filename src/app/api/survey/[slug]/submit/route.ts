@@ -8,6 +8,7 @@ import { createNotification } from "@/lib/notifications";
 import { normalizeDestination } from "@/lib/destinations";
 import { rateLimit, getClientIP } from "@/lib/rate-limit";
 import { apiError } from "@/lib/api-response";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 const log = logger.child({ module: "survey-submit" });
 
@@ -195,9 +196,14 @@ export async function POST(
   // GHL opportunity (non-blocking — no contact ID from direct form submissions)
   const opp = await createSurveyOpportunity(tenant.id, "", destination, name, totalAmount).catch(() => null);
 
+  const number = await generateDocumentNumber(tenant.id, "quote", {
+    context: "public_survey",
+  });
+
   const quote = await prisma.quote.create({
     data: {
       tenantId: tenant.id,
+      number,
       ghlOpportunityId: opp?.opportunityId ?? null,
       ghlPipelineId: opp?.pipelineId ?? null,
       ghlStageId: opp?.stageId ?? null,

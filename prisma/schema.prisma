@@ -398,6 +398,7 @@ model SeasonCalendar {
 model Quote {
   id              String    @id @default(cuid())
   tenantId        String
+  number          String?   // Sequential "PRE-2026-0001" via generateDocumentNumber()
   ghlContactId    String?   // GHL contact ID
   clientName      String
   clientEmail     String?
@@ -474,6 +475,7 @@ model Quote {
   reservations    Reservation[]
   tasks           Task[]
 
+  @@unique([tenantId, number])
   @@index([tenantId, status])
   @@index([tenantId, createdAt])
 }
@@ -562,6 +564,7 @@ model Task {
 model Reservation {
   id              String    @id @default(cuid())
   tenantId        String
+  number          String?   // Sequential "RES-2026-0001" via generateDocumentNumber()
   ghlContactId    String?
   quoteId         String?
 
@@ -627,6 +630,7 @@ model Reservation {
   structuredParticipants Participant[]
   operationalUnits    OperationalUnit[]
 
+  @@unique([tenantId, number])
   @@index([tenantId, status])
   @@index([tenantId, activityDate])
   @@index([tenantId, createdAt])
