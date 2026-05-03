@@ -7,14 +7,12 @@ import { validateBody } from "@/lib/validation";
 
 const splitSchema = z.object({
   totalAmount: z.number().min(0),
-  payments: z
-    .object({
-      cash:  z.number().min(0).default(0),
-      card:  z.number().min(0).default(0),
-      bizum: z.number().min(0).default(0),
-      transfer: z.number().min(0).default(0),
-    })
-    .default({}),
+  payments: z.object({
+    cash:     z.number().min(0).default(0),
+    card:     z.number().min(0).default(0),
+    bizum:    z.number().min(0).default(0),
+    transfer: z.number().min(0).default(0),
+  }),
 });
 
 /**
@@ -36,11 +34,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = validateBody(body, splitSchema);
     if (!validated.ok) return badRequest(validated.error);
-    const { totalAmount, payments } = validated.data;
+    const { totalAmount } = validated.data;
+    // Coalesce defaults locally — Zod's inferred type leaves these as
+    // optional even with `.default(0)` due to strictNullChecks behaviour.
+    const cash     = validated.data.payments.cash     ?? 0;
+    const card     = validated.data.payments.card     ?? 0;
+    const bizum    = validated.data.payments.bizum    ?? 0;
+    const transfer = validated.data.payments.transfer ?? 0;
 
-    const sumCents = Math.round(
-      (payments.cash + payments.card + payments.bizum + payments.transfer) * 100,
-    );
+    const sumCents = Math.round((cash + card + bizum + transfer) * 100);
     const totalCents = Math.round(totalAmount * 100);
     const deltaCents = sumCents - totalCents;
     const valid = Math.abs(deltaCents) <= 1; // ±1 cent rounding tolerance
@@ -48,10 +50,10 @@ export async function POST(request: NextRequest) {
     const share =
       sumCents > 0
         ? {
-            cash:  Math.round((payments.cash * 100) / sumCents * 1000) / 10,
-            card:  Math.round((payments.card * 100) / sumCents * 1000) / 10,
-            bizum: Math.round((payments.bizum * 100) / sumCents * 1000) / 10,
-            transfer: Math.round((payments.transfer * 100) / sumCents * 1000) / 10,
+            cash:     Math.round((cash * 100) / sumCents * 1000) / 10,
+            card:     Math.round((card * 100) / sumCents * 1000) / 10,
+            bizum:    Math.round((bizum * 100) / sumCents * 1000) / 10,
+            transfer: Math.round((transfer * 100) / sumCents * 1000) / 10,
           }
         : { cash: 0, card: 0, bizum: 0, transfer: 0 };
 
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
       sum: sumCents / 100,
       delta: deltaCents / 100,
       share,
-      payments,
+      payments: { cash, card, bizum, transfer },
     });
   } catch (error) {
     return apiError(error, {
