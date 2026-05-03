@@ -209,6 +209,10 @@ model Tenant {
   // Twilio message log
   twilioMessageLogs        TwilioMessageLog[]
 
+  // Inbox (multi-channel conversations)
+  conversations            Conversation[]
+  inboxMessages            InboxMessage[]
+
   // Internal chat
   messages                 Message[]
 }
@@ -1279,6 +1283,7 @@ model Client {
   restaurantBookings RestaurantBooking[]
   invoices           Invoice[]
   tpvSales           TpvSale[]
+  conversations      Conversation[]      @relation("ClientConversations")
 
   @@index([tenantId, email])
   @@index([tenantId, phone])
@@ -2881,6 +2886,7 @@ model Lead {
   // Conversion
   quoteId       String?  // Denormalised pointer to the lead's primary Quote
   quotes        Quote[]  @relation("LeadQuotes")  // Inverse — one lead may have N quote revisions
+  conversations Conversation[] @relation("LeadConversations")
 
   // GHL integration
   ghlContactId      String?  // Idempotency key for webhook re-deliveries
@@ -3013,4 +3019,69 @@ model TwilioMessageLog {
   @@index([tenantId, status])
   @@index([tenantId, toNumber])
   @@index([twilioSid])
+}
+
+// ==================== INBOX (CONVERSATIONS + MESSAGES) ====================
+// Multi-channel unified inbox replacing GHL conversations. Receives
+// inbound from Twilio (SMS/WhatsApp), VAPI (voice transcripts) and
+// optionally email (Resend events). All ops happen inside Skinet.
+
+model Conversation {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  leadId          String?
+  lead            Lead?    @relation("LeadConversations", fields: [leadId], references: [id], onDelete: SetNull)
+  clientId        String?
+  client          Client?  @relation("ClientConversations", fields: [clientId], references: [id], onDelete: SetNull)
+
+  channel         String   // "sms" | "whatsapp" | "email" | "voice"
+  channelRef      String   // phone E.164 | email | vapi callId
+  subject         String?
+
+  status          String   @default("open") // "open" | "snoozed" | "closed"
+  assignedTo      String?  // userId
+
+  lastMessageAt        DateTime  @default(now())
+  lastMessageBody      String?
+  lastMessageDirection String?   // "inbound" | "outbound"
+  unreadCount          Int       @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  messages        InboxMessage[]
+
+  @@index([tenantId, status, lastMessageAt])
+  @@index([tenantId, channel, channelRef])
+  @@index([tenantId, assignedTo])
+}
+
+model InboxMessage {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  direction       String   // "inbound" | "outbound"
+  channel         String   // mirror of conversation.channel
+  fromAddr        String
+  toAddr          String
+  body            String
+  externalId      String?  // Twilio MessageSid | Resend id | VAPI message id
+  rawProvider     String?  // "twilio" | "vapi" | "resend"
+  status          String?  // delivered|failed|read
+  errorMessage    String?
+  media           Json?    // [{ url, contentType }] for MMS / WhatsApp media
+
+  actorId         String?  // userId for outbound manual sends
+  sentAt          DateTime @default(now())
+  readAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([tenantId, conversationId, sentAt])
+  @@index([tenantId, externalId])
 }
