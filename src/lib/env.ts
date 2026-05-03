@@ -48,6 +48,13 @@ const envSchema = z.object({
   REDSYS_SECRET_KEY: z.string().optional(),
   REDSYS_TERMINAL: z.string().optional(),
 
+  // Twilio (SMS + WhatsApp) — replaces GHL.sendMessage
+  // Sender numbers must be E.164 (e.g. +34911234567 or "whatsapp:+14155238886")
+  TWILIO_ACCOUNT_SID: z.string().optional(),
+  TWILIO_AUTH_TOKEN: z.string().optional(),
+  TWILIO_FROM_SMS: z.string().optional(),       // E.164 SMS-capable number
+  TWILIO_FROM_WHATSAPP: z.string().optional(),  // "whatsapp:+E.164"
+
   // Optional
   LOG_LEVEL: z
     .enum(["debug", "info", "warn", "error"])
