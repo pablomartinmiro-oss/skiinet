@@ -35,6 +35,11 @@ const envSchema = z.object({
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
 
+  // Public lead intake — fallback tenantId for forms that have no slug context
+  // (e.g. marketing site /contacto). When unset, public forms with no slug
+  // and no tenantSlug in body are rejected with 400.
+  DEFAULT_TENANT_ID: z.string().optional(),
+
   // Optional
   LOG_LEVEL: z
     .enum(["debug", "info", "warn", "error"])

@@ -797,20 +797,6 @@ model SyncStatus {
   @@index([tenantId])
 }
 
-// ==================== CONTACT FORM SUBMISSIONS ====================
-
-model ContactSubmission {
-  id        String   @id @default(cuid())
-  nombre    String
-  email     String
-  telefono  String?
-  asunto    String   @default("Información general")
-  mensaje   String
-  createdAt DateTime @default(now())
-
-  @@index([email, createdAt])
-}
-
 // ==================== CATALOG EXTENSIONS ====================
 
 model Category {
@@ -2813,9 +2799,13 @@ model Lead {
   // Conversion
   quoteId       String?
 
+  // GHL integration — idempotency key for webhook re-deliveries
+  ghlContactId  String?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  @@unique([tenantId, ghlContactId])
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([tenantId, score])

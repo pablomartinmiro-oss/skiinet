@@ -6,6 +6,7 @@ import { logger } from "@/lib/logger";
 import { apiError, badRequest } from "@/lib/api-response";
 import { rateLimit, getClientIP } from "@/lib/rate-limit";
 import { validateBody } from "@/lib/validation";
+import { intakeLead } from "@/lib/leads/intake";
 
 const publicBudgetRequestSchema = z.object({
   customerName: z.string().min(1, "El nombre es obligatorio").max(200),
@@ -55,8 +56,9 @@ export async function POST(
     });
     if (!tenant) return badRequest("Tenant no encontrado");
 
+    // Build a structured note with the budget details (preserved from
+    // ContactSubmission.mensaje) so admins see all context on the lead.
     const lines: string[] = [];
-    lines.push(`[Tienda: ${tenant.name} (${slug})]`);
     if (data.company) lines.push(`Empresa: ${data.company}`);
     if (data.startDate || data.endDate) {
       lines.push(
@@ -76,25 +78,37 @@ export async function POST(
     }
     if (data.notes) lines.push(`\nNotas: ${data.notes}`);
 
-    const submission = await prisma.contactSubmission.create({
-      data: {
-        nombre: data.customerName,
-        email: data.email,
-        telefono: data.phone ?? null,
-        asunto: `Solicitud de presupuesto — ${tenant.name}`,
-        mensaje: lines.join("\n"),
-      },
-      select: { id: true, createdAt: true },
+    const customFields = JSON.parse(
+      JSON.stringify({
+        startDate: data.startDate ?? null,
+        endDate: data.endDate ?? null,
+        numAdults: data.numAdults,
+        numChildren,
+        station: data.station ?? null,
+        activities,
+      }),
+    );
+
+    const { lead } = await intakeLead({
+      tenantId: tenant.id,
+      name: data.customerName,
+      email: data.email,
+      phone: data.phone ?? null,
+      company: data.company ?? null,
+      source: "storefront_budget",
+      notes: lines.join("\n"),
+      tags: ["solicitud-presupuesto", `tienda:${slug}`],
+      customFields,
     });
 
     log.info(
-      { submissionId: submission.id, tenantId: tenant.id },
-      "Public budget request received"
+      { leadId: lead.id, tenantId: tenant.id },
+      "Public budget request received as Lead",
     );
 
     return NextResponse.json({
       ok: true,
-      id: submission.id,
+      id: lead.id,
       message:
         "Hemos recibido tu solicitud. Te contactaremos en menos de 24 horas con tu presupuesto personalizado.",
     });
