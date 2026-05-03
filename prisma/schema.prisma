@@ -1762,12 +1762,19 @@ model DiscountCode {
   id             String    @id @default(cuid())
   tenantId       String
   code           String
+  name           String?
+  description    String?
+  observations   String?
   type           String    @default("percentage") // "percentage" | "fixed"
   value          Float
   expirationDate DateTime?
   maxUses        Int       @default(0) // 0 = unlimited
   usedCount      Int       @default(0)
   isActive       Boolean   @default(true)
+  origin         String    @default("manual") // "manual" | "voucher"
+  compensationVoucherId String?  // Links back to CompensationVoucher when origin == "voucher"
+  clientEmail    String?
+  clientName     String?
   createdById    String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -1777,6 +1784,8 @@ model DiscountCode {
 
   @@unique([tenantId, code])
   @@index([tenantId, isActive])
+  @@index([tenantId, origin])
+  @@index([compensationVoucherId])
 }
 
 model DiscountCodeUse {
