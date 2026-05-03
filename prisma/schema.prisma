@@ -203,6 +203,9 @@ model Tenant {
   crmActivityLogs          CrmActivityLog[]
   pendingPayments          PendingPayment[]
 
+  // Lego Packs
+  legoPackSnapshots        LegoPackSnapshot[]
+
   // Internal chat
   messages                 Message[]
 }
@@ -2941,4 +2944,30 @@ model PendingPayment {
 
   @@index([tenantId, status])
   @@index([tenantId, dueDate])
+}
+
+// ==================== LEGO PACK SNAPSHOTS ====================
+// Frozen pricing snapshot taken when a pack is sold. Decouples future
+// pack edits from already-issued documents.
+model LegoPackSnapshot {
+  id            String   @id @default(cuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  packId        String
+  packTitle     String
+  packSlug      String?
+
+  operationType String   // "tpv_sale" | "reservation" | "quote"
+  operationId   String
+
+  pricedAt      DateTime @default(now())
+  totalPrice    Float
+  linesJson     Json     // Array of { lineId, productId?, quantity, unitPrice, totalPrice, label }
+  currency      String   @default("EUR")
+
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, packId])
+  @@index([tenantId, operationType, operationId])
 }
