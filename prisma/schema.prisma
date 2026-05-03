@@ -1606,6 +1606,7 @@ model SettlementStatusLog {
 model ReavExpedient {
   id               String   @id @default(cuid())
   tenantId         String
+  expedientNumber  String?  // Sequential "REAV-2026-0001" via generateDocumentNumber("cancellation"/"settlement"-style)
   invoiceId        String
   operationType    String   @default("standard")
   costPercentage   Float    @default(0)
@@ -1613,6 +1614,8 @@ model ReavExpedient {
   marginAmount     Float    @default(0)
   taxableBase      Float    @default(0)
   vat              Float    @default(0)
+  fiscalStatus     String   @default("borrador")  // borrador | calculado | declarado | cerrado | anulado
+  operativeStatus  String   @default("pendiente") // pendiente | en_curso | completado | cancelado
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -1621,7 +1624,10 @@ model ReavExpedient {
   costs     ReavCost[]
   documents ReavDocument[]
 
+  @@unique([tenantId, expedientNumber])
   @@index([tenantId, invoiceId])
+  @@index([tenantId, fiscalStatus])
+  @@index([tenantId, operativeStatus])
 }
 
 model ReavCost {
