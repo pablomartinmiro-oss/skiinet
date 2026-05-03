@@ -1499,23 +1499,28 @@ model RecurringExpense {
 // ==================== SUPPLIERS ====================
 
 model Supplier {
-  id                   String   @id @default(cuid())
-  tenantId             String
-  fiscalName           String
-  commercialName       String?
-  nif                  String
-  iban                 String?
-  email                String?
-  phone                String?
-  commissionPercentage Float    @default(0)
-  commissionType       String   @default("percentage") // "percentage" | "fixed" | "margin" | "hybrid"
-  fixedCostPerUnit     Float?
-  marginPercentage     Float?
-  paymentMethod        String   @default("transfer") // "transfer" | "card"
-  settlementFrequency  String   @default("monthly") // "biweekly" | "monthly" | "quarterly"
-  status               String   @default("active") // "active" | "inactive" | "blocked"
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                       String   @id @default(cuid())
+  tenantId                 String
+  fiscalName               String
+  commercialName           String?
+  nif                      String
+  iban                     String?
+  email                    String?
+  phone                    String?
+  fiscalAddress            String?
+  contactPerson            String?
+  adminEmail               String?
+  commissionPercentage     Float    @default(0)
+  commissionType           String   @default("percentage") // "percentage" | "fixed" | "margin" | "hybrid"
+  fixedCostPerUnit         Float?
+  marginPercentage         Float?
+  paymentMethod            String   @default("transfer") // "transfer" | "card"
+  settlementFrequency      String   @default("monthly") // "biweekly" | "monthly" | "quarterly"
+  settlementDayOfMonth     Int      @default(1)  // Day of month (1-28) when autoGenerateSettlements fires
+  autoGenerateSettlements  Boolean  @default(false)
+  status                   String   @default("active") // "active" | "inactive" | "blocked"
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
   tenant      Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   settlements SupplierSettlement[]
@@ -1538,6 +1543,8 @@ model SupplierSettlement {
   commissionAmount Float     @default(0)
   netAmount        Float     @default(0)
   pdfUrl           String?
+  pdfKey           String?   // S3 key (PORT-10)
+  internalNotes    String?
   sentAt           DateTime?
   paidAt           DateTime?
   createdAt        DateTime  @default(now())
