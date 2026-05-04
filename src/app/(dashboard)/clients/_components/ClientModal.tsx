@@ -55,7 +55,7 @@ export function ClientModal({ client, onClose, onSave, saving }: ClientModalProp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
       <form
         onSubmit={handleSubmit}
         className="mx-4 w-full max-w-md rounded-xl bg-white p-5 shadow-lg"
@@ -129,7 +129,7 @@ export function DeleteConfirm({ name, onCancel, onConfirm, deleting }: {
   name: string; onCancel: () => void; onConfirm: () => void; deleting: boolean;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
       <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-5 shadow-lg">
         <p className="text-sm font-semibold text-[#2D2A26] mb-2">Eliminar cliente</p>
         <p className="text-xs text-[#8A8580] mb-4">

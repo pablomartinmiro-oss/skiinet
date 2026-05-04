@@ -18,8 +18,13 @@ export function ActivityIncidentModal({
   isPending,
 }: IncidentModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
-      <div className="mx-4 w-full max-w-md rounded-xl bg-white p-5 shadow-lg">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start gap-3 mb-4">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#C75D4A]/15">
             <AlertTriangle className="h-4 w-4 text-[#C75D4A]" />
