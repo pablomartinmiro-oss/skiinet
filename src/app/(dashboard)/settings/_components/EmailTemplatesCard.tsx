@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Mail, Eye, X } from "lucide-react";
@@ -51,6 +51,23 @@ export function EmailTemplatesCard() {
   }, [data]);
 
   const previewTemplate = data?.templates.find((t) => t.id === previewId);
+
+  const closePreview = useCallback(() => setPreviewId(null), []);
+
+  // Close on Escape + lock body scroll while open
+  useEffect(() => {
+    if (!previewId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closePreview();
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [previewId, closePreview]);
 
   if (isLoading) {
     return (
@@ -124,10 +141,16 @@ export function EmailTemplatesCard() {
       {/* Preview modal */}
       {previewTemplate && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs"
-          onClick={() => setPreviewId(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Vista previa: ${previewTemplate.name}`}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+          onClick={closePreview}
         >
-          <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h4 className="text-sm font-semibold text-[#2D2A26]">
@@ -140,8 +163,10 @@ export function EmailTemplatesCard() {
                 </span>
               </div>
               <button
-                onClick={() => setPreviewId(null)}
-                className="rounded-lg p-1 text-[#8A8580] hover:bg-[#FAF9F7] transition-colors"
+                type="button"
+                onClick={closePreview}
+                aria-label="Cerrar"
+                className="rounded-lg p-2 text-[#8A8580] hover:bg-[#FAF9F7] hover:text-[#2D2A26] transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -149,9 +174,7 @@ export function EmailTemplatesCard() {
 
             <div className="rounded-xl border border-[#E8E4DE] bg-[#FAF9F7] p-8 text-center">
               <Mail className="mx-auto h-8 w-8 text-[#E8E4DE] mb-3" />
-              <p className="text-sm text-[#8A8580]">
-                Vista previa del email
-              </p>
+              <p className="text-sm text-[#8A8580]">Vista previa del email</p>
               <p className="mt-1 text-xs text-[#8A8580]/70">
                 El editor visual de plantillas estara disponible proximamente
               </p>
@@ -159,8 +182,9 @@ export function EmailTemplatesCard() {
 
             <div className="mt-4 flex justify-end">
               <button
-                onClick={() => setPreviewId(null)}
-                className="rounded-[10px] px-4 py-2 text-sm font-medium text-[#8A8580] hover:bg-[#FAF9F7] transition-colors"
+                type="button"
+                onClick={closePreview}
+                className="rounded-[10px] border border-[#E8E4DE] px-4 py-2 text-sm font-medium text-[#2D2A26] hover:bg-[#FAF9F7] transition-colors"
               >
                 Cerrar
               </button>
