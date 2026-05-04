@@ -1,12 +1,72 @@
 # Skiinet (OpenClaw) — Build Progress
 
-## Current Status
-- **Phase:** Glass Design System (2026-05-02) ✅
-- **Step:** Ready to push
-- **Live URL:** https://crm-dash-prod.up.railway.app
+## Current Status (2026-05-03 — post-compact handoff)
+
+- **Live URL:** https://openclaw-production-50e4.up.railway.app
+- **Branch:** `main` (PR #35 + #36 mergeados)
+- **Tenant prod Skicenter ID:** `cmn3gorz400004cov5kzoh3k2`
+
+### Mergeado hoy
+
+**PR #35** (squashed, deployed) — 23 commits cubriendo:
+- Lead unification (forms públicos crean Lead real)
+- 14 PORT specs (numbering, Redsys, CRM, reviews, discounts, REAV, catalog, packs, suppliers, finance, cancellations, ticketing, operations, TPV)
+- Twilio adapter + VAPI webhook + inbox unificado
+- Bug fix: syncDocumentCounters auto-heal en seed
+
+**PR #36** (squashed, en deploy ahora) — Templates email/PDF profesionales:
+- 8 emails transaccionales con brand Skicenter (navy `#0F2A4A` + winter orange `#FF6B35`)
+- 3 PDFs (quote, invoice, settlement) con datos CIAN
+- `POST /api/admin/seed-templates` (Owner-only)
+- Files en `src/lib/seed/templates/*`
+
+### LO QUE QUEDA POST-COMPACT
+
+1. **Verificar deploy bdbb7019** — BUILDING al momento de compactar.
+2. **Triggerear `/api/admin/seed-templates`** en prod (Owner Skicenter).
+3. **Triggerear `/api/admin/seed-products`** en prod (carga 93 productos + 3 estaciones + 7 períodos temporada).
+4. **Switch `dataMode` mock→live** en tenant Skicenter via Settings UI o SQL directo:
+   ```sql
+   UPDATE "Tenant" SET "dataMode"='live' WHERE id='cmn3gorz400004cov5kzoh3k2';
+   ```
+5. **Env vars Railway opcionales** cuando hagan falta:
+   - `RESEND_API_KEY` (emails outbound — sin esto no fluyen)
+   - `REDSYS_ENVIRONMENT=production` + `REDSYS_MERCHANT_CODE/SECRET_KEY/TERMINAL`
+   - `TWILIO_ACCOUNT_SID/AUTH_TOKEN/FROM_SMS/FROM_WHATSAPP`
+   - `VAPI_WEBHOOK_SECRET`
+
+### Estado actual prod (verificado)
+
+- ✅ 126 tablas creadas, 44 migrations aplicadas
+- ✅ Smoke test 4 endpoints prod (health, /api/contact, webhooks/vapi, webhooks/twilio): 4/4 pass
+- ✅ Lead + Conversation + InboxMessage creados end-to-end
+- 🟡 Tenant Skicenter aún sin productos/templates/site-settings — pendiente seedear
+- 🟡 dataMode aún en `mock`
+
+### Coexistencia GHL ↔ Skinet (importante)
+
+GHL **sigue conectado** para Skicenter. Razón: tienen histórico ahí (contactos, conversaciones, oportunidades). Decisión:
+- Skinet sincroniza GHL → tablas Cached* (legacy reads)
+- Nuevos leads de forms / VAPI / Twilio → tablas `Lead` / `Conversation` (nuevas)
+- UI `/comms` muestra ambas fuentes (PR-22 hace el merge)
+
+Apagar GHL completamente = trabajo futuro: configurar Twilio + VAPI directos, validar 1-2 semanas, luego desconectar OAuth en Settings + borrar `src/lib/ghl/` (~1 día).
+
+### Logins
+- Demo: `demo@skicenter.com` / `demo123`
+- Skicenter real (Owner): `jgrande@skicenter.es` (password con cliente)
+
+### Docs útiles en raíz del repo
+- `AUDIT-REPORT.md` — reporte completo del audit dinámico (smoke test 26/26, screenshots Playwright, plan deploy)
+- `nayade-port/PORT-PLAN.md` — plan portado de Nayade (todo cubierto salvo Hotel/Spa/Restaurant/Auth descartados por decisión producto)
+
+---
+
+## Sesiones previas (histórico)
+
+### Phase: Glass Design System (2026-05-02) ✅
 - **Last pushed commit:** 710d352 (2026-05-02)
 - **Last deployed commit:** fc2e8d0 (2026-03-16) — phases R-X pushed to git, Railway auto-deploys
-- **Date:** 2026-05-02
 
 ### Glass Design System (2026-05-02) ✅
 - Full glass morphism design across all dashboard pages
