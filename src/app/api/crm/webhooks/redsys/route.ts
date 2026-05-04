@@ -7,6 +7,7 @@ import { verifyRedsysSignature } from "@/lib/redsys/client";
 import { sendEmail } from "@/lib/email/client";
 import { buildConfirmationEmailHTML } from "@/lib/email/templates";
 import { generateTasksForPaidQuote } from "@/lib/tasks/generate";
+import { logCrmActivityAsync } from "@/lib/crm/activity-log";
 
 const log = logger.child({ route: "/api/crm/webhooks/redsys" });
 
@@ -64,6 +65,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Quote not found" }, { status: 404 });
     }
 
+    // Idempotency — Redsys may re-deliver the IPN. If already finalised,
+    // ack quickly without re-running side effects (emails, tasks, GHL moves).
+    if (quote.paymentStatus === "paid") {
+      log.info(
+        { quoteId: quote.id, orderId },
+        "Redsys IPN re-delivery — quote already paid, ack and skip",
+      );
+      return NextResponse.json({ status: "ok", idempotent: true });
+    }
+
+    // Tampering check — the amount Redsys reports MUST match what we asked for.
+    // An attacker who tampers the form mid-flight (changing amount to 1c) would
+    // get a successful auth code; without this check we'd mark the quote paid.
+    const expectedCents = Math.round(quote.totalAmount * 100).toString();
+    if (data.Ds_Amount !== expectedCents) {
+      log.error(
+        {
+          quoteId: quote.id,
+          orderId,
+          expectedCents,
+          receivedCents: data.Ds_Amount,
+        },
+        "Redsys amount tampering detected — refusing to mark paid",
+      );
+      await prisma.quote.update({
+        where: { id: quote.id },
+        data: { paymentStatus: "tampering_suspected" },
+      });
+      logCrmActivityAsync({
+        tenantId: quote.tenantId,
+        entityType: "quote",
+        entityId: quote.id,
+        action: "tampering_suspected",
+        details: { orderId, expectedCents, receivedCents: data.Ds_Amount },
+      });
+      return NextResponse.json(
+        { error: "Amount mismatch" },
+        { status: 400 },
+      );
+    }
+
     // Payment successful if Ds_Response < 100
     if (responseCode < 100) {
       await prisma.quote.update({
@@ -74,6 +116,19 @@ export async function POST(request: NextRequest) {
           paymentMethod: "redsys",
           paidAt: new Date(),
           paymentRef: authCode,
+        },
+      });
+
+      logCrmActivityAsync({
+        tenantId: quote.tenantId,
+        entityType: "quote",
+        entityId: quote.id,
+        action: "payment_received",
+        details: {
+          orderId,
+          authCode,
+          amountCents: data.Ds_Amount,
+          method: "redsys",
         },
       });
 
@@ -168,6 +223,13 @@ export async function POST(request: NextRequest) {
         { quoteId: quote.id, orderId, responseCode },
         "Payment failed"
       );
+      logCrmActivityAsync({
+        tenantId: quote.tenantId,
+        entityType: "quote",
+        entityId: quote.id,
+        action: "payment_failed",
+        details: { orderId, responseCode },
+      });
     }
 
     // Redsys expects 200 OK

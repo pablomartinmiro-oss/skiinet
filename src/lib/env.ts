@@ -35,6 +35,30 @@ const envSchema = z.object({
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
 
+  // Public lead intake — fallback tenantId for forms that have no slug context
+  // (e.g. marketing site /contacto). When unset, public forms with no slug
+  // and no tenantSlug in body are rejected with 400.
+  DEFAULT_TENANT_ID: z.string().optional(),
+
+  // Redsys (TPV)
+  // Production: https://sis.redsys.es/sis/realizarPago
+  // Test:       https://sis-t.redsys.es:25443/sis/realizarPago
+  REDSYS_ENVIRONMENT: z.enum(["test", "production"]).default("test"),
+  REDSYS_MERCHANT_CODE: z.string().optional(),
+  REDSYS_SECRET_KEY: z.string().optional(),
+  REDSYS_TERMINAL: z.string().optional(),
+
+  // Twilio (SMS + WhatsApp) — replaces GHL.sendMessage
+  // Sender numbers must be E.164 (e.g. +34911234567 or "whatsapp:+14155238886")
+  TWILIO_ACCOUNT_SID: z.string().optional(),
+  TWILIO_AUTH_TOKEN: z.string().optional(),
+  TWILIO_FROM_SMS: z.string().optional(),       // E.164 SMS-capable number
+  TWILIO_FROM_WHATSAPP: z.string().optional(),  // "whatsapp:+E.164"
+
+  // VAPI (voice AI agents) — webhook secret for inbound call reports.
+  // Set in VAPI dashboard under Server URL → Custom Header secret.
+  VAPI_WEBHOOK_SECRET: z.string().optional(),
+
   // Optional
   LOG_LEVEL: z
     .enum(["debug", "info", "warn", "error"])

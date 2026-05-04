@@ -7,8 +7,9 @@ import {
   buildContactFormConfirmationHTML,
 } from "@/lib/email/templates/contact-form-notification";
 import { rateLimit, getClientIP } from "@/lib/rate-limit";
-import { apiError } from "@/lib/api-response";
 import { validateBody, contactFormSchema } from "@/lib/validation";
+import { intakeLead } from "@/lib/leads/intake";
+import { resolveTenantForPublicRequest } from "@/lib/leads/resolve-tenant";
 
 const log = logger.child({ module: "contact-form" });
 
@@ -31,12 +32,31 @@ export async function POST(req: NextRequest) {
   const { nombre, email, telefono, asunto, mensaje } = validation.data;
   const normalizedEmail = email.trim().toLowerCase();
 
-  // Rate limiting — max 3 per email per hour
+  // Resolve tenant — body.tenantSlug if the form passes it, else DEFAULT_TENANT_ID.
+  // Public marketing /contacto has no slug context so it relies on env var.
+  const tenantSlug =
+    typeof body.tenantSlug === "string" ? body.tenantSlug : null;
+  const tenantResult = await resolveTenantForPublicRequest({ tenantSlug });
+  if (!tenantResult.ok) {
+    log.error(
+      { reason: tenantResult.reason, tenantSlug },
+      "Could not resolve tenant for contact form",
+    );
+    return NextResponse.json(
+      { error: "Configuracion incompleta. Contacta con soporte." },
+      { status: 500 },
+    );
+  }
+  const tenantId = tenantResult.tenantId;
+
+  // Rate limit by tenant + email — max 3 per hour
   try {
     const oneHourAgo = new Date(Date.now() - 3_600_000);
-    const recentCount = await prisma.contactSubmission.count({
+    const recentCount = await prisma.lead.count({
       where: {
+        tenantId,
         email: normalizedEmail,
+        source: "contact_form",
         createdAt: { gte: oneHourAgo },
       },
     });
@@ -47,23 +67,24 @@ export async function POST(req: NextRequest) {
         { status: 429 },
       );
     }
-  } catch {
-    log.warn("ContactSubmission table may not exist, skipping rate limit");
+  } catch (err) {
+    log.warn({ err }, "Rate limit check failed, continuing");
   }
 
-  // Save to DB
+  // Persist as Lead
   try {
-    await prisma.contactSubmission.create({
-      data: {
-        nombre: nombre.trim(),
-        email: normalizedEmail,
-        telefono: telefono?.trim() || null,
-        asunto: asunto || "Informacion general",
-        mensaje: mensaje.trim(),
-      },
+    const subject = asunto || "Informacion general";
+    await intakeLead({
+      tenantId,
+      name: nombre.trim(),
+      email: normalizedEmail,
+      phone: telefono?.trim() || null,
+      source: "contact_form",
+      notes: `[${subject}] ${mensaje.trim()}`,
+      tags: ["web-contacto", `asunto:${subject.toLowerCase()}`],
     });
   } catch (err) {
-    log.warn({ err }, "Could not save contact submission to DB");
+    log.error({ err, tenantId }, "Could not persist contact form as Lead");
   }
 
   // Send emails via Resend
@@ -75,8 +96,9 @@ export async function POST(req: NextRequest) {
     mensaje: mensaje.trim(),
   });
 
-  // Create GHL contact (best effort)
+  // Create GHL contact for the resolved tenant (no more findFirst bug)
   await createGHLContact({
+    tenantId,
     nombre: nombre.trim(),
     email: normalizedEmail,
     telefono: telefono?.trim(),
@@ -124,13 +146,15 @@ async function sendEmails(data: {
 }
 
 async function createGHLContact(data: {
+  tenantId: string;
   nombre: string;
   email: string;
   telefono?: string;
 }) {
   try {
-    const tenant = await prisma.tenant.findFirst({
-      where: { ghlLocationId: { not: null } },
+    // Use the resolved tenant — never findFirst across all tenants
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: data.tenantId },
       select: { ghlLocationId: true, ghlAccessToken: true },
     });
 

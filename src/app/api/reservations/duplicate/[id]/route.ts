@@ -4,6 +4,7 @@ import { requireTenant } from "@/lib/auth/guard";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { apiError } from "@/lib/api-response";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 export async function POST(
   _request: NextRequest,
@@ -25,10 +26,17 @@ export async function POST(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Copy all fields except id, timestamps, notification tracking
+    // Copy all fields except id, timestamps, notification tracking.
+    // Always allocate a fresh document number — duplicates are independent fiscal records.
+    const number = await generateDocumentNumber(tenantId, "reservation", {
+      generatedBy: session.userId,
+      context: "duplicate",
+    });
+
     const duplicate = await prisma.reservation.create({
       data: {
         tenantId,
+        number,
         clientName: source.clientName,
         clientPhone: source.clientPhone,
         clientEmail: source.clientEmail,

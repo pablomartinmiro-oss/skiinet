@@ -48,3 +48,7 @@ csv-imports/
 *.csv
 tarifas*/
 model fiscal*/
+
+# Audit artifacts (local-only)
+/audit-*.png
+/.playwright-mcp/

@@ -7,6 +7,7 @@ import { apiError } from "@/lib/api-response";
 import { validateBody, createQuoteSchema } from "@/lib/validation";
 import { sendEmail } from "@/lib/email/resend";
 import { buildQuoteConfirmationHTML } from "@/lib/email/templates/quote-confirmation";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 export async function GET(request: NextRequest) {
   const [session, authError] = await requireTenant();
@@ -55,9 +56,15 @@ export async function POST(request: NextRequest) {
     }
     const data = validated.data;
 
+    const number = await generateDocumentNumber(tenantId, "quote", {
+      generatedBy: session.userId,
+      context: "manual",
+    });
+
     const quote = await prisma.quote.create({
       data: {
         tenantId,
+        number,
         clientName: data.clientName,
         clientEmail: data.clientEmail || null,
         clientPhone: data.clientPhone || null,

@@ -161,6 +161,101 @@ export async function updatePrefix(
 }
 
 /**
+ * Map of DocumentType → (table, column, prefix) used by syncDocumentCounters
+ * to scan existing rows and self-heal counter state.
+ */
+const COUNTER_SOURCES: Record<DocumentType, { table: string; column: string; prefix: string }> = {
+  invoice:      { table: "Invoice",            column: "number",           prefix: "FAC-" },
+  quote:        { table: "Quote",              column: "number",           prefix: "PRE-" },
+  reservation:  { table: "Reservation",        column: "number",           prefix: "RES-" },
+  tpv:          { table: "TpvSale",            column: "ticketNumber",     prefix: "TKT-" },
+  settlement:   { table: "SupplierSettlement", column: "number",           prefix: "LIQ-" },
+  cancellation: { table: "CancellationRequest", column: "creditNoteNumber", prefix: "ANU-" },
+  // CompensationVoucher.code is shared by both coupon-issued and credit_note flows;
+  // we let credit_note own the sync so generic coupons (issued elsewhere) don't double-bump.
+  credit_note:  { table: "CompensationVoucher", column: "code",            prefix: "BON-" },
+  coupon:       { table: "CompensationVoucher", column: "code",            prefix: "CUP-" },
+};
+
+/**
+ * Sync DocumentCounter rows with the highest sequence already present in
+ * the corresponding tables. Used by seed scripts to recover from rows
+ * inserted with hardcoded numbers (e.g. demo data with FAC-2026-0001..0012).
+ *
+ * Idempotent. Safe to run multiple times. Only bumps counters upward —
+ * never decrements.
+ */
+export async function syncDocumentCounters(
+  tenantId: string,
+  opts?: { year?: number; client?: TransactionClient },
+): Promise<{ synced: Array<{ type: DocumentType; oldValue: number; newValue: number }> }> {
+  const db = opts?.client ?? prisma;
+  const targetYear = opts?.year ?? new Date().getFullYear();
+  const synced: Array<{ type: DocumentType; oldValue: number; newValue: number }> = [];
+
+  for (const type of ALL_DOCUMENT_TYPES) {
+    const src = COUNTER_SOURCES[type];
+    if (!src) continue;
+
+    // Extract last-block sequence from "PREFIX-YEAR-NNNN" format. Tolerates
+    // any prefix length and any trailing format as long as the digits at the
+    // end of the string represent the sequence.
+    let rows: Array<{ max_seq: number | null }> = [];
+    try {
+      rows = await db.$queryRawUnsafe<Array<{ max_seq: number | null }>>(
+        `SELECT MAX(CAST(SUBSTRING("${src.column}" FROM '([0-9]+)$') AS INTEGER)) AS max_seq
+         FROM "${src.table}"
+         WHERE "tenantId" = $1
+           AND "${src.column}" IS NOT NULL
+           AND "${src.column}" LIKE $2`,
+        tenantId,
+        `%-${targetYear}-%`,
+      );
+    } catch (err) {
+      // Table or column missing — skip silently (test envs / partial schemas).
+      logger.debug({ err, type }, "syncDocumentCounters: skipping type");
+      continue;
+    }
+
+    const maxSeq = rows[0]?.max_seq ?? 0;
+    if (maxSeq <= 0) continue;
+
+    const existing = await db.documentCounter.findUnique({
+      where: {
+        tenantId_documentType_year: { tenantId, documentType: type, year: targetYear },
+      },
+      select: { id: true, currentNumber: true },
+    });
+    const oldValue = existing?.currentNumber ?? 0;
+    if (maxSeq <= oldValue) continue;
+
+    if (existing) {
+      await db.documentCounter.update({
+        where: { id: existing.id },
+        data: { currentNumber: maxSeq },
+      });
+    } else {
+      await db.documentCounter.create({
+        data: {
+          tenantId,
+          documentType: type,
+          year: targetYear,
+          currentNumber: maxSeq,
+          prefix: src.prefix,
+        },
+      });
+    }
+
+    synced.push({ type, oldValue, newValue: maxSeq });
+  }
+
+  if (synced.length > 0) {
+    logger.info({ tenantId, year: targetYear, synced }, "DocumentCounter synced from existing rows");
+  }
+  return { synced };
+}
+
+/**
  * Reset a counter to a specific value.
  * DANGER: Only for admin corrections (e.g. start of year).
  * Creates an audit log entry.

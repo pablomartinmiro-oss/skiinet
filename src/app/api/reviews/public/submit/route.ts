@@ -53,6 +53,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verified-booking signal: if the reviewer's email matches any reservation
+    // in this tenant we mark the review as verified. Used to render a trust
+    // badge in public listings.
+    let verifiedBooking = false;
+    if (data.authorEmail) {
+      const matchingRes = await prisma.reservation.findFirst({
+        where: {
+          tenantId: data.tenantId,
+          clientEmail: data.authorEmail.trim().toLowerCase(),
+        },
+        select: { id: true },
+      });
+      verifiedBooking = !!matchingRes;
+    }
+
     const review = await prisma.review.create({
       data: {
         tenantId: data.tenantId,
@@ -65,11 +80,12 @@ export async function POST(request: NextRequest) {
         body: data.body,
         stayDate: data.stayDate ?? null,
         status: "pending",
+        verifiedBooking,
       },
     });
 
     log.info(
-      { reviewId: review.id, tenantId: data.tenantId },
+      { reviewId: review.id, tenantId: data.tenantId, verifiedBooking },
       "Public review submitted"
     );
     return NextResponse.json(

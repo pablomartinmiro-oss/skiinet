@@ -6,6 +6,7 @@ import { logger } from "@/lib/logger";
 import { apiError } from "@/lib/api-response";
 import { createNotification } from "@/lib/notifications";
 import { validateBody, createReservationSchema } from "@/lib/validation";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 export async function GET(request: NextRequest) {
   const [session, authError] = await requireTenant();
@@ -94,9 +95,15 @@ export async function POST(request: NextRequest) {
       voucherPricePaid, voucherExpiry, voucherRedeemed, voucherRedeemedAt,
     } = validation.data;
 
+    const number = await generateDocumentNumber(tenantId, "reservation", {
+      generatedBy: session.userId,
+      context: "manual",
+    });
+
     const reservation = await prisma.reservation.create({
       data: {
         tenantId,
+        number,
         clientName,
         clientPhone: clientPhone ?? "",
         clientEmail: clientEmail ?? "",

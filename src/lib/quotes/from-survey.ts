@@ -10,6 +10,8 @@ import { sendEmail } from "@/lib/email/client";
 import { createSurveyOpportunity } from "./opportunity";
 import { getCustomFieldIdToKeyMap } from "@/lib/ghl/custom-fields";
 import { normalizeDestination } from "@/lib/destinations";
+import { intakeLead, linkLeadToQuote } from "@/lib/leads/intake";
+import { generateDocumentNumber } from "@/lib/documents/numbering";
 
 interface QuoteItemInput {
   productId: string | null;
@@ -318,9 +320,44 @@ export async function maybeCreateQuoteFromSurvey(tenantId: string, contactData: 
     ? await createSurveyOpportunity(tenantId, contactId, destination, clientName, totalAmount).catch(() => null)
     : null;
 
+  // Persist as Lead first (idempotent by ghlContactId on webhook re-deliveries).
+  // The Lead is then linked to the Quote once the Quote row is created below.
+  let leadId: string | null = null;
+  try {
+    const leadCustomFields = JSON.parse(
+      JSON.stringify({
+        destination,
+        checkIn: rawCheckIn,
+        checkOut: rawCheckOut,
+        adults,
+        children,
+        services,
+        accommodationNote,
+      }),
+    );
+    const intake = await intakeLead({
+      tenantId,
+      name: clientName as string,
+      email: clientEmail ?? null,
+      phone: clientPhone ?? null,
+      source: "ghl_survey",
+      ghlContactId: contactId ?? null,
+      tags: ["survey", `destino:${destination}`],
+      customFields: leadCustomFields,
+    });
+    leadId = intake.lead.id;
+  } catch (err) {
+    log.warn({ err, tenantId, contactId }, "intakeLead failed; continuing with Quote creation");
+  }
+
+  const number = await generateDocumentNumber(tenantId, "quote", {
+    context: "ghl_survey",
+  });
+
   const quote = await prisma.quote.create({
     data: {
       tenantId,
+      number,
       ghlContactId: contactId ?? null,
       ghlOpportunityId: opp?.opportunityId ?? null,
       ghlPipelineId: opp?.pipelineId ?? null,
@@ -351,8 +388,15 @@ export async function maybeCreateQuoteFromSurvey(tenantId: string, contactData: 
     await prisma.quoteItem.createMany({ data: items.map((item) => ({ ...item, quoteId: quote.id })) });
   }
 
+  // Link Lead → Quote (best-effort, non-blocking)
+  if (leadId) {
+    linkLeadToQuote(leadId, quote.id).catch((err) =>
+      log.warn({ err, leadId, quoteId: quote.id }, "Failed to link lead to quote"),
+    );
+  }
+
   log.info(
-    { tenantId, quoteId: quote.id, destination, itemCount: items.length, totalAmount, season },
+    { tenantId, leadId, quoteId: quote.id, destination, itemCount: items.length, totalAmount, season },
     "Draft quote created from survey"
   );
 

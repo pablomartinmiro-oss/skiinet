@@ -29,6 +29,8 @@ const PUBLIC_ROUTES = [
   "/api/ticketing/redeem",
   "/api/survey",
   "/api/voucher",
+  "/api/webhooks/twilio",
+  "/api/webhooks/vapi",
   "/survey",
 ];
 

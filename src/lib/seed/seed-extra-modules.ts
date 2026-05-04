@@ -4,6 +4,7 @@
 
 import type { PrismaClient } from "@/generated/prisma/client";
 import { hash } from "bcryptjs";
+import { syncDocumentCounters } from "@/lib/documents/numbering";
 import {
   DEMO_LEADS,
   DEMO_EXTRA_INSTRUCTORS,
@@ -515,6 +516,12 @@ export async function seedExtraModules(prisma: Db, tenantId: string, opts: SeedO
       create: { tenantId, module: mod, isEnabled: true },
     });
   }
+
+  // Sync DocumentCounter to the highest sequence we just inserted with
+  // hardcoded numbers (FAC-2026-XXXX, LIQ-2026-XXXX, TKT-2026-XXXX, etc.).
+  // Without this, the first generateDocumentNumber call after seed collides
+  // with seed rows on the @@unique([tenantId, number]) constraint.
+  await syncDocumentCounters(tenantId, { client: prisma });
 
   return result;
 }

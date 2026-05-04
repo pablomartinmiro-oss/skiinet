@@ -14,7 +14,7 @@ import {
   SMS_MESSAGES,
 } from "@/lib/email/followup-templates";
 import { buildQuoteReminderHTML } from "@/lib/email/templates/quote-reminder";
-import { getGHLClient } from "@/lib/ghl/api";
+import { sendSmsOrWhatsApp } from "@/lib/notifications/sms";
 
 const log = logger.child({ module: "quote-followup" });
 
@@ -39,25 +39,31 @@ function hoursDiff(from: Date, to: Date): number {
   return (to.getTime() - from.getTime()) / (1000 * 60 * 60);
 }
 
-// ==================== SMS VIA GHL ====================
+// ==================== SMS DISPATCHER ====================
+// Uses the provider-agnostic dispatcher: Twilio if configured, else GHL
+// fallback. Signature kept identical so existing call sites need no changes.
 
 async function sendSMS(
   tenantId: string,
   contactId: string,
-  message: string
+  message: string,
+  to?: string,
 ): Promise<boolean> {
-  try {
-    const ghl = await getGHLClient(tenantId);
-    await ghl.sendMessage(contactId, {
-      type: "SMS",
-      body: message,
-      contactId,
-    });
-    return true;
-  } catch (err) {
-    log.warn({ error: err, contactId }, "GHL SMS send failed — skipping");
+  const result = await sendSmsOrWhatsApp({
+    tenantId,
+    channel: "sms",
+    to,
+    ghlContactId: contactId,
+    body: message,
+  });
+  if (!result.ok) {
+    log.warn(
+      { provider: result.provider, error: result.error, contactId },
+      "SMS send failed — skipping",
+    );
     return false;
   }
+  return true;
 }
 
 // ==================== UNPAID QUOTE REMINDERS ====================
@@ -65,6 +71,7 @@ async function sendSMS(
 interface QuoteForReminder {
   id: string;
   tenantId: string;
+  number: string | null; // Sequential PRE-2026-XXXX (preferred over id slice)
   clientName: string;
   clientEmail: string | null;
   clientPhone: string | null;
@@ -145,6 +152,7 @@ export async function processUnpaidReminders(): Promise<{
     select: {
       id: true,
       tenantId: true,
+      number: true,
       clientName: true,
       clientEmail: true,
       clientPhone: true,
@@ -190,7 +198,7 @@ async function sendReminderForStep(
   now: Date
 ): Promise<void> {
   const firstName = quote.clientName.split(" ")[0];
-  const quoteNumber = quote.id.slice(-8).toUpperCase();
+  const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
   const destination = destLabel(quote.destination);
   const paymentUrl = quote.redsysPaymentUrl ?? undefined;
 
@@ -261,7 +269,7 @@ async function sendReminderForStep(
 
   // Send SMS via GHL if contact has phone
   if (quote.clientPhone && quote.ghlContactId && smsText) {
-    await sendSMS(quote.tenantId, quote.ghlContactId, smsText);
+    await sendSMS(quote.tenantId, quote.ghlContactId, smsText, quote.clientPhone ?? undefined);
   }
 
   // Update quote tracking
@@ -282,7 +290,7 @@ async function sendReminderForStep(
 
 async function handleExpiry(quote: QuoteForReminder, now: Date): Promise<void> {
   const firstName = quote.clientName.split(" ")[0];
-  const quoteNumber = quote.id.slice(-8).toUpperCase();
+  const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
 
   // Send expired notification email
   if (quote.clientEmail) {
@@ -298,7 +306,12 @@ async function handleExpiry(quote: QuoteForReminder, now: Date): Promise<void> {
 
   // Send SMS
   if (quote.clientPhone && quote.ghlContactId) {
-    await sendSMS(quote.tenantId, quote.ghlContactId, SMS_MESSAGES.expired(quoteNumber));
+    await sendSMS(
+      quote.tenantId,
+      quote.ghlContactId,
+      SMS_MESSAGES.expired(quoteNumber),
+      quote.clientPhone ?? undefined,
+    );
   }
 
   // Mark as expired
@@ -387,7 +400,7 @@ export async function processPostPaymentFollowUp(): Promise<{
         const html = buildCrossSellHTML({
           firstName,
           destination,
-          quoteNumber: quote.id.slice(-8).toUpperCase(),
+          quoteNumber: quote.number ?? quote.id.slice(-8).toUpperCase(),
           missingServices,
         });
         await sendEmail({
@@ -400,7 +413,12 @@ export async function processPostPaymentFollowUp(): Promise<{
       }
 
       if (quote.clientPhone && quote.ghlContactId) {
-        await sendSMS(quote.tenantId, quote.ghlContactId, SMS_MESSAGES.cross_sell(destination));
+        await sendSMS(
+          quote.tenantId,
+          quote.ghlContactId,
+          SMS_MESSAGES.cross_sell(destination),
+          quote.clientPhone ?? undefined,
+        );
       }
 
       await prisma.quote.update({
@@ -505,7 +523,7 @@ export async function processPreTripReminders(): Promise<{
     try {
       const firstName = quote.clientName.split(" ")[0];
       const destination = destLabel(quote.destination);
-      const quoteNumber = quote.id.slice(-8).toUpperCase();
+      const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
       const baseParams = { firstName, destination, quoteNumber };
 
       let html: string;
@@ -541,7 +559,7 @@ export async function processPreTripReminders(): Promise<{
       }
 
       if (quote.clientPhone && quote.ghlContactId) {
-        await sendSMS(quote.tenantId, quote.ghlContactId, smsText);
+        await sendSMS(quote.tenantId, quote.ghlContactId, smsText, quote.clientPhone ?? undefined);
       }
 
       await prisma.quote.update({
@@ -578,6 +596,7 @@ export async function flagAtRiskQuotes(): Promise<number> {
     select: {
       id: true,
       tenantId: true,
+      number: true,
       clientName: true,
       totalAmount: true,
     },
@@ -585,7 +604,7 @@ export async function flagAtRiskQuotes(): Promise<number> {
 
   let flagged = 0;
   for (const quote of atRiskQuotes) {
-    const quoteNumber = quote.id.slice(-8).toUpperCase();
+    const quoteNumber = quote.number ?? quote.id.slice(-8).toUpperCase();
     await createTeamNotification(
       quote.tenantId,
       "quote_at_risk",
